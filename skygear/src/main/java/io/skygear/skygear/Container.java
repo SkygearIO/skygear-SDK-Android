@@ -45,4 +45,13 @@ public final class Container {
 
         this.config = config;
     }
+
+    /**
+     * Gets config.
+     *
+     * @return the config
+     */
+    public Configuration getConfig() {
+        return config;
+    }
 }
