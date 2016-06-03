@@ -1,18 +1,31 @@
 package io.skygear.skygear;
 
+import java.security.InvalidParameterException;
+
 /**
- * Created by benlei on 1/6/2016.
+ * Container for Skygear.
  */
-public class Container {
-    private static final String DEFAULT_BASE_URL = "http://skygear.dev/";
+public final class Container {
+    private static Container sharedInstance;
+    private Configuration config;
 
-    private String baseUrl;
-
-    public Container() {
-        this(DEFAULT_BASE_URL);
+    public Container(Configuration config) {
+        this.config = config;
     }
 
-    public Container(String baseUrl) {
-        this.baseUrl = baseUrl;
+    public static Container defaultContainer() {
+        if (sharedInstance == null) {
+            sharedInstance = new Container(Configuration.defaultConfiguration());
+        }
+
+        return sharedInstance;
+    }
+
+    public void configure(Configuration config) {
+        if (config == null) {
+            throw new InvalidParameterException("Null configuration is not allowed");
+        }
+
+        this.config = config;
     }
 }
