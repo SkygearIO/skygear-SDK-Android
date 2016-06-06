@@ -1,5 +1,7 @@
 package io.skygear.skygear;
 
+import android.content.Context;
+
 import java.security.InvalidParameterException;
 
 /**
@@ -25,9 +27,9 @@ public final class Container {
      *
      * @return a default container
      */
-    public static Container defaultContainer() {
+    public static Container defaultContainer(Context context) {
         if (sharedInstance == null) {
-            sharedInstance = new Container(Configuration.defaultConfiguration());
+            sharedInstance = new Container(Configuration.defaultConfiguration(context));
         }
 
         return sharedInstance;

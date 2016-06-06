@@ -30,6 +30,6 @@ public abstract class SkygearApplication extends Application {
                 .context(this)
                 .build();
 
-        Container.defaultContainer().configure(config);
+        Container.defaultContainer(this).configure(config);
     }
 }

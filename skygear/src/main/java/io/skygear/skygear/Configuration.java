@@ -27,7 +27,7 @@ public final class Configuration {
     private Configuration(String endpoint, String apiKey, Context context) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
-        this.context = context;
+        this.context = context.getApplicationContext();
     }
 
     /**
@@ -35,11 +35,11 @@ public final class Configuration {
      *
      * @return a default configuration
      */
-    protected static Configuration defaultConfiguration() {
+    protected static Configuration defaultConfiguration(Context context) {
         return new Configuration(
                 DEFAULT_BASE_URL,
                 DEFAULT_API_KEY,
-                null
+                context
         );
     }
 
@@ -96,6 +96,10 @@ public final class Configuration {
 
             if (this.apiKey == null) {
                 throw new InvalidParameterException("Missing API Key");
+            }
+
+            if (this.context == null) {
+                throw new InvalidParameterException("Missing Application Context");
             }
 
             return new Configuration(this.endpoint, this.apiKey, this.context);
