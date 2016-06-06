@@ -1,0 +1,24 @@
+language: android
+
+android:
+  components:
+    - platform-tools
+    - tools
+    - build-tools-23.0.3
+    - android-23
+    - extra-android-support
+    - extra-android-m2repository
+  licenses:
+    - android-sdk-license-.+
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+script:
+  - ./gradlew :skygear:test --info
+
+notifications:
+  slack:
+    secure: "boKBSUo8wZLXMAAzRGfu3IXeoIDvpzWHDDQoV2jDPcGxbNOApxE9F2dvTWhyqBwquqbZ1gMHorpW9hiATAQaacT+e6hUrHegXbpQijGQJ4yc1UW47VKxnDU+Jdf3fVY9TRymdqMvR2IoB9XVqJU12ISFKNIpNVChw1LZvEIhj6QTkOCUUokBS04Jvti8sxIK0MQ3epUTyVNMs90RAd+S0aVdZHHXQOaH8pFciPCrKNE1MPTNQRb6sZ9GFi3ZqmLxlUTKBdoe2knNq+aVxNcYq9yl27QxknggG0u9nNAQdsqnAN/AGOYfNz5gF0zsfQFVT7D3zpuYdDbtdNMDsh9cIru4KkIShDVVkwppyt3jRgWKIRdwfYS4qJfbYl35Xjyswg2UJjoZSrgatMxNXJCvrlC1aIWK2YeB45+gctVwzvHmokCzV0kZpgJB5GWmY6qcI1VKCUIUt59jCMqKLJJixmmBnagaPcAaY6V70WoaRT4dF+0Xxb0ehMrtuFMdxFeir7ULfu2R4VfLd7GpZSXBDybGnYUZWv3HydN9D/QAvGgUUSevXrLryLQJNePFVrqkU66oBGqj0Ney7VKq4UB0b4b5sxFpkF56qo43tPEPU4qlrOw1wpeIx0xNSm8w3XTNs7Fd1mA585UhAcDS7XowhtRJpQrEA3Km4fYXrUtL9KA="
