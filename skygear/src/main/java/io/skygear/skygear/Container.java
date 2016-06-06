@@ -9,27 +9,30 @@ import java.security.InvalidParameterException;
  */
 public final class Container {
     private static Container sharedInstance;
+    private Context context;
     private Configuration config;
 
     /**
      * Instantiates a new Container.
      *
-     * @param config configuration of the container
+     * @param context application context
+     * @param config  configuration of the container
      */
-    public Container(Configuration config) {
+    public Container(Context context, Configuration config) {
+        this.context = context.getApplicationContext();
         this.config = config;
     }
 
     /**
      * Gets the Default container shared within the application.
-     *
      * This container is configured with default configuration. Better to configure it according to your usage.
      *
+     * @param context application context
      * @return a default container
      */
     public static Container defaultContainer(Context context) {
         if (sharedInstance == null) {
-            sharedInstance = new Container(Configuration.defaultConfiguration(context));
+            sharedInstance = new Container(context, Configuration.defaultConfiguration());
         }
 
         return sharedInstance;
@@ -55,5 +58,14 @@ public final class Container {
      */
     public Configuration getConfig() {
         return config;
+    }
+
+    /**
+     * Gets context.
+     *
+     * @return the application context
+     */
+    public Context getContext() {
+        return this.context;
     }
 }

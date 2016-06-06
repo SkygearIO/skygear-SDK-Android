@@ -1,7 +1,5 @@
 package io.skygear.skygear;
 
-import android.content.Context;
-
 import java.security.InvalidParameterException;
 
 /**
@@ -19,15 +17,10 @@ public final class Configuration {
      * Skygear Api key.
      */
     public final String apiKey;
-    /**
-     * Application Context.
-     */
-    public final Context context;
 
-    private Configuration(String endpoint, String apiKey, Context context) {
+    private Configuration(String endpoint, String apiKey) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
-        this.context = context.getApplicationContext();
     }
 
     /**
@@ -35,11 +28,10 @@ public final class Configuration {
      *
      * @return a default configuration
      */
-    protected static Configuration defaultConfiguration(Context context) {
+    static Configuration defaultConfiguration() {
         return new Configuration(
                 DEFAULT_BASE_URL,
-                DEFAULT_API_KEY,
-                context
+                DEFAULT_API_KEY
         );
     }
 
@@ -49,7 +41,6 @@ public final class Configuration {
     public static final class Builder {
         private String endpoint;
         private String apiKey;
-        private Context context;
 
         /**
          * Sets the Skygear endpoint.
@@ -74,17 +65,6 @@ public final class Configuration {
         }
 
         /**
-         * Sets the application context.
-         *
-         * @param context the application context
-         * @return the builder
-         */
-        public Builder context(Context context) {
-            this.context = context;
-            return this;
-        }
-
-        /**
          * Build a configuration.
          *
          * @return the configuration
@@ -98,11 +78,7 @@ public final class Configuration {
                 throw new InvalidParameterException("Missing API Key");
             }
 
-            if (this.context == null) {
-                throw new InvalidParameterException("Missing Application Context");
-            }
-
-            return new Configuration(this.endpoint, this.apiKey, this.context);
+            return new Configuration(this.endpoint, this.apiKey);
         }
     }
 }

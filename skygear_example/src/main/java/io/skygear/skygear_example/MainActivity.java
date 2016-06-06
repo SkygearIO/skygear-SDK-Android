@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         this.endpointDisplay = (TextView) findViewById(R.id.endpoint_display);
         this.apiKeyDisplay = (TextView) findViewById(R.id.api_key_display);
 
-        this.skygear = Container.defaultContainer();
+        this.skygear = Container.defaultContainer(this);
     }
 
     @Override

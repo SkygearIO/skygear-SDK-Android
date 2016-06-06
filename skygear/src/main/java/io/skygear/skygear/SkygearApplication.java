@@ -27,7 +27,6 @@ public abstract class SkygearApplication extends Application {
         Configuration config = new Configuration.Builder()
                 .endPoint(this.getSkygearEndpoint())
                 .apiKey(this.getApiKey())
-                .context(this)
                 .build();
 
         Container.defaultContainer(this).configure(config);
