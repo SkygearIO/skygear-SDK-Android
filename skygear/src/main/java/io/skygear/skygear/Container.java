@@ -1,18 +1,71 @@
 package io.skygear.skygear;
 
+import android.content.Context;
+
+import java.security.InvalidParameterException;
+
 /**
- * Created by benlei on 1/6/2016.
+ * Container for Skygear.
  */
-public class Container {
-    private static final String DEFAULT_BASE_URL = "http://skygear.dev/";
+public final class Container {
+    private static Container sharedInstance;
+    private Context context;
+    private Configuration config;
 
-    private String baseUrl;
-
-    public Container() {
-        this(DEFAULT_BASE_URL);
+    /**
+     * Instantiates a new Container.
+     *
+     * @param context application context
+     * @param config  configuration of the container
+     */
+    public Container(Context context, Configuration config) {
+        this.context = context.getApplicationContext();
+        this.config = config;
     }
 
-    public Container(String baseUrl) {
-        this.baseUrl = baseUrl;
+    /**
+     * Gets the Default container shared within the application.
+     * This container is configured with default configuration. Better to configure it according to your usage.
+     *
+     * @param context application context
+     * @return a default container
+     */
+    public static Container defaultContainer(Context context) {
+        if (sharedInstance == null) {
+            sharedInstance = new Container(context, Configuration.defaultConfiguration());
+        }
+
+        return sharedInstance;
+    }
+
+    /**
+     * Updates configuration of the container
+     *
+     * @param config configuration of the container
+     */
+    public void configure(Configuration config) {
+        if (config == null) {
+            throw new InvalidParameterException("Null configuration is not allowed");
+        }
+
+        this.config = config;
+    }
+
+    /**
+     * Gets config.
+     *
+     * @return the config
+     */
+    public Configuration getConfig() {
+        return config;
+    }
+
+    /**
+     * Gets context.
+     *
+     * @return the application context
+     */
+    public Context getContext() {
+        return this.context;
     }
 }
