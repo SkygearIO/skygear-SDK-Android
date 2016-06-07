@@ -1,0 +1,331 @@
+package io.skygear.skygear;
+
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.InstrumentationTestCase;
+import android.test.suitebuilder.annotation.SmallTest;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.toolbox.HttpStack;
+import com.android.volley.toolbox.Volley;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicStatusLine;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+
+@RunWith(AndroidJUnit4.class)
+public class RequestManagerUnitTest extends InstrumentationTestCase {
+    static Context instrumentationContext;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        instrumentationContext = InstrumentationRegistry.getContext().getApplicationContext();
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        instrumentationContext = null;
+    }
+
+    @Test
+    @SmallTest
+    public void testRequestManagerNormalFlow() throws Exception {
+        Configuration config = Configuration.defaultConfiguration();
+        RequestManager requestManager = new RequestManager(
+                RequestManagerUnitTest.instrumentationContext,
+                config
+        );
+
+        assertEquals(config.endpoint, requestManager.endpoint);
+        assertEquals(config.apiKey, requestManager.apiKey);
+        assertNotNull(requestManager.queue);
+    }
+
+    @Test
+    @SmallTest
+    public void testRequestManagerUpdateConfig() throws Exception {
+        RequestManager requestManager = new RequestManager(
+                RequestManagerUnitTest.instrumentationContext,
+                Configuration.defaultConfiguration()
+        );
+
+        Configuration config = new Configuration.Builder()
+                .endPoint("http://my-endpoint.skygeario.com/")
+                .apiKey("my-api-key")
+                .build();
+
+        requestManager.configure(config);
+
+        assertEquals(config.endpoint, requestManager.endpoint);
+        assertEquals(config.apiKey, requestManager.apiKey);
+    }
+
+    @Test
+    @SmallTest
+    public void testSendRequestNormalFlow() throws Exception {
+        Configuration config = new Configuration.Builder()
+                .endPoint("http://my-endpoint.skygeario.com/")
+                .apiKey("my-api-key")
+                .build();
+        RequestManager requestManager = new RequestManager(
+                RequestManagerUnitTest.instrumentationContext,
+                config
+        );
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        HttpStack httpStack = new MockHttpStack(new MockHttpStack.RequestValidator() {
+            @Override
+            public void validate(com.android.volley.Request request, Map<String, String> additionalHeaders)
+                    throws AuthFailureError
+            {
+                assertEquals("http://my-endpoint.skygeario.com/test/action", request.getUrl());
+                assertEquals("application/json", request.getBodyContentType());
+
+                Map headers = request.getHeaders();
+                assertEquals("my-api-key", (String)headers.get("X-Skygear-API-Key"));
+
+                try {
+                    JSONObject bodyObject = new JSONObject(new String(request.getBody()));
+
+                    assertEquals("test:action", bodyObject.getString("action"));
+                    assertEquals("my-api-key", bodyObject.getString("api_key"));
+                    assertEquals("world", bodyObject.getString("hello"));
+                    assertEquals("bar", bodyObject.getString("foo"));
+                } catch (JSONException e) {
+                    fail("Invalid body format");
+                }
+
+
+            }
+        });
+
+        requestManager.queue = Volley.newRequestQueue(
+                RequestManagerUnitTest.instrumentationContext,
+                httpStack
+        );
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("hello", "world");
+        data.put("foo", "bar");
+
+        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFail(Request.Error error) {
+                fail("Should not get error callback");
+            }
+        };
+
+        Request request = new Request("test:action", data, responseHandler);
+        requestManager.sendRequest(request);
+
+        latch.await(1, TimeUnit.SECONDS);
+    }
+
+    @Test
+    @SmallTest
+    public void testSendRequestWithAccessToken() throws Exception {
+        RequestManager requestManager = new RequestManager(
+                RequestManagerUnitTest.instrumentationContext,
+                Configuration.defaultConfiguration()
+        );
+
+        requestManager.accessToken = "my-access-token";
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        HttpStack httpStack = new MockHttpStack(new MockHttpStack.RequestValidator() {
+            @Override
+            public void validate(com.android.volley.Request request, Map<String, String> additionalHeaders)
+                    throws AuthFailureError
+            {
+                Map headers = request.getHeaders();
+                assertEquals("my-access-token", (String)headers.get("X-Skygear-Access-Token"));
+
+                try {
+                    JSONObject bodyObject = new JSONObject(new String(request.getBody()));
+                    assertEquals("my-access-token", bodyObject.getString("access_token"));
+                } catch (JSONException e) {
+                    fail("Invalid body format");
+                }
+            }
+        });
+
+        requestManager.queue = Volley.newRequestQueue(
+                RequestManagerUnitTest.instrumentationContext,
+                httpStack
+        );
+
+        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFail(Request.Error error) {
+                fail("Should not get error callback");
+            }
+        };
+
+        Request request = new Request("test:action", new HashMap<String, Object>(), responseHandler);
+        requestManager.sendRequest(request);
+
+//        latch.await(1, TimeUnit.SECONDS);
+        latch.await();
+    }
+
+    @Test
+    @SmallTest
+    public void testSendRequestWithHandleSuccessResponse() throws Exception {
+        RequestManager requestManager = new RequestManager(
+                RequestManagerUnitTest.instrumentationContext,
+                Configuration.defaultConfiguration()
+        );
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        HttpStack httpStack = new MockHttpStack(new MockHttpStack.MockResponder() {
+            @Override
+            public HttpResponse getResponse(com.android.volley.Request request, Map<String, String> header)
+                    throws AuthFailureError
+            {
+                BasicHttpResponse response = new BasicHttpResponse(
+                        new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "OK")
+                );
+
+                try {
+                    response.setEntity(
+                            new StringEntity("{\"result\": {\"status\": \"OK\"}}")
+                    );
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                return response;
+            }
+        });
+
+        requestManager.queue = Volley.newRequestQueue(
+                RequestManagerUnitTest.instrumentationContext,
+                httpStack
+        );
+
+        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    assertEquals("OK", result.getJSONObject("result").getString("status"));
+                } catch (JSONException e) {
+                    fail("Invalid response format");
+                }
+
+                latch.countDown();
+            }
+
+            @Override
+            public void onFail(Request.Error error) {
+                fail("Should not get error callback");
+            }
+        };
+
+        Request request = new Request("test:action", new HashMap<String, Object>(), responseHandler);
+        requestManager.sendRequest(request);
+
+        latch.await(1, TimeUnit.SECONDS);
+    }
+
+    @Test
+    @SmallTest
+    public void testSendRequestWithHandleErrorResponse() throws Exception {
+        RequestManager requestManager = new RequestManager(
+                RequestManagerUnitTest.instrumentationContext,
+                Configuration.defaultConfiguration()
+        );
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        HttpStack httpStack = new MockHttpStack(new MockHttpStack.MockResponder() {
+            @Override
+            public HttpResponse getResponse(com.android.volley.Request request, Map<String, String> header)
+                    throws AuthFailureError
+            {
+                BasicHttpResponse response = new BasicHttpResponse(
+                        new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 401, "Unauthorized")
+                );
+
+                try {
+                    response.setEntity(
+                            new StringEntity(
+                                    "{" +
+                                    "  \"error\": {" +
+                                    "    \"name\": \"PermissionDenied\", " +
+                                    "    \"code\": 102," +
+                                    "    \"message\": \"write is not allowed\"" +
+                                    "  }" +
+                                    "}"
+                            )
+                    );
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                return response;
+            }
+        });
+
+        requestManager.queue = Volley.newRequestQueue(
+                RequestManagerUnitTest.instrumentationContext,
+                httpStack
+        );
+
+        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                fail("Should not get success callback");
+            }
+
+            @Override
+            public void onFail(Request.Error error) {
+                String message = error.getMessage();
+                try {
+                    JSONObject jsonObject = new JSONObject(message);
+                    JSONObject errorObject = jsonObject.getJSONObject("error");
+                    assertEquals("PermissionDenied", errorObject.getString("name"));
+                    assertEquals(102, errorObject.getInt("code"));
+                    assertEquals("write is not allowed", errorObject.getString("message"));
+
+                } catch (JSONException e) {
+                    fail("Invalid response format");
+                }
+                latch.countDown();
+            }
+        };
+
+        Request request = new Request("test:action", new HashMap<String, Object>(), responseHandler);
+        requestManager.sendRequest(request);
+
+        latch.await(1, TimeUnit.SECONDS);
+    }
+}

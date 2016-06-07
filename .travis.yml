@@ -17,7 +17,7 @@ cache:
     - $HOME/.gradle/wrapper/
 
 script:
-  - ./gradlew :skygear:test --info
+  - ./gradlew :skygear:test :skygear:connectedAndroidTest --info --stacktrace
 
 deploy:
   provider: script
