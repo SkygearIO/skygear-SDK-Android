@@ -11,6 +11,7 @@ public final class Container {
     private static Container sharedInstance;
     private Context context;
     private Configuration config;
+    private RequestManager requestManager;
 
     /**
      * Instantiates a new Container.
@@ -21,6 +22,7 @@ public final class Container {
     public Container(Context context, Configuration config) {
         this.context = context.getApplicationContext();
         this.config = config;
+        this.requestManager = new RequestManager(context, config);
     }
 
     /**
