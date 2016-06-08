@@ -1,64 +1,62 @@
 package io.skygear.skygear;
 
-import android.app.Application;
 import android.content.Context;
-import android.test.mock.MockApplication;
-import android.test.mock.MockContext;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(AndroidJUnit4.class)
 public class ContainerUnitTest {
-    static Application mockApp;
-    static Context mockContext;
+    static Context instrumentationContext;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        final Context mockApp = ContainerUnitTest.mockApp = new MockApplication();
-        ContainerUnitTest.mockContext = new MockContext(){
-            @Override
-            public Context getApplicationContext() {
-                return mockApp;
-            }
-        };
+        instrumentationContext = InstrumentationRegistry.getContext().getApplicationContext();
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
-        ContainerUnitTest.mockApp = null;
-        ContainerUnitTest.mockContext = null;
+    public static void tearDownClass() throws Exception {
+        instrumentationContext = null;
     }
 
     @Test
+    @SmallTest
     public void testContainerNormalFlow() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
-        Container container = new Container(ContainerUnitTest.mockContext, config);
+        Container container = new Container(instrumentationContext, config);
 
         assertEquals(config, container.getConfig());
     }
 
     @Test
+    @SmallTest
     public void testDefaultContainerNormalFlow() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
-        Container container = Container.defaultContainer(ContainerUnitTest.mockContext);
+        Container container = Container.defaultContainer(instrumentationContext);
 
         assertEquals(config.endpoint, container.getConfig().endpoint);
         assertEquals(config.apiKey, container.getConfig().apiKey);
-        assertEquals(ContainerUnitTest.mockApp, container.getContext());
+        assertEquals(instrumentationContext, container.getContext());
     }
 
     @Test
+    @SmallTest
     public void testDefaultContainerIsSingleton() throws Exception {
-        Container container1 = Container.defaultContainer(ContainerUnitTest.mockContext);
-        Container container2 = Container.defaultContainer(ContainerUnitTest.mockContext);
+        Container container1 = Container.defaultContainer(instrumentationContext);
+        Container container2 = Container.defaultContainer(instrumentationContext);
 
         assertEquals(container2, container1);
     }
 
     @Test
+    @SmallTest
     public void testContainerUpdateConfiguration() throws Exception {
         Configuration config1 = new Configuration.Builder()
                 .endPoint("http://my-endpoint.skygeario.com")
@@ -68,7 +66,7 @@ public class ContainerUnitTest {
                 .endPoint("http://my-endpoint-2.skygeario.com")
                 .apiKey("my-api-key-2")
                 .build();
-        Container container = new Container(ContainerUnitTest.mockContext, config1);
+        Container container = new Container(instrumentationContext, config1);
         container.configure(config2);
 
         assertEquals(config2, container.getConfig());
