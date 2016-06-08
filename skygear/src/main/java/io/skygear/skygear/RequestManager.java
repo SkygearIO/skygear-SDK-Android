@@ -5,11 +5,9 @@ import android.content.Context;
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -106,46 +104,46 @@ public class RequestManager {
         Map<String, Object> data = request.data;
         data.putAll(this.getExtraData(action));
 
-        final Map<String, String> extraHeaders = this.getExtraHeaders();
-        JsonObjectRequest volleyRequest = new JsonObjectRequest(
-                com.android.volley.Request.Method.POST,
+        JsonObjectRequest jsonRequest = new JsonRequest(
                 url,
                 new JSONObject(data),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        if (request.responseHandler != null) {
-                            request.responseHandler.onSuccess(response);
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        if (request.responseHandler != null) {
-                            String errorString;
-                            if (error.networkResponse != null) {
-                                errorString = new String(error.networkResponse.data);
-                            } else {
-                                errorString = error.getMessage();
-                            }
+                this.getExtraHeaders(),
+                request,
+                request
+        );
 
-                            request.responseHandler.onFail(new Request.Error(errorString));
-                        }
-                    }
-                }
+        this.queue.add(jsonRequest);
+    }
+
+    private static class JsonRequest extends JsonObjectRequest {
+        private Map<String, String> extraHeaders;
+
+        private JsonRequest(
+                String url,
+                JSONObject data,
+                Map<String, String> extraHeaders,
+                Response.Listener<JSONObject> listener,
+                Response.ErrorListener errorListener
         ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                return extraHeaders;
-            }
+            super(
+                    com.android.volley.Request.Method.POST,
+                    url,
+                    data,
+                    listener,
+                    errorListener
+            );
 
-            @Override
-            public String getBodyContentType() {
-                return "application/json";
-            }
-        };
+            this.extraHeaders = extraHeaders;
+        }
 
-        this.queue.add(volleyRequest);
+        @Override
+        public Map<String, String> getHeaders() throws AuthFailureError {
+            return this.extraHeaders;
+        }
+
+        @Override
+        public String getBodyContentType() {
+            return "application/json";
+        }
     }
 }

@@ -236,7 +236,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
             @Override
             public void onSuccess(JSONObject result) {
                 try {
-                    assertEquals("OK", result.getJSONObject("result").getString("status"));
+                    assertEquals("OK", result.getString("status"));
                 } catch (JSONException e) {
                     fail("Invalid response format");
                 }

@@ -1,5 +1,9 @@
 package io.skygear.skygear;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -7,7 +11,7 @@ import java.util.Map;
 /**
  * A Skygear Request.
  */
-public class Request {
+public class Request implements Response.Listener<JSONObject>, Response.ErrorListener {
     /**
      * Request Action.
      * It will be in format of "namespace:action".
@@ -43,6 +47,34 @@ public class Request {
         this.action = action;
         this.data = data;
         this.responseHandler = responseHandler;
+    }
+
+    @Override
+    public void onResponse(JSONObject response) {
+        if (this.responseHandler != null) {
+            JSONObject resultObject;
+            try {
+                resultObject = response.getJSONObject("result");
+            } catch (JSONException e) {
+                resultObject = response;
+            }
+
+            this.responseHandler.onSuccess(resultObject);
+        }
+    }
+
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        if (this.responseHandler != null) {
+            String errorString;
+            if (error.networkResponse != null) {
+                errorString = new String(error.networkResponse.data);
+            } else {
+                errorString = error.getMessage();
+            }
+
+            this.responseHandler.onFail(new Request.Error(errorString));
+        }
     }
 
     /**
