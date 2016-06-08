@@ -308,17 +308,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
 
             @Override
             public void onFail(Request.Error error) {
-                String message = error.getMessage();
-                try {
-                    JSONObject jsonObject = new JSONObject(message);
-                    JSONObject errorObject = jsonObject.getJSONObject("error");
-                    assertEquals("PermissionDenied", errorObject.getString("name"));
-                    assertEquals(102, errorObject.getInt("code"));
-                    assertEquals("write is not allowed", errorObject.getString("message"));
-
-                } catch (JSONException e) {
-                    fail("Invalid response format");
-                }
+                assertEquals("write is not allowed", error.getMessage());
                 latch.countDown();
             }
         };

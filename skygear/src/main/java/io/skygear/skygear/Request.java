@@ -67,8 +67,14 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
     public void onErrorResponse(VolleyError error) {
         if (this.responseHandler != null) {
             String errorString;
-            if (error.networkResponse != null) {
-                errorString = new String(error.networkResponse.data);
+            if (error.networkResponse != null && error.networkResponse.data != null) {
+                String networkErrorString = new String(error.networkResponse.data);
+                try {
+                    JSONObject errorObject = new JSONObject(networkErrorString);
+                    errorString = errorObject.getJSONObject("error").getString("message");
+                } catch (JSONException e) {
+                    errorString = networkErrorString;
+                }
             } else {
                 errorString = error.getMessage();
             }
