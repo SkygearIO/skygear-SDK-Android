@@ -89,6 +89,42 @@ public final class Container implements AuthResolver {
         this.requestManager.sendRequest(req);
     }
 
+    /**
+     * Login with username.
+     *
+     * @param username the username
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void loginWithUsername(String username, String password, AuthResponseHandler handler) {
+        Request req = new LoginRequest(username, null, password);
+
+        if (handler != null) {
+            handler.authResolver = this;
+        }
+
+        req.responseHandler = handler;
+        this.requestManager.sendRequest(req);
+    }
+
+    /**
+     * Login with email.
+     *
+     * @param email    the email
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void loginWithEmail(String email, String password, AuthResponseHandler handler) {
+        Request req = new LoginRequest(null, email, password);
+
+        if (handler != null) {
+            handler.authResolver = this;
+        }
+
+        req.responseHandler = handler;
+        this.requestManager.sendRequest(req);
+    }
+
     @Override
     public void resolveAuthToken(String token) {
         this.requestManager.accessToken = token;
