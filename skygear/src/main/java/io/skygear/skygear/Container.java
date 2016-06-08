@@ -65,9 +65,11 @@ public final class Container implements AuthResolver {
 
         if (handler != null) {
             handler.authResolver = this;
+            req.responseHandler = handler;
+        } else {
+            req.responseHandler = new AuthResolveHandler(this);
         }
 
-        req.responseHandler = handler;
         this.requestManager.sendRequest(req);
     }
 
@@ -83,9 +85,11 @@ public final class Container implements AuthResolver {
 
         if (handler != null) {
             handler.authResolver = this;
+            req.responseHandler = handler;
+        } else {
+            req.responseHandler = new AuthResolveHandler(this);
         }
 
-        req.responseHandler = handler;
         this.requestManager.sendRequest(req);
     }
 
@@ -101,9 +105,11 @@ public final class Container implements AuthResolver {
 
         if (handler != null) {
             handler.authResolver = this;
+            req.responseHandler = handler;
+        } else {
+            req.responseHandler = new AuthResolveHandler(this);
         }
 
-        req.responseHandler = handler;
         this.requestManager.sendRequest(req);
     }
 
@@ -119,9 +125,11 @@ public final class Container implements AuthResolver {
 
         if (handler != null) {
             handler.authResolver = this;
+            req.responseHandler = handler;
+        } else {
+            req.responseHandler = new AuthResolveHandler(this);
         }
 
-        req.responseHandler = handler;
         this.requestManager.sendRequest(req);
     }
 
@@ -135,9 +143,11 @@ public final class Container implements AuthResolver {
 
         if (handler != null) {
             handler.authResolver = this;
+            req.responseHandler = handler;
+        } else {
+            req.responseHandler = new AuthResolveHandler(this);
         }
 
-        req.responseHandler = handler;
         this.requestManager.sendRequest(req);
     }
 
