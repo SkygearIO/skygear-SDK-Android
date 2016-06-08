@@ -98,6 +98,13 @@ public class RequestManager {
      * @param request the request
      */
     public void sendRequest(final Request request) {
+        try {
+            request.validate();
+        } catch (Exception e) {
+            request.onValidationError(e);
+            return;
+        }
+
         String action = request.action;
         String url = this.endpoint + action.replace(":", "/");
 

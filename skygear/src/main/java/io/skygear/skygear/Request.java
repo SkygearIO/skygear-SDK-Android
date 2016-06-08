@@ -49,6 +49,28 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
         this.responseHandler = responseHandler;
     }
 
+    /**
+     * Validation method.
+     * This is be called before sending out the request.
+     * Throw an exception to indicate any validation error.
+     *
+     * @throws Exception the exception
+     */
+    protected void validate() throws Exception {
+        // Do nothing. Let subclasses to overwrite it.
+    }
+
+    /**
+     * Validation error callback
+     *
+     * @param exception the exception
+     */
+    public void onValidationError(Exception exception) {
+        if (this.responseHandler != null) {
+            this.responseHandler.onFail(new Error(exception.getMessage()));
+        }
+    }
+
     @Override
     public void onResponse(JSONObject response) {
         if (this.responseHandler != null) {

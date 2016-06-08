@@ -89,6 +89,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         );
 
         final CountDownLatch latch = new CountDownLatch(1);
+        final boolean[] checkpoints = { false };
 
         HttpStack httpStack = new MockHttpStack(new MockHttpStack.RequestValidator() {
             @Override
@@ -128,6 +129,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
             @Override
             public void onSuccess(JSONObject result) {
+                checkpoints[0] = true;
                 latch.countDown();
             }
 
@@ -141,6 +143,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         requestManager.sendRequest(request);
 
         latch.await(1, TimeUnit.SECONDS);
+        assertTrue(checkpoints[0]);
     }
 
     @Test
@@ -154,6 +157,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         requestManager.accessToken = "my-access-token";
 
         final CountDownLatch latch = new CountDownLatch(1);
+        final boolean[] checkpoints = { false };
 
         HttpStack httpStack = new MockHttpStack(new MockHttpStack.RequestValidator() {
             @Override
@@ -180,6 +184,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
             @Override
             public void onSuccess(JSONObject result) {
+                checkpoints[0] = true;
                 latch.countDown();
             }
 
@@ -192,8 +197,9 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         Request request = new Request("test:action", new HashMap<String, Object>(), responseHandler);
         requestManager.sendRequest(request);
 
-//        latch.await(1, TimeUnit.SECONDS);
-        latch.await();
+        latch.await(1, TimeUnit.SECONDS);
+        assertTrue(checkpoints[0]);
+
     }
 
     @Test
@@ -205,6 +211,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         );
 
         final CountDownLatch latch = new CountDownLatch(1);
+        final boolean[] checkpoints = { false };
 
         HttpStack httpStack = new MockHttpStack(new MockHttpStack.MockResponder() {
             @Override
@@ -241,6 +248,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
                     fail("Invalid response format");
                 }
 
+                checkpoints[0] = true;
                 latch.countDown();
             }
 
@@ -254,6 +262,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         requestManager.sendRequest(request);
 
         latch.await(1, TimeUnit.SECONDS);
+        assertTrue(checkpoints[0]);
     }
 
     @Test
@@ -265,6 +274,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         );
 
         final CountDownLatch latch = new CountDownLatch(1);
+        final boolean[] checkpoints = { false };
 
         HttpStack httpStack = new MockHttpStack(new MockHttpStack.MockResponder() {
             @Override
@@ -309,6 +319,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
             @Override
             public void onFail(Request.Error error) {
                 assertEquals("write is not allowed", error.getMessage());
+                checkpoints[0] = true;
                 latch.countDown();
             }
         };
@@ -317,5 +328,97 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         requestManager.sendRequest(request);
 
         latch.await(1, TimeUnit.SECONDS);
+        assertTrue(checkpoints[0]);
+    }
+
+    public void testRequestValidationSuccess() throws Exception {
+        RequestManager requestManager = new RequestManager(
+                RequestManagerUnitTest.instrumentationContext,
+                Configuration.defaultConfiguration()
+        );
+        requestManager.queue = Volley.newRequestQueue(
+                RequestManagerUnitTest.instrumentationContext,
+                new MockHttpStack()
+        );
+
+        final CountDownLatch latch = new CountDownLatch(2);
+        final boolean[] checkpoints = {false, false};
+
+        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                checkpoints[1] = true;
+                latch.countDown();
+            }
+
+            @Override
+            public void onFail(Request.Error error) {
+                fail("Should not get error callback");
+            }
+        };
+
+        Request request = new Request(
+                "test:action",
+                new HashMap<String, Object>(),
+                responseHandler
+        ) {
+            @Override
+            protected void validate() throws Exception {
+                checkpoints[0] = true;
+                latch.countDown();
+            }
+        };
+
+        requestManager.sendRequest(request);
+
+        latch.await(1, TimeUnit.SECONDS);
+
+        assertTrue(checkpoints[0]);
+        assertTrue(checkpoints[1]);
+    }
+
+    public void testRequestValidationFail() throws Exception {
+        RequestManager requestManager = new RequestManager(
+                RequestManagerUnitTest.instrumentationContext,
+                Configuration.defaultConfiguration()
+        );
+        requestManager.queue = Volley.newRequestQueue(
+                RequestManagerUnitTest.instrumentationContext,
+                new MockHttpStack()
+        );
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final boolean[] checkpoints = { false };
+
+        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                fail("Should not get success callback");
+            }
+
+            @Override
+            public void onFail(Request.Error error) {
+                assertEquals("Test validation exception", error.getMessage());
+
+                checkpoints[0] = true;
+                latch.countDown();
+            }
+        };
+
+        Request request = new Request(
+                "test:action",
+                new HashMap<String, Object>(),
+                responseHandler
+        ) {
+            @Override
+            protected void validate() throws Exception {
+                throw new Exception("Test validation exception");
+            }
+        };
+
+        requestManager.sendRequest(request);
+
+        latch.await(1, TimeUnit.SECONDS);
+        assertTrue(checkpoints[0]);
     }
 }
