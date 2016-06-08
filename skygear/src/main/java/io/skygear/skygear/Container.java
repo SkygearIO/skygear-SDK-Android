@@ -125,6 +125,22 @@ public final class Container implements AuthResolver {
         this.requestManager.sendRequest(req);
     }
 
+    /**
+     * Logout.
+     *
+     * @param handler the response handler
+     */
+    public void logout(LogoutResponseHandler handler) {
+        Request req = new LogoutRequest();
+
+        if (handler != null) {
+            handler.authResolver = this;
+        }
+
+        req.responseHandler = handler;
+        this.requestManager.sendRequest(req);
+    }
+
     @Override
     public void resolveAuthToken(String token) {
         this.requestManager.accessToken = token;
