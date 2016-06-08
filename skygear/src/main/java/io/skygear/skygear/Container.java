@@ -7,7 +7,7 @@ import java.security.InvalidParameterException;
 /**
  * Container for Skygear.
  */
-public final class Container {
+public final class Container implements AuthResolver {
     private static Container sharedInstance;
     private Context context;
     private Configuration config;
@@ -51,6 +51,47 @@ public final class Container {
         }
 
         this.config = config;
+    }
+
+    /**
+     * Sign up with username.
+     *
+     * @param username the username
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void signupWithUsername(String username, String password, AuthResponseHandler handler) {
+        Request req = new SignupRequest(username, null, password);
+
+        if (handler != null) {
+            handler.authResolver = this;
+        }
+
+        req.responseHandler = handler;
+        this.requestManager.sendRequest(req);
+    }
+
+    /**
+     * Sign up with email.
+     *
+     * @param email    the email
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void signupWithEmail(String email, String password, AuthResponseHandler handler) {
+        Request req = new SignupRequest(null, email, password);
+
+        if (handler != null) {
+            handler.authResolver = this;
+        }
+
+        req.responseHandler = handler;
+        this.requestManager.sendRequest(req);
+    }
+
+    @Override
+    public void resolveAuthToken(String token) {
+        this.requestManager.accessToken = token;
     }
 
     /**
