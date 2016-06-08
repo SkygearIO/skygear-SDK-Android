@@ -15,24 +15,56 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The Skygear request manager.
+ */
 public class RequestManager {
+    /**
+     * The Request Queue.
+     */
     RequestQueue queue;
+    /**
+     * The Endpoint.
+     */
     String endpoint;
+    /**
+     * The Api key.
+     */
     String apiKey;
 
+    /**
+     * The Access token.
+     */
     public String accessToken;
 
+    /**
+     * Instantiates a new Request manager.
+     *
+     * @param context the context
+     * @param config  the config
+     */
     public RequestManager(Context context, Configuration config) {
         this.queue = Volley.newRequestQueue(context);
         this.configure(config);
     }
 
+    /**
+     * Updates the configuration of the Request manager.
+     *
+     * @param config the config
+     */
     public void configure(Configuration config) {
         this.endpoint = config.endpoint;
         this.apiKey = config.apiKey;
     }
 
-    Map<String, Object> getExtraData(String action) throws JSONException {
+    /**
+     * Gets extra data map based on the configuration.
+     *
+     * @param action the action
+     * @return the extra data
+     */
+    Map<String, Object> getExtraData(String action) {
         Map<String, Object> extra = new HashMap<>();
 
         extra.put("action", action);
@@ -45,7 +77,12 @@ public class RequestManager {
         return extra;
     }
 
-    Map<String, String> getExtraHeaders(String action){
+    /**
+     * Get extra headers map based on the configuration.
+     *
+     * @return the map
+     */
+    Map<String, String> getExtraHeaders(){
         Map<String, String> extra = new HashMap<>();
 
         extra.put("X-Skygear-API-Key", this.apiKey);
@@ -57,14 +94,19 @@ public class RequestManager {
         return extra;
     }
 
-    public void sendRequest(final Request request) throws JSONException {
+    /**
+     * Send a request.
+     *
+     * @param request the request
+     */
+    public void sendRequest(final Request request) {
         String action = request.action;
         String url = this.endpoint + action.replace(":", "/");
 
         Map<String, Object> data = request.data;
         data.putAll(this.getExtraData(action));
 
-        final Map<String, String> extraHeaders = this.getExtraHeaders(action);
+        final Map<String, String> extraHeaders = this.getExtraHeaders();
         JsonObjectRequest volleyRequest = new JsonObjectRequest(
                 com.android.volley.Request.Method.POST,
                 url,
@@ -81,7 +123,7 @@ public class RequestManager {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (request.responseHandler != null) {
-                            String errorString = null;
+                            String errorString;
                             if (error.networkResponse != null) {
                                 errorString = new String(error.networkResponse.data);
                             } else {
