@@ -28,9 +28,14 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
 
 @RunWith(AndroidJUnit4.class)
-public class RequestManagerUnitTest extends InstrumentationTestCase {
+public class RequestManagerUnitTest {
     static Context instrumentationContext;
 
     @BeforeClass
