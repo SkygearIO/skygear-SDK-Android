@@ -1,7 +1,9 @@
 package io.skygear.skygear_example;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.TextView;
 
 import io.skygear.skygear.Configuration;
@@ -29,7 +31,19 @@ public class MainActivity extends AppCompatActivity {
 
         Configuration skygearConfig = this.skygear.getConfig();
 
-        this.endpointDisplay.setText(String.format("Endpoint: %s", skygearConfig.endpoint));
-        this.apiKeyDisplay.setText(String.format("API Key: %s", skygearConfig.apiKey));
+        this.endpointDisplay.setText(skygearConfig.endpoint);
+        this.apiKeyDisplay.setText(skygearConfig.apiKey);
+    }
+
+    public void goSignup(View v) {
+        startActivity(new Intent(this, SignupActivity.class));
+    }
+
+    public void goLogin(View v) {
+        startActivity(new Intent(this, LoginActivity.class));
+    }
+
+    public void goLogout(View view) {
+        startActivity(new Intent(this, LogoutActivity.class));
     }
 }
