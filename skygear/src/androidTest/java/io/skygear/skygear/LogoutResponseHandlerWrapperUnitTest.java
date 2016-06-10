@@ -69,9 +69,9 @@ public class LogoutResponseHandlerWrapperUnitTest {
         final boolean[] checkpoints = { false };
         AuthResolver resolver = new AuthResolver() {
             @Override
-            public void resolveAuthToken(String token) {
+            public void resolveAuthUser(User user) {
                 checkpoints[0] = true;
-                assertNull(token);
+                assertNull(user);
             }
         };
 

@@ -126,8 +126,11 @@ public final class Container implements AuthResolver {
     }
 
     @Override
-    public void resolveAuthToken(String token) {
-        this.requestManager.accessToken = token;
+    public void resolveAuthUser(User user) {
+        this.persistentStore.currentUser = user;
+        this.persistentStore.save();
+
+        this.requestManager.accessToken = user != null ? user.accessToken : null;
     }
 
     /**

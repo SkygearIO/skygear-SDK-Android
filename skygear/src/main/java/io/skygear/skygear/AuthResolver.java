@@ -7,7 +7,7 @@ public interface AuthResolver {
     /**
      * Resolve auth token.
      *
-     * @param token access token
+     * @param user authenticated user
      */
-    void resolveAuthToken(String token);
+    void resolveAuthUser(User user);
 }

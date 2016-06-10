@@ -28,9 +28,10 @@ class AuthResponseHandlerWrapper implements Request.ResponseHandler {
     @Override
     public void onSuccess(JSONObject result) {
         try {
-            String accessToken = result.getString("access_token");
+            String resultString = result.toString();
+            User authUser = User.fromJsonString(resultString);
             if (this.authResolver != null) {
-                this.authResolver.resolveAuthToken(accessToken);
+                this.authResolver.resolveAuthUser(authUser);
             }
             if (this.originalHandler != null) {
                 this.originalHandler.onSuccess(result);

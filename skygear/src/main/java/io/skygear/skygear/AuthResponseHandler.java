@@ -10,9 +10,9 @@ public abstract class AuthResponseHandler implements Request.ResponseHandler {
     /**
      * Auth success callback
      *
-     * @param token access token
+     * @param user authenticated user
      */
-    public abstract void onAuthSuccess(String token);
+    public abstract void onAuthSuccess(User user);
 
     /**
      * Auth fail callback
@@ -24,8 +24,8 @@ public abstract class AuthResponseHandler implements Request.ResponseHandler {
     @Override
     public void onSuccess(JSONObject result) {
         try {
-            String accessToken = result.getString("access_token");
-            this.onAuthSuccess(accessToken);
+            String resultString = result.toString();
+            this.onAuthSuccess(User.fromJsonString(resultString));
         } catch (JSONException e) {
             this.onAuthFail("Malformed server response");
         }

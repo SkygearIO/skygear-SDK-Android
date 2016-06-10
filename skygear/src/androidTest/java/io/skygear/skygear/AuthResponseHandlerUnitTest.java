@@ -18,9 +18,10 @@ public class AuthResponseHandlerUnitTest {
         final boolean[] checkpoints = { false };
         AuthResponseHandler authResponseHandler = new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(String token) {
+            public void onAuthSuccess(User user) {
                 checkpoints[0] = true;
-                assertEquals("my-token", token);
+                assertEquals("user_001", user.userId);
+                assertEquals("my-token", user.accessToken);
             }
 
             @Override
@@ -31,6 +32,7 @@ public class AuthResponseHandlerUnitTest {
 
         JSONObject data = new JSONObject();
         data.put("access_token", "my-token");
+        data.put("user_id", "user_001");
 
         authResponseHandler.onSuccess(data);
 
@@ -41,7 +43,7 @@ public class AuthResponseHandlerUnitTest {
     public void testAuthResponseHandlerFailFlow() throws Exception {
         AuthResponseHandler authResponseHandler = new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(String token) {
+            public void onAuthSuccess(User user) {
                 fail("Should not get success callback");
             }
 

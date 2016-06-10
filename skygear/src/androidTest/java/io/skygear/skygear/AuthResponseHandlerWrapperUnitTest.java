@@ -18,9 +18,10 @@ public class AuthResponseHandlerWrapperUnitTest {
         final boolean[] checkpoints = { false };
         AuthResponseHandler authResponseHandler = new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(String token) {
+            public void onAuthSuccess(User user) {
                 checkpoints[0] = true;
-                assertEquals("my-token", token);
+                assertEquals("user_001", user.userId);
+                assertEquals("my-token", user.accessToken);
             }
 
             @Override
@@ -35,6 +36,7 @@ public class AuthResponseHandlerWrapperUnitTest {
         );
 
         JSONObject data = new JSONObject();
+        data.put("user_id", "user_001");
         data.put("access_token", "my-token");
 
         wrapper.onSuccess(data);
@@ -47,7 +49,7 @@ public class AuthResponseHandlerWrapperUnitTest {
         final boolean[] checkpoints = { false };
         AuthResponseHandler authResponseHandler = new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(String token) {
+            public void onAuthSuccess(User user) {
                 fail("Should not get success callback");
             }
 
@@ -73,15 +75,18 @@ public class AuthResponseHandlerWrapperUnitTest {
         final boolean[] checkpoints = { false };
         AuthResolver resolver = new AuthResolver() {
             @Override
-            public void resolveAuthToken(String token) {
+            public void resolveAuthUser(User user) {
                 checkpoints[0] = true;
-                assertEquals("my-token", token);
+                assertEquals("user_001", user.userId);
+                assertEquals("my-token", user.accessToken);
+
             }
         };
 
         AuthResponseHandlerWrapper wrapper = new AuthResponseHandlerWrapper(resolver, null);
 
         JSONObject data = new JSONObject();
+        data.put("user_id", "user_001");
         data.put("access_token", "my-token");
 
         wrapper.onSuccess(data);

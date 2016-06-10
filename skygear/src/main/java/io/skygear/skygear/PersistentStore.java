@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * The Skygear persistent store.
@@ -54,21 +53,7 @@ class PersistentStore {
         String currentUserString = pref.getString(CURRENT_USER_KEY, "{}");
 
         try {
-            JSONObject currentUserJson = new JSONObject(currentUserString);
-            String userId = currentUserJson.getString("user_id");
-            String accessToken = currentUserJson.getString("access_token");
-            String username = null;
-            String email = null;
-
-            if (currentUserJson.has("username")) {
-                username = currentUserJson.getString("username");
-            }
-
-            if (currentUserJson.has("email")) {
-                email = currentUserJson.getString("email");
-            }
-
-            this.currentUser = new User(userId, accessToken, username, email);
+            this.currentUser = User.fromJsonString(currentUserString);
         } catch (JSONException e) {
             Log.w("Skygear SDK", "Fail to decode saved current user object");
             this.currentUser = null;
@@ -79,25 +64,12 @@ class PersistentStore {
         SharedPreferences pref = context.getSharedPreferences(SKYGEAR_PREF_SPACE, Context.MODE_PRIVATE);
         SharedPreferences.Editor authUserEditor = pref.edit();
 
-        JSONObject currentUserJson = new JSONObject();
         if (this.currentUser != null) {
-            try {
-                currentUserJson.put("user_id", this.currentUser.userId);
-                currentUserJson.put("access_token", this.currentUser.accessToken);
-
-                if (this.currentUser.username != null) {
-                    currentUserJson.put("username", this.currentUser.username);
-                }
-
-                if (this.currentUser.email != null) {
-                    currentUserJson.put("email", this.currentUser.email);
-                }
-            } catch (JSONException e) {
-                Log.w("Skygear SDK", "Fail to encode current user object");
-            }
+            authUserEditor.putString(CURRENT_USER_KEY, this.currentUser.toJsonString());
+        } else {
+            authUserEditor.remove(CURRENT_USER_KEY);
         }
 
-        authUserEditor.putString(CURRENT_USER_KEY, currentUserJson.toString());
         authUserEditor.apply();
     }
 }
