@@ -51,6 +51,7 @@ public final class Container implements AuthResolver {
         }
 
         this.config = config;
+        this.requestManager.configure(config);
     }
 
     /**
