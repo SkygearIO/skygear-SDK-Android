@@ -9,7 +9,9 @@ import java.security.InvalidParameterException;
  */
 public final class Container implements AuthResolver {
     private static Container sharedInstance;
-    private Context context;
+
+    private final PersistentStore persistentStore;
+    private final Context context;
     private Configuration config;
     private RequestManager requestManager;
 
@@ -23,6 +25,7 @@ public final class Container implements AuthResolver {
         this.context = context.getApplicationContext();
         this.config = config;
         this.requestManager = new RequestManager(context, config);
+        this.persistentStore = new PersistentStore(context);
     }
 
     /**
@@ -143,5 +146,14 @@ public final class Container implements AuthResolver {
      */
     public Context getContext() {
         return this.context;
+    }
+
+    /**
+     * Gets current user.
+     *
+     * @return the current user
+     */
+    public User getCurrentUser() {
+        return this.persistentStore.currentUser;
     }
 }

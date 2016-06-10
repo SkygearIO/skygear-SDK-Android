@@ -1,6 +1,8 @@
 package io.skygear.skygear;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -15,13 +17,26 @@ import static junit.framework.Assert.assertEquals;
 public class ContainerUnitTest {
     static Context instrumentationContext;
 
+    @SuppressLint("CommitPrefEdits")
+    private static void clearSharedPreferences(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        SharedPreferences.Editor edit = pref.edit();
+        edit.clear();
+        edit.commit();
+    }
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         instrumentationContext = InstrumentationRegistry.getContext().getApplicationContext();
+        clearSharedPreferences(instrumentationContext);
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        clearSharedPreferences(instrumentationContext);
         instrumentationContext = null;
     }
 
