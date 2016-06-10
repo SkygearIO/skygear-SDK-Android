@@ -63,13 +63,7 @@ public final class Container implements AuthResolver {
      */
     public void signupWithUsername(String username, String password, AuthResponseHandler handler) {
         Request req = new SignupRequest(username, null, password);
-
-        if (handler != null) {
-            handler.authResolver = this;
-            req.responseHandler = handler;
-        } else {
-            req.responseHandler = new AuthResolveHandler(this);
-        }
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
         this.requestManager.sendRequest(req);
     }
@@ -83,13 +77,7 @@ public final class Container implements AuthResolver {
      */
     public void signupWithEmail(String email, String password, AuthResponseHandler handler) {
         Request req = new SignupRequest(null, email, password);
-
-        if (handler != null) {
-            handler.authResolver = this;
-            req.responseHandler = handler;
-        } else {
-            req.responseHandler = new AuthResolveHandler(this);
-        }
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
         this.requestManager.sendRequest(req);
     }
@@ -103,13 +91,7 @@ public final class Container implements AuthResolver {
      */
     public void loginWithUsername(String username, String password, AuthResponseHandler handler) {
         Request req = new LoginRequest(username, null, password);
-
-        if (handler != null) {
-            handler.authResolver = this;
-            req.responseHandler = handler;
-        } else {
-            req.responseHandler = new AuthResolveHandler(this);
-        }
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
         this.requestManager.sendRequest(req);
     }
@@ -123,13 +105,7 @@ public final class Container implements AuthResolver {
      */
     public void loginWithEmail(String email, String password, AuthResponseHandler handler) {
         Request req = new LoginRequest(null, email, password);
-
-        if (handler != null) {
-            handler.authResolver = this;
-            req.responseHandler = handler;
-        } else {
-            req.responseHandler = new AuthResolveHandler(this);
-        }
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
         this.requestManager.sendRequest(req);
     }
@@ -141,13 +117,7 @@ public final class Container implements AuthResolver {
      */
     public void logout(LogoutResponseHandler handler) {
         Request req = new LogoutRequest();
-
-        if (handler != null) {
-            handler.authResolver = this;
-            req.responseHandler = handler;
-        } else {
-            req.responseHandler = new AuthResolveHandler(this);
-        }
+        req.responseHandler = new LogoutResponseHandlerWrapper(this, handler);
 
         this.requestManager.sendRequest(req);
     }

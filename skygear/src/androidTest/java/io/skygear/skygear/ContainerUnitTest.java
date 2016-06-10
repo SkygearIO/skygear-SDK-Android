@@ -3,7 +3,6 @@ package io.skygear.skygear;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -27,7 +26,6 @@ public class ContainerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testContainerNormalFlow() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
         Container container = new Container(instrumentationContext, config);
@@ -36,7 +34,6 @@ public class ContainerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDefaultContainerNormalFlow() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
         Container container = Container.defaultContainer(instrumentationContext);
@@ -47,7 +44,6 @@ public class ContainerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDefaultContainerIsSingleton() throws Exception {
         Container container1 = Container.defaultContainer(instrumentationContext);
         Container container2 = Container.defaultContainer(instrumentationContext);
@@ -56,7 +52,6 @@ public class ContainerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testContainerUpdateConfiguration() throws Exception {
         Configuration config1 = new Configuration.Builder()
                 .endPoint("http://my-endpoint.skygeario.com")

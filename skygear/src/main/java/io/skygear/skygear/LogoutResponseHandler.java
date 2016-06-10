@@ -7,11 +7,6 @@ import org.json.JSONObject;
  */
 public abstract class LogoutResponseHandler implements Request.ResponseHandler {
     /**
-     * The Auth resolver.
-     */
-    public AuthResolver authResolver;
-
-    /**
      * On logout success.
      */
     public abstract void onLogoutSuccess();
@@ -25,10 +20,6 @@ public abstract class LogoutResponseHandler implements Request.ResponseHandler {
 
     @Override
     public void onSuccess(JSONObject result) {
-        if (this.authResolver != null) {
-            this.authResolver.resolveAuthToken(null);
-        }
-
         this.onLogoutSuccess();
     }
 

@@ -1,24 +1,24 @@
 package io.skygear.skygear;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class LogoutResponseHandlerUnitTest {
     @Test
-    @SmallTest
     public void testLogoutResponseHandlerSuccessFlow() throws Exception {
+        final boolean[] checkpoints = { false };
         LogoutResponseHandler logoutResponseHandler = new LogoutResponseHandler() {
             @Override
             public void onLogoutSuccess() {
+                checkpoints[0] = true;
             }
 
             @Override
@@ -28,10 +28,11 @@ public class LogoutResponseHandlerUnitTest {
         };
 
         logoutResponseHandler.onSuccess(new JSONObject());
+
+        assertTrue(checkpoints[0]);
     }
 
     @Test
-    @SmallTest
     public void testLogoutResponseHandlerErrorFlow() throws Exception {
         LogoutResponseHandler logoutResponseHandler = new LogoutResponseHandler() {
             @Override
@@ -46,29 +47,5 @@ public class LogoutResponseHandlerUnitTest {
         };
 
         logoutResponseHandler.onFail(new Request.Error("Test Error"));
-    }
-
-    @Test
-    @SmallTest
-    public void testLogoutResponseHandlerAuthResolverFlow() throws Exception {
-        LogoutResponseHandler logoutResponseHandler = new LogoutResponseHandler() {
-            @Override
-            public void onLogoutSuccess() {
-            }
-
-            @Override
-            public void onLogoutFail(String reason) {
-                fail("Should not get error callback");
-            }
-        };
-
-        logoutResponseHandler.authResolver = new AuthResolver() {
-            @Override
-            public void resolveAuthToken(String token) {
-                assertNull(token);
-            }
-        };
-
-        logoutResponseHandler.onSuccess(new JSONObject());
     }
 }

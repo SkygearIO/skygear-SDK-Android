@@ -8,11 +8,6 @@ import org.json.JSONObject;
  */
 public abstract class AuthResponseHandler implements Request.ResponseHandler {
     /**
-     * The Auth resolver.
-     */
-    public AuthResolver authResolver;
-
-    /**
      * Auth success callback
      *
      * @param token access token
@@ -30,9 +25,6 @@ public abstract class AuthResponseHandler implements Request.ResponseHandler {
     public void onSuccess(JSONObject result) {
         try {
             String accessToken = result.getString("access_token");
-            if (this.authResolver != null) {
-                this.authResolver.resolveAuthToken(accessToken);
-            }
             this.onAuthSuccess(accessToken);
         } catch (JSONException e) {
             this.onAuthFail("Malformed server response");
