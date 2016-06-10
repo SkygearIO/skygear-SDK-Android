@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Container;
+import io.skygear.skygear.User;
 
 public class LoginActivity extends AppCompatActivity {
     private static String LOG_TAG = LoginActivity.class.getSimpleName();
@@ -53,9 +54,9 @@ public class LoginActivity extends AppCompatActivity {
 
         this.skygear.loginWithUsername(username, password, new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(String token) {
+            public void onAuthSuccess(User user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + token);
+                successDialog.setMessage("Success with token:\n" + user.accessToken);
                 successDialog.show();
             }
 

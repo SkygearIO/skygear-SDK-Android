@@ -9,4 +9,7 @@
     <string name="Unknown">Unknown</string>
     <string name="access_token_indicator">Access Token:</string>
     <string name="logout">Logout</string>
+    <string name="user_id_indicator">User ID:</string>
+    <string name="username_indicator">Username:</string>
+    <string name="undefined">undefined</string>
 </resources>

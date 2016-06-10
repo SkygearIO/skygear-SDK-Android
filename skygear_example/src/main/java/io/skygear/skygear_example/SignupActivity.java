@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Container;
+import io.skygear.skygear.User;
 
 public class SignupActivity extends AppCompatActivity {
     private static String LOG_TAG = SignupActivity.class.getSimpleName();
@@ -53,12 +54,12 @@ public class SignupActivity extends AppCompatActivity {
 
         this.skygear.signupWithUsername(username, password, new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(String token) {
+            public void onAuthSuccess(User user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + token);
+                successDialog.setMessage("Success with token:\n" + user.accessToken);
                 successDialog.show();
 
-                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + token);
+                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.accessToken);
             }
 
             @Override
