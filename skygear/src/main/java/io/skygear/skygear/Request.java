@@ -20,11 +20,20 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
     /**
      * The Data.
      */
-    public final Map<String, Object> data;
+    Map<String, Object> data;
     /**
      * The Response handler.
      */
     public ResponseHandler responseHandler;
+
+    /**
+     * Instantiates a new Request.
+     *
+     * @param action the action
+     */
+    public Request(String action) {
+        this(action, null, null);
+    }
 
     /**
      * Instantiates a new Request.
@@ -57,7 +66,7 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
      * @throws Exception the exception
      */
     protected void validate() throws Exception {
-        // Do nothing. Let subclasses to overwrite it.
+        // Do nothing. Let subclasses to override it.
     }
 
     /**

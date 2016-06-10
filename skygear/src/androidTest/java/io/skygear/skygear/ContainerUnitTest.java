@@ -1,33 +1,46 @@
 package io.skygear.skygear;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class ContainerUnitTest {
     static Context instrumentationContext;
 
+    @SuppressLint("CommitPrefEdits")
+    private static void clearSharedPreferences(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        SharedPreferences.Editor edit = pref.edit();
+        edit.clear();
+        edit.commit();
+    }
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         instrumentationContext = InstrumentationRegistry.getContext().getApplicationContext();
+        clearSharedPreferences(instrumentationContext);
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        clearSharedPreferences(instrumentationContext);
         instrumentationContext = null;
     }
 
     @Test
-    @SmallTest
     public void testContainerNormalFlow() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
         Container container = new Container(instrumentationContext, config);
@@ -36,7 +49,6 @@ public class ContainerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDefaultContainerNormalFlow() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
         Container container = Container.defaultContainer(instrumentationContext);
@@ -47,7 +59,6 @@ public class ContainerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDefaultContainerIsSingleton() throws Exception {
         Container container1 = Container.defaultContainer(instrumentationContext);
         Container container2 = Container.defaultContainer(instrumentationContext);
@@ -56,7 +67,6 @@ public class ContainerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testContainerUpdateConfiguration() throws Exception {
         Configuration config1 = new Configuration.Builder()
                 .endPoint("http://my-endpoint.skygeario.com")

@@ -8,11 +8,11 @@ import io.skygear.skygear.SkygearApplication;
 public class MyApplication extends SkygearApplication {
     @Override
     public String getSkygearEndpoint() {
-        return "http://skygear.dev/";
+        return "http://192.168.1.70:3001/";
     }
 
     @Override
     public String getApiKey() {
-        return "dev";
+        return "changeme";
     }
 }

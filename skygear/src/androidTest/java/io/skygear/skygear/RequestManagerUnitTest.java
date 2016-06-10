@@ -3,8 +3,6 @@ package io.skygear.skygear;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.InstrumentationTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.toolbox.HttpStack;
@@ -28,9 +26,14 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
 
 @RunWith(AndroidJUnit4.class)
-public class RequestManagerUnitTest extends InstrumentationTestCase {
+public class RequestManagerUnitTest {
     static Context instrumentationContext;
 
     @BeforeClass
@@ -44,7 +47,6 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
     }
 
     @Test
-    @SmallTest
     public void testRequestManagerNormalFlow() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
         RequestManager requestManager = new RequestManager(
@@ -58,7 +60,6 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
     }
 
     @Test
-    @SmallTest
     public void testRequestManagerUpdateConfig() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
@@ -77,7 +78,6 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
     }
 
     @Test
-    @SmallTest
     public void testSendRequestNormalFlow() throws Exception {
         Configuration config = new Configuration.Builder()
                 .endPoint("http://my-endpoint.skygeario.com/")
@@ -147,7 +147,6 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
     }
 
     @Test
-    @SmallTest
     public void testSendRequestWithAccessToken() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
@@ -203,7 +202,6 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
     }
 
     @Test
-    @SmallTest
     public void testSendRequestWithHandleSuccessResponse() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
@@ -266,7 +264,6 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
     }
 
     @Test
-    @SmallTest
     public void testSendRequestWithHandleErrorResponse() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
@@ -331,6 +328,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         assertTrue(checkpoints[0]);
     }
 
+    @Test
     public void testRequestValidationSuccess() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
@@ -377,6 +375,7 @@ public class RequestManagerUnitTest extends InstrumentationTestCase {
         assertTrue(checkpoints[1]);
     }
 
+    @Test
     public void testRequestValidationFail() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,

@@ -7,9 +7,11 @@ import java.security.InvalidParameterException;
 /**
  * Container for Skygear.
  */
-public final class Container {
+public final class Container implements AuthResolver {
     private static Container sharedInstance;
-    private Context context;
+
+    private final PersistentStore persistentStore;
+    private final Context context;
     private Configuration config;
     private RequestManager requestManager;
 
@@ -23,6 +25,7 @@ public final class Container {
         this.context = context.getApplicationContext();
         this.config = config;
         this.requestManager = new RequestManager(context, config);
+        this.persistentStore = new PersistentStore(context);
     }
 
     /**
@@ -51,6 +54,83 @@ public final class Container {
         }
 
         this.config = config;
+        this.requestManager.configure(config);
+    }
+
+    /**
+     * Sign up with username.
+     *
+     * @param username the username
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void signupWithUsername(String username, String password, AuthResponseHandler handler) {
+        Request req = new SignupRequest(username, null, password);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.requestManager.sendRequest(req);
+    }
+
+    /**
+     * Sign up with email.
+     *
+     * @param email    the email
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void signupWithEmail(String email, String password, AuthResponseHandler handler) {
+        Request req = new SignupRequest(null, email, password);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.requestManager.sendRequest(req);
+    }
+
+    /**
+     * Login with username.
+     *
+     * @param username the username
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void loginWithUsername(String username, String password, AuthResponseHandler handler) {
+        Request req = new LoginRequest(username, null, password);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.requestManager.sendRequest(req);
+    }
+
+    /**
+     * Login with email.
+     *
+     * @param email    the email
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void loginWithEmail(String email, String password, AuthResponseHandler handler) {
+        Request req = new LoginRequest(null, email, password);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.requestManager.sendRequest(req);
+    }
+
+    /**
+     * Logout.
+     *
+     * @param handler the response handler
+     */
+    public void logout(LogoutResponseHandler handler) {
+        Request req = new LogoutRequest();
+        req.responseHandler = new LogoutResponseHandlerWrapper(this, handler);
+
+        this.requestManager.sendRequest(req);
+    }
+
+    @Override
+    public void resolveAuthUser(User user) {
+        this.persistentStore.currentUser = user;
+        this.persistentStore.save();
+
+        this.requestManager.accessToken = user != null ? user.accessToken : null;
     }
 
     /**
@@ -69,5 +149,14 @@ public final class Container {
      */
     public Context getContext() {
         return this.context;
+    }
+
+    /**
+     * Gets current user.
+     *
+     * @return the current user
+     */
+    public User getCurrentUser() {
+        return this.persistentStore.currentUser;
     }
 }
