@@ -81,4 +81,41 @@ public class ContainerUnitTest {
 
         assertEquals(config2, container.getConfig());
     }
+
+    @Test
+    public void testContainerPublicDatabase() throws Exception {
+        Configuration config = Configuration.defaultConfiguration();
+        Container container = new Container(instrumentationContext, config);
+        Database publicDatabase = container.getPublicDatabase();
+
+        assertEquals("_public", publicDatabase.getName());
+        assertEquals(container, publicDatabase.getContainer());
+    }
+
+    @Test
+    public void testContainerPrivateDatabase() throws Exception {
+        Configuration config = Configuration.defaultConfiguration();
+        Container container = new Container(instrumentationContext, config);
+        User user = new User(
+                "user_123",
+                "token_123",
+                "user123",
+                "user123@skygear.dev"
+        );
+        container.resolveAuthUser(user);
+
+        Database privateDatabase = container.getPrivateDatabase();
+
+        assertEquals("_private", privateDatabase.getName());
+        assertEquals(container, privateDatabase.getContainer());
+
+        clearSharedPreferences(instrumentationContext);
+    }
+
+    @Test(expected = AuthenticationException.class)
+    public void testContainerNotAllowGetPrivateDatabaseWithoutLogin() throws Exception {
+        Configuration config = Configuration.defaultConfiguration();
+        Container container = new Container(instrumentationContext, config);
+        container.getPrivateDatabase();
+    }
 }
