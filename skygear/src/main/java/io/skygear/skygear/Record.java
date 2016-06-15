@@ -2,11 +2,14 @@ package io.skygear.skygear;
 
 import android.util.Log;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +22,16 @@ import java.util.UUID;
 public class Record {
     private String id;
     private String type;
+
+
+
+    private Date createdAt;
+    private Date updatedAt;
+
+    private String creatorId;
+    private String updaterId;
     private String ownerId;
+
     private HashMap<String, Object> data;
 
     /**
@@ -95,7 +107,7 @@ public class Record {
 
     /**
      * Gets the whole set of attributes.
-     *
+     * <p/>
      * Please be reminded that the cloned map is returned.
      *
      * @return the set of attributes
@@ -121,6 +133,51 @@ public class Record {
      */
     public String getType() {
         return type;
+    }
+
+    /**
+     * Gets creation time.
+     *
+     * @return the creation time
+     */
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    /**
+     * Gets updating time
+     *
+     * @return the updating time
+     */
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    /**
+     * Gets creator id.
+     *
+     * @return the creator id
+     */
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    /**
+     * Gets updater id.
+     *
+     * @return the updater id
+     */
+    public String getUpdaterId() {
+        return updaterId;
+    }
+
+    /**
+     * Gets owner id.
+     *
+     * @return the owner id
+     */
+    public String getOwnerId() {
+        return ownerId;
     }
 
     /**
@@ -224,9 +281,10 @@ public class Record {
          */
         static String serialize(Record record) {
             try {
-                // TODO: Handle metadata of records, i.e. _create_at, _updated_at, etc.
                 JSONObject jsonObject = new JSONObject(record.data);
                 jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
+
+                // TODO: Handle ACL (_access)
 
                 return jsonObject.toString();
             } catch (JSONException e) {
@@ -253,20 +311,33 @@ public class Record {
                 throw new InvalidParameterException("_id field is malformed");
             }
 
-            String type = split[0];
-            String id = split[1];
+            // handle _id
+            Record record = new Record(split[0]);
+            record.id = split[1];
 
-            Record record = new Record(type);
-            record.id = id;
+            // handle _create_at
+            String createdAtString = jsonObject.getString("_created_at");
+            DateTime createdAtDatetime = ISODateTimeFormat.dateTime().parseDateTime(createdAtString);
+            record.createdAt = createdAtDatetime.toDate();
 
-            // TODO: Handle metadata of records, i.e. _create_at, _updated_at, etc.
+            // handle _updated_at
+            String updatedAtString = jsonObject.getString("_updated_at");
+            DateTime updatedAtDatetime = ISODateTimeFormat.dateTime().parseDateTime(updatedAtString);
+            record.updatedAt = updatedAtDatetime.toDate();
+
+            // handler _created_by, _updated_by, _ownerID
+            record.creatorId = jsonObject.getString("_created_by");
+            record.updaterId = jsonObject.getString("_updated_by");
+            record.ownerId = jsonObject.getString("_ownerID");
+
+            // TODO: Handle ACL (_access)
 
             Iterator<String> keys = jsonObject.keys();
             while(keys.hasNext()) {
                 String nextKey = keys.next();
-                Object nextValue = jsonObject.get(nextKey);
-
-                record.set(nextKey, nextValue);
+                if (!ReservedKeys.contains(nextKey)) {
+                    record.set(nextKey, jsonObject.get(nextKey));
+                }
             }
 
             return record;

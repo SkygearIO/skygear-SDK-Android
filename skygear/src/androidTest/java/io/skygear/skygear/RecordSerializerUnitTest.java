@@ -2,11 +2,14 @@ package io.skygear.skygear;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,6 +109,12 @@ public class RecordSerializerUnitTest {
     public void testRecordDeserializationNormalFlow() throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
+        jsonObject.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
+        jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
+        jsonObject.put("_updated_at", "2016-06-15T07:55:33.342Z");
+        jsonObject.put("_updated_by", "5a497b0b-cf93-4720-bea4-14637478cfc2");
+        jsonObject.put("_access", null);
         jsonObject.put("hello", "world");
         jsonObject.put("foobar", 3);
         jsonObject.put("abc", 12.345);
@@ -115,6 +124,19 @@ public class RecordSerializerUnitTest {
 
         assertEquals("Note", record.getType());
         assertEquals("48092492-0791-4120-B314-022202AD3971", record.getId());
+        assertEquals("5a497b0b-cf93-4720-bea4-14637478cfc0", record.getCreatorId());
+        assertEquals("5a497b0b-cf93-4720-bea4-14637478cfc1", record.getOwnerId());
+        assertEquals("5a497b0b-cf93-4720-bea4-14637478cfc2", record.getUpdaterId());
+
+        assertEquals(
+                new DateTime(2016, 6, 15, 7, 55, 32, 342, DateTimeZone.UTC).toDate(),
+                record.getCreatedAt()
+        );
+        assertEquals(
+                new DateTime(2016, 6, 15, 7, 55, 33, 342, DateTimeZone.UTC).toDate(),
+                record.getUpdatedAt()
+        );
+
         assertEquals("world", record.get("hello"));
         assertEquals(3, record.get("foobar"));
         assertEquals(12.345, record.get("abc"));
