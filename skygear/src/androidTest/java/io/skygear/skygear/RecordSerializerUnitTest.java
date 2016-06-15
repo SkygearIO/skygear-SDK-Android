@@ -9,11 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.skygear.skygear.Record.Serializer;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -22,33 +20,33 @@ import static junit.framework.Assert.assertTrue;
 public class RecordSerializerUnitTest {
     @Test
     public void testRecordTypeValidation() throws Exception {
-        assertFalse(Serializer.isValidType(null));
-        assertFalse(Serializer.isValidType(""));
-        assertFalse(Serializer.isValidType("_note"));
+        assertFalse(RecordSerializer.isValidType(null));
+        assertFalse(RecordSerializer.isValidType(""));
+        assertFalse(RecordSerializer.isValidType("_note"));
 
-        assertTrue(Serializer.isValidType("note"));
+        assertTrue(RecordSerializer.isValidType("note"));
     }
 
     @Test
     public void testRecordDataKeyValidation() throws Exception {
-        assertFalse(Serializer.isValidKey(null));
-        assertFalse(Serializer.isValidKey(""));
-        assertFalse(Serializer.isValidKey("_id"));
-        assertFalse(Serializer.isValidKey("_type"));
-        assertFalse(Serializer.isValidKey("_created_at"));
-        assertFalse(Serializer.isValidKey("_updated_at"));
-        assertFalse(Serializer.isValidKey("_ownerID"));
-        assertFalse(Serializer.isValidKey("_created_by"));
-        assertFalse(Serializer.isValidKey("_updated_by"));
-        assertFalse(Serializer.isValidKey("_access"));
+        assertFalse(RecordSerializer.isValidKey(null));
+        assertFalse(RecordSerializer.isValidKey(""));
+        assertFalse(RecordSerializer.isValidKey("_id"));
+        assertFalse(RecordSerializer.isValidKey("_type"));
+        assertFalse(RecordSerializer.isValidKey("_created_at"));
+        assertFalse(RecordSerializer.isValidKey("_updated_at"));
+        assertFalse(RecordSerializer.isValidKey("_ownerID"));
+        assertFalse(RecordSerializer.isValidKey("_created_by"));
+        assertFalse(RecordSerializer.isValidKey("_updated_by"));
+        assertFalse(RecordSerializer.isValidKey("_access"));
 
-        assertTrue(Serializer.isValidKey("hello"));
+        assertTrue(RecordSerializer.isValidKey("hello"));
     }
 
     @Test
     public void testRecordDataValueCompatibilityCheck() throws Exception {
-        assertFalse(Serializer.isCompatibleValue(null));
-        assertFalse(Serializer.isCompatibleValue(new Object()));
+        assertFalse(RecordSerializer.isCompatibleValue(null));
+        assertFalse(RecordSerializer.isCompatibleValue(new Object()));
 
         byte b = 12;
         char c = 'a';
@@ -58,16 +56,16 @@ public class RecordSerializerUnitTest {
         long l = 12;
         short s = 12;
 
-        assertTrue(Serializer.isCompatibleValue(b));
-        assertTrue(Serializer.isCompatibleValue(c));
-        assertTrue(Serializer.isCompatibleValue(d));
-        assertTrue(Serializer.isCompatibleValue(f));
-        assertTrue(Serializer.isCompatibleValue(i));
-        assertTrue(Serializer.isCompatibleValue(l));
-        assertTrue(Serializer.isCompatibleValue(s));
+        assertTrue(RecordSerializer.isCompatibleValue(b));
+        assertTrue(RecordSerializer.isCompatibleValue(c));
+        assertTrue(RecordSerializer.isCompatibleValue(d));
+        assertTrue(RecordSerializer.isCompatibleValue(f));
+        assertTrue(RecordSerializer.isCompatibleValue(i));
+        assertTrue(RecordSerializer.isCompatibleValue(l));
+        assertTrue(RecordSerializer.isCompatibleValue(s));
 
-        assertTrue(Serializer.isCompatibleValue(false));
-        assertTrue(Serializer.isCompatibleValue("okay"));
+        assertTrue(RecordSerializer.isCompatibleValue(false));
+        assertTrue(RecordSerializer.isCompatibleValue("okay"));
     }
 
     @Test
@@ -83,8 +81,8 @@ public class RecordSerializerUnitTest {
         Object[] arr1 = new Object[] { b, c, d, f, i, l, s };
         Object[] arr2 = new Object[] { "hello", "world", new Object() };
 
-        assertTrue(Serializer.isCompatibleValue(arr1));
-        assertFalse(Serializer.isCompatibleValue(arr2));
+        assertTrue(RecordSerializer.isCompatibleValue(arr1));
+        assertFalse(RecordSerializer.isCompatibleValue(arr2));
     }
 
     @Test
@@ -95,7 +93,7 @@ public class RecordSerializerUnitTest {
         data.put("abc", 12.345);
 
         Record aNote = new Record("Note", data);
-        String serializedString = Serializer.serialize(aNote);
+        String serializedString = RecordSerializer.serialize(aNote);
         JSONObject jsonObject = new JSONObject(serializedString);
 
         assertEquals(0, jsonObject.getString("_id").indexOf("Note/"));
@@ -120,7 +118,7 @@ public class RecordSerializerUnitTest {
         jsonObject.put("abc", 12.345);
 
         String jsonString = jsonObject.toString();
-        Record record = Serializer.deserialize(jsonString);
+        Record record = RecordSerializer.deserialize(jsonString);
 
         assertEquals("Note", record.getType());
         assertEquals("48092492-0791-4120-B314-022202AD3971", record.getId());
@@ -151,6 +149,6 @@ public class RecordSerializerUnitTest {
         jsonObject.put("abc", 12.345);
 
         String jsonString = jsonObject.toString();
-        Serializer.deserialize(jsonString);
+        RecordSerializer.deserialize(jsonString);
     }
 }
