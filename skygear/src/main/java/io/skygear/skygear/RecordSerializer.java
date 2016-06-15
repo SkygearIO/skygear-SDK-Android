@@ -5,6 +5,7 @@ import android.util.Log;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -98,10 +99,8 @@ public class RecordSerializer {
     static String serialize(Record record) {
         try {
             HashMap<String, Object> recordData = record.data;
-            Iterator<String> recordDataKeys = recordData.keySet().iterator();
 
-            while (recordDataKeys.hasNext()) {
-                String perKey = recordDataKeys.next();
+            for (String perKey : recordData.keySet()) {
                 Object perValue = recordData.get(perKey);
 
                 if (perValue instanceof Date) {
@@ -111,6 +110,16 @@ public class RecordSerializer {
 
             JSONObject jsonObject = new JSONObject(recordData);
             jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
+
+            // add public readable ACL, i.e. [{"level": "read", "public": true}]
+            JSONObject publicReadable = new JSONObject();
+            publicReadable.put("public", true);
+            publicReadable.put("level", "read");
+
+            JSONArray acl = new JSONArray();
+            acl.put(publicReadable);
+
+            jsonObject.put("_access", acl);
 
             // TODO: Handle ACL (_access)
 

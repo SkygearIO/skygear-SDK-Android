@@ -4,6 +4,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -106,6 +107,13 @@ public class RecordSerializerUnitTest {
         JSONObject publishDateObject = jsonObject.getJSONObject("publish_date");
         assertEquals("date", publishDateObject.getString("$type"));
         assertEquals("2016-06-15T07:55:34.342Z", publishDateObject.getString("$date"));
+
+        JSONArray acl = jsonObject.getJSONArray("_access");
+        assertEquals(1, acl.length());
+
+        JSONObject publicReadable = acl.getJSONObject(0);
+        assertTrue(publicReadable.getBoolean("public"));
+        assertEquals("read", publicReadable.getString("level"));
     }
 
     @Test
