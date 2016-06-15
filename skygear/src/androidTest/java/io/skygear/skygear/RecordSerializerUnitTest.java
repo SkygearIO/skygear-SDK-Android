@@ -91,6 +91,7 @@ public class RecordSerializerUnitTest {
         data.put("hello", "world");
         data.put("foobar", 3);
         data.put("abc", 12.345);
+        data.put("publish_date", new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate());
 
         Record aNote = new Record("Note", data);
         String serializedString = RecordSerializer.serialize(aNote);
@@ -101,6 +102,10 @@ public class RecordSerializerUnitTest {
         assertEquals("world", jsonObject.getString("hello"));
         assertEquals(3, jsonObject.getInt("foobar"));
         assertEquals(12.345, jsonObject.getDouble("abc"));
+
+        JSONObject publishDateObject = jsonObject.getJSONObject("publish_date");
+        assertEquals("date", publishDateObject.getString("$type"));
+        assertEquals("2016-06-15T07:55:34.342Z", publishDateObject.getString("$date"));
     }
 
     @Test
@@ -116,6 +121,12 @@ public class RecordSerializerUnitTest {
         jsonObject.put("hello", "world");
         jsonObject.put("foobar", 3);
         jsonObject.put("abc", 12.345);
+
+        JSONObject publishDateObject = new JSONObject();
+        publishDateObject.put("$type", "date");
+        publishDateObject.put("$date", "2016-06-15T07:55:34.342Z");
+
+        jsonObject.put("publish_date", publishDateObject);
 
         String jsonString = jsonObject.toString();
         Record record = RecordSerializer.deserialize(jsonString);
@@ -138,6 +149,11 @@ public class RecordSerializerUnitTest {
         assertEquals("world", record.get("hello"));
         assertEquals(3, record.get("foobar"));
         assertEquals(12.345, record.get("abc"));
+
+        assertEquals(
+                new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate(),
+                record.get("publish_date")
+        );
     }
 
     @Test(expected = InvalidParameterException.class)
