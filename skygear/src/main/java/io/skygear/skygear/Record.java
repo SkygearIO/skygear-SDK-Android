@@ -1,6 +1,7 @@
 package io.skygear.skygear;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.InvalidParameterException;
 import java.util.Date;
@@ -179,20 +180,20 @@ public class Record {
     /**
      * Serializes the record.
      *
-     * @return the JSON string
+     * @return the JSON object
      */
-    public String toJsonString() {
+    public JSONObject toJson() {
         return RecordSerializer.serialize(this);
     }
 
     /**
      * Deserializes the record.
      *
-     * @param jsonString the json string
+     * @param jsonObject the json object
      * @return the record
      * @throws JSONException the json exception
      */
-    public static Record fromJsonString(String jsonString) throws JSONException {
-        return RecordSerializer.deserialize(jsonString);
+    public static Record fromJson(JSONObject jsonObject) throws JSONException {
+        return RecordSerializer.deserialize(jsonObject);
     }
 }

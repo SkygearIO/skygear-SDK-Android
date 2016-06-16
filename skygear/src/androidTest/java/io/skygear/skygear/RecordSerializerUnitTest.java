@@ -95,8 +95,7 @@ public class RecordSerializerUnitTest {
         data.put("publish_date", new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate());
 
         Record aNote = new Record("Note", data);
-        String serializedString = RecordSerializer.serialize(aNote);
-        JSONObject jsonObject = new JSONObject(serializedString);
+        JSONObject jsonObject = RecordSerializer.serialize(aNote);
 
         assertEquals(0, jsonObject.getString("_id").indexOf("Note/"));
 
@@ -136,8 +135,7 @@ public class RecordSerializerUnitTest {
 
         jsonObject.put("publish_date", publishDateObject);
 
-        String jsonString = jsonObject.toString();
-        Record record = RecordSerializer.deserialize(jsonString);
+        Record record = RecordSerializer.deserialize(jsonObject);
 
         assertEquals("Note", record.getType());
         assertEquals("48092492-0791-4120-B314-022202AD3971", record.getId());
@@ -172,7 +170,6 @@ public class RecordSerializerUnitTest {
         jsonObject.put("foobar", 3);
         jsonObject.put("abc", 12.345);
 
-        String jsonString = jsonObject.toString();
-        RecordSerializer.deserialize(jsonString);
+        RecordSerializer.deserialize(jsonObject);
     }
 }

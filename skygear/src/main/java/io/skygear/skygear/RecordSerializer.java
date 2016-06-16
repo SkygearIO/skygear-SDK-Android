@@ -94,9 +94,9 @@ public class RecordSerializer {
      * Serializes a Skygear Record
      *
      * @param record the record
-     * @return the JSON string
+     * @return the JSON object
      */
-    static String serialize(Record record) {
+    static JSONObject serialize(Record record) {
         try {
             HashMap<String, Object> recordData = record.data;
 
@@ -123,7 +123,7 @@ public class RecordSerializer {
 
             // TODO: Handle ACL (_access)
 
-            return jsonObject.toString();
+            return jsonObject;
         } catch (JSONException e) {
             Log.w("Skygear SDK", "Fail to serialize record object");
         }
@@ -134,13 +134,11 @@ public class RecordSerializer {
     /**
      * Deserialize a Skygear Record.
      *
-     * @param jsonString the JSON string
+     * @param jsonObject the JSON object
      * @return the Skygear Record
      * @throws JSONException the JSON exception
      */
-    static Record deserialize(String jsonString) throws JSONException {
-        JSONObject jsonObject = new JSONObject(jsonString);
-
+    static Record deserialize(JSONObject jsonObject) throws JSONException {
         String typedId = (String) jsonObject.remove("_id");
         String[] split = typedId.split("/", 2);
 
