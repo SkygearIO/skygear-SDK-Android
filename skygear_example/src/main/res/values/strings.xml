@@ -12,4 +12,11 @@
     <string name="user_id_indicator">User ID:</string>
     <string name="username_indicator">Username:</string>
     <string name="undefined">undefined</string>
+    <string name="user_authentication">User Authentication</string>
+    <string name="record_management">Record Management</string>
+    <string name="record_create_save">Create / Save</string>
+    <string name="record_fields">Record Fields</string>
+    <string name="key">Key</string>
+    <string name="value">Value</string>
+    <string name="save">Save</string>
 </resources>

@@ -65,4 +65,8 @@ public class MainActivity extends AppCompatActivity {
     public void goLogout(View view) {
         startActivity(new Intent(this, LogoutActivity.class));
     }
+
+    public void goSaveRecord(View view) {
+        startActivity(new Intent(this, RecordSaveActivity.class));
+    }
 }
