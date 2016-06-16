@@ -26,6 +26,10 @@ public final class Container implements AuthResolver {
         this.config = config;
         this.requestManager = new RequestManager(context, config);
         this.persistentStore = new PersistentStore(context);
+
+        if (this.persistentStore.currentUser != null) {
+            this.requestManager.accessToken = this.persistentStore.currentUser.accessToken;
+        }
     }
 
     /**
