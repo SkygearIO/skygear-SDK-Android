@@ -50,6 +50,12 @@ task generateJavadocs(type: Javadoc) {
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
+afterEvaluate {
+    generateJavadocs.classpath += files(android.libraryVariants.collect { variant ->
+        variant.javaCompile.classpath.files
+    })
+}
+
 task generateJavadocsJar(type: Jar) {
     from generateJavadocs.destinationDir
     classifier 'javadoc'

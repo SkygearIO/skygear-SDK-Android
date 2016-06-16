@@ -103,7 +103,7 @@ public class Record {
 
     /**
      * Gets the whole set of attributes.
-     * <p/>
+     *
      * Please be reminded that the cloned map is returned.
      *
      * @return the set of attributes
