@@ -30,6 +30,7 @@ android {
 
 dependencies {
     compile 'com.android.volley:volley:1.0.0'
+    compile 'joda-time:joda-time:2.9.4'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     testCompile 'junit:junit:4.12'
@@ -47,6 +48,12 @@ task generateSourcesJar(type: Jar) {
 task generateJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+afterEvaluate {
+    generateJavadocs.classpath += files(android.libraryVariants.collect { variant ->
+        variant.javaCompile.classpath.files
+    })
 }
 
 task generateJavadocsJar(type: Jar) {
