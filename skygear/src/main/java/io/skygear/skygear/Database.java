@@ -86,4 +86,15 @@ public class Database {
     public String getName() {
         return name;
     }
+
+    public void save(Record record, RecordSaveResponseHandler handler) {
+        this.save(new Record[]{ record }, handler);
+    }
+
+    public void save(Record[] records, RecordSaveResponseHandler handler) {
+        RecordSaveRequest request = new RecordSaveRequest(records, this);
+        request.responseHandler = handler;
+
+        this.getContainer().sendRequest(request);
+    }
 }

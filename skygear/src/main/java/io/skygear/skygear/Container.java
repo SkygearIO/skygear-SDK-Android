@@ -165,6 +165,15 @@ public final class Container implements AuthResolver {
     }
 
     /**
+     * Send a request.
+     *
+     * @param request the request
+     */
+    public void sendRequest(Request request) {
+        this.requestManager.sendRequest(request);
+    }
+
+    /**
      * Gets config.
      *
      * @return the config
