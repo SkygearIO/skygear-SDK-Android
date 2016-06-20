@@ -14,6 +14,8 @@ public final class Container implements AuthResolver {
     private final Context context;
     private Configuration config;
     private RequestManager requestManager;
+    private Database publicDatabase;
+    private Database privateDatabase;
 
     /**
      * Instantiates a new Container.
@@ -26,6 +28,8 @@ public final class Container implements AuthResolver {
         this.config = config;
         this.requestManager = new RequestManager(context, config);
         this.persistentStore = new PersistentStore(context);
+        this.publicDatabase = Database.publicDatabase(this);
+        this.privateDatabase = Database.privateDatabase(this);
 
         if (this.persistentStore.currentUser != null) {
             this.requestManager.accessToken = this.persistentStore.currentUser.accessToken;
@@ -135,6 +139,38 @@ public final class Container implements AuthResolver {
         this.persistentStore.save();
 
         this.requestManager.accessToken = user != null ? user.accessToken : null;
+    }
+
+    /**
+     * Gets the public database.
+     *
+     * @return the public database
+     */
+    public Database getPublicDatabase() {
+        return publicDatabase;
+    }
+
+    /**
+     * Gets the private database.
+     *
+     * @return the private database
+     * @throws AuthenticationException the authentication exception
+     */
+    public Database getPrivateDatabase() throws AuthenticationException {
+        if (this.getCurrentUser() == null) {
+            throw new AuthenticationException("Private database is only available for logged-in user");
+        }
+
+        return privateDatabase;
+    }
+
+    /**
+     * Send a request.
+     *
+     * @param request the request
+     */
+    public void sendRequest(Request request) {
+        this.requestManager.sendRequest(request);
     }
 
     /**
