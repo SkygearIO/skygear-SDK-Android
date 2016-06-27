@@ -39,6 +39,7 @@ public class Database {
      * <p>
      * Please be reminded that the skygear container passed in would be weakly referenced.
      * </p>
+     *
      * @param container the skygear container
      * @return the database
      */
@@ -107,6 +108,19 @@ public class Database {
      */
     public void save(Record[] records, RecordSaveResponseHandler handler) {
         RecordSaveRequest request = new RecordSaveRequest(records, this);
+        request.responseHandler = handler;
+
+        this.getContainer().sendRequest(request);
+    }
+
+    /**
+     * Query records.
+     *
+     * @param query   the query object
+     * @param handler the response handler
+     */
+    public void query(Query query, RecordQueryResponseHandler handler) {
+        RecordQueryRequest request = new RecordQueryRequest(query, this);
         request.responseHandler = handler;
 
         this.getContainer().sendRequest(request);

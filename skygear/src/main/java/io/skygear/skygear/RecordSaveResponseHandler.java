@@ -64,7 +64,10 @@ public abstract class RecordSaveResponseHandler implements Request.ResponseHandl
 
             if (errorMap.size() == 0) {
                 // all success
-                this.onSaveSuccess(recordMap.values().toArray(new Record[]{}));
+                Record[] records = new Record[recordMap.size()];
+                recordMap.values().toArray(records);
+
+                this.onSaveSuccess(records);
             } else if (recordMap.size() == 0) {
                 // all fail
                 this.onSaveFail(errorMap.values().iterator().next());
