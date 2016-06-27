@@ -8,7 +8,9 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="io.skygear.skygear_example.RecordSaveActivity">
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context=".RecordActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,16 +29,19 @@
             android:lines="1"
             android:maxLines="1"
             android:inputType="text"
+            android:nextFocusDown="@+id/record_value1"
+            android:nextFocusForward="@id/record_value1"
             android:hint="@string/key" />
 
         <EditText
-            android:id="@+id/record_value1"
+            android:id="@id/record_value1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:lines="1"
             android:maxLines="1"
             android:inputType="text"
+            android:imeOptions="actionDone"
             android:hint="@string/value" />
 
     </LinearLayout>
@@ -53,42 +58,19 @@
             android:lines="1"
             android:maxLines="1"
             android:inputType="text"
+            android:nextFocusDown="@+id/record_value2"
+            android:nextFocusForward="@id/record_value2"
             android:hint="@string/key" />
 
         <EditText
-            android:id="@+id/record_value2"
+            android:id="@id/record_value2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:lines="1"
             android:maxLines="1"
             android:inputType="text"
-            android:hint="@string/value" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/record_key3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:lines="1"
-            android:maxLines="1"
-            android:inputType="text"
-            android:hint="@string/key" />
-
-        <EditText
-            android:id="@+id/record_value3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:lines="1"
-            android:maxLines="1"
-            android:inputType="text"
+            android:imeOptions="actionDone"
             android:hint="@string/value" />
 
     </LinearLayout>
@@ -100,10 +82,37 @@
         android:gravity="center">
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="doSave"
             android:text="@string/save" />
 
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="doQuery"
+            android:text="@string/query" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="doDelete"
+            android:text="@string/delete" />
+
     </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" >
+
+        <TextView
+            android:id="@+id/record_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+    </ScrollView>
 </LinearLayout>
