@@ -463,8 +463,32 @@ public class Query {
      * @return the query
      */
     public static Query or(Query... queries) {
-        // TODO: Support Query Or Operation
-        return null;
+        if (queries.length == 0) {
+            throw new InvalidParameterException("No queries to be processed");
+        }
+
+        String type = queries[0].type;
+        Query newQuery = new Query(type);
+
+        JSONArray predicate;
+        if (queries.length == 1) {
+            predicate = queries[0].getPredicateJson();
+        } else {
+            predicate = new JSONArray();
+            predicate.put("or");
+
+            for (Query perQuery : queries) {
+                if (!perQuery.getType().equals(type)) {
+                    throw new InvalidParameterException("All queries must be in the same type.");
+                }
+
+                predicate.put(perQuery.getPredicateJson());
+            }
+        }
+
+        newQuery.predicates.add(predicate);
+
+        return newQuery;
     }
 
     /**

@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.security.InvalidParameterException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -348,5 +349,51 @@ public class QueryUnitTest {
         assertEquals("rating", predicate2Keypath.getString("$val"));
 
         assertEquals(3, predicate2.getInt(2));
+    }
+
+    @Test
+    public void testOrQueryNormalFlow() throws Exception {
+        Query query1 = new Query("Note").caseInsensitiveLike("title", "Hello");
+        Query query2 = new Query("Note").greaterThan("rating", 3);
+
+        JSONArray predicate = Query.or(query1, query2).getPredicateJson();
+        assertEquals("or", predicate.getString(0));
+
+        JSONArray predicate1 = predicate.getJSONArray(1);
+        assertEquals("ilike", predicate1.getString(0));
+
+        JSONObject predicate1Keypath = predicate1.getJSONObject(1);
+        assertEquals("keypath", predicate1Keypath.getString("$type"));
+        assertEquals("title", predicate1Keypath.getString("$val"));
+
+        assertEquals("Hello", predicate1.getString(2));
+
+        JSONArray predicate2 = predicate.getJSONArray(2);
+        assertEquals("gt", predicate2.getString(0));
+
+        JSONObject predicate2Keypath = predicate2.getJSONObject(1);
+        assertEquals("keypath", predicate2Keypath.getString("$type"));
+        assertEquals("rating", predicate2Keypath.getString("$val"));
+
+        assertEquals(3, predicate2.getInt(2));
+    }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testOrQueryNotAllowEmptyList() throws Exception {
+        Query.or();
+    }
+
+    @Test
+    public void testOrQueryWithOnlyOneQuery() throws Exception {
+        Query query1 = new Query("Note").caseInsensitiveLike("title", "Hello");
+        JSONArray predicate = Query.or(query1).getPredicateJson();
+
+        assertEquals("ilike", predicate.getString(0));
+
+        JSONObject predicate1Keypath = predicate.getJSONObject(1);
+        assertEquals("keypath", predicate1Keypath.getString("$type"));
+        assertEquals("title", predicate1Keypath.getString("$val"));
+
+        assertEquals("Hello", predicate.getString(2));
     }
 }
