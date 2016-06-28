@@ -1,6 +1,7 @@
 package io.skygear.skygear_example;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -42,11 +43,18 @@ public class SignupActivity extends AppCompatActivity {
         final AlertDialog successDialog = new AlertDialog.Builder(this)
                 .setTitle("Signup success")
                 .setMessage("")
+                .setPositiveButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SignupActivity.this.finish();
+                    }
+                })
                 .create();
 
         final AlertDialog failDialog = new AlertDialog.Builder(this)
                 .setTitle("Signup failed")
                 .setMessage("")
+                .setNeutralButton("Dismiss", null)
                 .create();
 
         Log.i(LOG_TAG, "doSignup: Signup with username: " + username);
