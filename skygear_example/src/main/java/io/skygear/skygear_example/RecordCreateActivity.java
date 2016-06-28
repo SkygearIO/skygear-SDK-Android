@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -24,8 +25,9 @@ public class RecordCreateActivity extends AppCompatActivity {
     private EditText[] recordValueFields;
 
     private Container skygear;
-    private Record[] records;
+    private Record record;
     private TextView display;
+    private Button deleteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,29 +46,28 @@ public class RecordCreateActivity extends AppCompatActivity {
                 (EditText) findViewById(R.id.record_value2)
         };
 
+        this.deleteButton = (Button) findViewById(R.id.delete_button);
         this.display = (TextView) findViewById(R.id.record_display);
+
         this.updateRecordDisplay();
     }
 
     private void updateRecordDisplay() {
         String displayText;
-        if (this.records == null || this.records.length == 0) {
+        if (this.record == null) {
             displayText = "No records";
-
+            this.deleteButton.setEnabled(false);
         } else {
-            StringBuffer buffer = new StringBuffer();
-            buffer.append(String.format("Got %d records\n\n", this.records.length));
-
             try {
-                for (int idx = 0; idx < this.records.length; idx++) {
-                    buffer.append(String.format("Record[%d]:\n", idx))
-                            .append(this.records[idx].toJson().toString(2))
-                            .append("\n\n");
-                }
-                displayText = buffer.toString();
+                displayText = String.format(
+                        "Created record:\n\n%s",
+                        this.record.toJson().toString(2)
+                );
+                this.deleteButton.setEnabled(true);
 
             } catch (JSONException e) {
                 displayText = "Invalid JSON format";
+                this.deleteButton.setEnabled(false);
             }
         }
 
@@ -97,12 +98,7 @@ public class RecordCreateActivity extends AppCompatActivity {
 
         final AlertDialog successDialog = new AlertDialog.Builder(this)
                 .setTitle("Save Success")
-                .setMessage("")
-                .create();
-
-        final AlertDialog partiallySuccessDialog = new AlertDialog.Builder(this)
-                .setTitle("Some Records Save Success")
-                .setMessage("")
+                .setMessage("Successfully saved")
                 .create();
 
         final AlertDialog failDialog = new AlertDialog.Builder(this)
@@ -113,21 +109,16 @@ public class RecordCreateActivity extends AppCompatActivity {
         skygear.getPublicDatabase().save(newRecord, new RecordSaveResponseHandler(){
             @Override
             public void onSaveSuccess(Record[] records) {
-                RecordCreateActivity.this.records = records;
+                RecordCreateActivity.this.record = records[0];
                 RecordCreateActivity.this.updateRecordDisplay();
 
-                successDialog.setMessage(
-                        String.format("Successfully saved %d records", records.length)
-                );
                 successDialog.show();
             }
 
             @Override
             public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, String> reasons) {
-                partiallySuccessDialog.setMessage(
-                        String.format("%d successes\n%d fails", successRecords.size(), reasons.size())
-                );
-                partiallySuccessDialog.show();
+                failDialog.setMessage("Unexpected Error");
+                failDialog.show();
             }
 
             @Override
@@ -141,7 +132,7 @@ public class RecordCreateActivity extends AppCompatActivity {
     public void doDelete(View view) {
         this.dismissKeyboard();
 
-        if (this.records == null || this.records.length == 0) {
+        if (this.record == null) {
             new AlertDialog.Builder(this)
                     .setTitle("No records")
                     .setMessage("No records selected. You may create one first")
@@ -149,7 +140,7 @@ public class RecordCreateActivity extends AppCompatActivity {
         } else {
             new AlertDialog.Builder(this)
                     .setTitle("Confirm delete")
-                    .setMessage(String.format("Are you sure to delete the %d records ?", this.records.length))
+                    .setMessage("Are you sure to delete the record?")
                     .setNegativeButton("No", null)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
@@ -167,35 +158,25 @@ public class RecordCreateActivity extends AppCompatActivity {
                 .setMessage("")
                 .create();
 
-        final AlertDialog partiallySuccessDialog = new AlertDialog.Builder(this)
-                .setTitle("Some Records Delete Success")
-                .setMessage("")
-                .create();
-
         final AlertDialog failDialog = new AlertDialog.Builder(this)
                 .setTitle("Delete Fail")
                 .setMessage("")
                 .create();
 
-        skygear.getPublicDatabase().delete(this.records, new RecordDeleteResponseHandler() {
+        skygear.getPublicDatabase().delete(this.record, new RecordDeleteResponseHandler() {
             @Override
             public void onDeleteSuccess(String[] ids) {
-                RecordCreateActivity.this.records = null;
+                RecordCreateActivity.this.record = null;
                 RecordCreateActivity.this.updateRecordDisplay();
 
-                successDialog.setMessage(
-                        String.format("Successfully delete %d records", ids.length)
-                );
+                successDialog.setMessage("Successfully delete the record");
                 successDialog.show();
             }
 
             @Override
             public void onDeletePartialSuccess(String[] ids, Map<String, String> reasons) {
-                RecordCreateActivity.this.records = null;
-                partiallySuccessDialog.setMessage(
-                        String.format("%d successes\n%d fails", ids.length, reasons.size())
-                );
-                partiallySuccessDialog.show();
+                failDialog.setMessage("Unexpected Error");
+                failDialog.show();
             }
 
             @Override

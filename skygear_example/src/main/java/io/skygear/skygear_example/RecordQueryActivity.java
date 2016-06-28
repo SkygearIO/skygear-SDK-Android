@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ public class RecordQueryActivity extends AppCompatActivity {
     private Container skygear;
     private Record[] records;
     private TextView display;
+    private Button deleteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +57,17 @@ public class RecordQueryActivity extends AppCompatActivity {
                 (Spinner) findViewById(R.id.operator2)
         };
 
+        this.deleteButton = (Button) findViewById(R.id.delete_button);
         this.display = (TextView) findViewById(R.id.record_display);
+
+        this.updateRecordDisplay();
     }
 
     private void updateRecordDisplay() {
         String displayText;
         if (this.records == null || this.records.length == 0) {
             displayText = "No records";
-
+            this.deleteButton.setEnabled(false);
         } else {
             StringBuffer buffer = new StringBuffer();
             buffer.append(String.format("Got %d records\n\n", this.records.length));
@@ -74,9 +79,11 @@ public class RecordQueryActivity extends AppCompatActivity {
                             .append("\n\n");
                 }
                 displayText = buffer.toString();
+                this.deleteButton.setEnabled(true);
 
             } catch (JSONException e) {
                 displayText = "Invalid JSON format";
+                this.deleteButton.setEnabled(false);
             }
         }
 
