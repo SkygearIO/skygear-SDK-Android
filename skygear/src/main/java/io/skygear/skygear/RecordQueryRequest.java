@@ -1,5 +1,7 @@
 package io.skygear.skygear;
 
+import org.json.JSONArray;
+
 import java.util.HashMap;
 
 /**
@@ -28,7 +30,11 @@ public class RecordQueryRequest extends Request {
     private void updateData() {
         this.data.put("database_id", this.databaseId);
         this.data.put("record_type", this.query.getType());
-        this.data.put("predicate", this.query.getPredicateJson());
         this.data.put("sort", this.query.getSortPredicateJson());
+
+        JSONArray predicateJson = this.query.getPredicateJson();
+        if (predicateJson.length() > 0) {
+            this.data.put("predicate", predicateJson);
+        }
     }
 }
