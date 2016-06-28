@@ -19,4 +19,7 @@
     <string name="key">Key</string>
     <string name="value">Value</string>
     <string name="save">Save</string>
+    <string name="record_crud">Record CRUD</string>
+    <string name="query">Query</string>
+    <string name="delete">Delete</string>
 </resources>

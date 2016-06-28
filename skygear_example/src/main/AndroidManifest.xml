@@ -18,10 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignupActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".LogoutActivity" />
-        <activity android:name=".RecordSaveActivity"></activity>
+        <activity android:name=".SignupActivity" android:screenOrientation="portrait" />
+        <activity android:name=".LoginActivity" android:screenOrientation="portrait" />
+        <activity android:name=".LogoutActivity" android:screenOrientation="portrait" />
+        <activity android:name=".RecordActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

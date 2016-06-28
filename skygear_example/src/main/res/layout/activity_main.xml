@@ -177,8 +177,8 @@
                 android:layout_weight="1"
                 android:layout_marginLeft="1dp"
                 android:layout_marginRight="1dp"
-                android:onClick="goSaveRecord"
-                android:text="@string/record_create_save" />
+                android:onClick="goRecordCURD"
+                android:text="@string/record_crud" />
         </LinearLayout>
 
     </LinearLayout>
