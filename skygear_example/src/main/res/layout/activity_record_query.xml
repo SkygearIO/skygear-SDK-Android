@@ -7,10 +7,10 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".RecordActivity">
+    android:orientation="vertical"
+    tools:context="io.skygear.skygear_example.RecordQueryActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
             android:id="@+id/record_key1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:lines="1"
             android:maxLines="1"
             android:inputType="text"
@@ -33,11 +33,19 @@
             android:nextFocusForward="@id/record_value1"
             android:hint="@string/key" />
 
+        <Spinner
+            android:id="@+id/operator1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/query_operators" />
+
         <EditText
             android:id="@id/record_value1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="4"
             android:lines="1"
             android:maxLines="1"
             android:inputType="text"
@@ -54,7 +62,7 @@
             android:id="@+id/record_key2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:lines="1"
             android:maxLines="1"
             android:inputType="text"
@@ -62,11 +70,19 @@
             android:nextFocusForward="@id/record_value2"
             android:hint="@string/key" />
 
+        <Spinner
+            android:id="@+id/operator2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/query_operators" />
+
         <EditText
             android:id="@id/record_value2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="4"
             android:lines="1"
             android:maxLines="1"
             android:inputType="text"
@@ -78,15 +94,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center">
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="doSave"
-            android:text="@string/save" />
+        android:layout_marginTop="10dp">
 
         <Button
             android:layout_width="0dp"

@@ -66,7 +66,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, LogoutActivity.class));
     }
 
-    public void goRecordCURD(View view) {
-        startActivity(new Intent(this, RecordActivity.class));
+    public void goRecordCreateDelete(View view) {
+        startActivity(new Intent(this, RecordCreateActivity.class));
+    }
+
+    public void goRecordQuery(View view) {
+        startActivity(new Intent(this, RecordQueryActivity.class));
     }
 }

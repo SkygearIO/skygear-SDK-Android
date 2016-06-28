@@ -5,9 +5,11 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -19,13 +21,13 @@ import io.skygear.skygear.Query;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordDeleteResponseHandler;
 import io.skygear.skygear.RecordQueryResponseHandler;
-import io.skygear.skygear.RecordSaveResponseHandler;
 
-public class RecordActivity extends AppCompatActivity {
-    private static final String LOG_TAG = RecordActivity.class.getSimpleName();
+public class RecordQueryActivity extends AppCompatActivity {
+    private static final String TAG = RecordQueryActivity.class.getSimpleName();
 
     private EditText[] recordKeyFields;
     private EditText[] recordValueFields;
+    private Spinner[] operatorSpinners;
 
     private Container skygear;
     private Record[] records;
@@ -34,7 +36,7 @@ public class RecordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_record);
+        setContentView(R.layout.activity_record_query);
 
         this.skygear = Container.defaultContainer(this);
 
@@ -48,8 +50,12 @@ public class RecordActivity extends AppCompatActivity {
                 (EditText) findViewById(R.id.record_value2)
         };
 
+        this.operatorSpinners = new Spinner[] {
+                (Spinner) findViewById(R.id.operator1),
+                (Spinner) findViewById(R.id.operator2)
+        };
+
         this.display = (TextView) findViewById(R.id.record_display);
-        this.updateRecordDisplay();
     }
 
     private void updateRecordDisplay() {
@@ -86,60 +92,17 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 
-    public void doSave(View view) {
-        this.dismissKeyboard();
-
-        Record newRecord = new Record("Demo");
-        for (int idx = 0; idx < this.recordKeyFields.length; idx++) {
-            String keyString = this.recordKeyFields[idx].getText().toString();
-            String valueString = this.recordValueFields[idx].getText().toString();
-
-            if (keyString.length() > 0) {
-                newRecord.set(keyString, valueString);
-            }
+    private void appendQueryPredicate(Query query, int operatorIndex, String key, String value) {
+        switch (operatorIndex) {
+            case 0:
+                query.equalTo(key, value);
+                break;
+            case 1:
+                query.like(key, value);
+                break;
+            default:
+                Log.w(TAG, "addQueryPredicate: Unknown operator index " + operatorIndex, null);
         }
-
-        final AlertDialog successDialog = new AlertDialog.Builder(this)
-                .setTitle("Save Success")
-                .setMessage("")
-                .create();
-
-        final AlertDialog partiallySuccessDialog = new AlertDialog.Builder(this)
-                .setTitle("Some Records Save Success")
-                .setMessage("")
-                .create();
-
-        final AlertDialog failDialog = new AlertDialog.Builder(this)
-                .setTitle("Save Fail")
-                .setMessage("")
-                .create();
-
-        skygear.getPublicDatabase().save(newRecord, new RecordSaveResponseHandler(){
-            @Override
-            public void onSaveSuccess(Record[] records) {
-                RecordActivity.this.records = records;
-                RecordActivity.this.updateRecordDisplay();
-
-                successDialog.setMessage(
-                        String.format("Successfully saved %d records", records.length)
-                );
-                successDialog.show();
-            }
-
-            @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, String> reasons) {
-                partiallySuccessDialog.setMessage(
-                        String.format("%d successes\n%d fails", successRecords.size(), reasons.size())
-                );
-                partiallySuccessDialog.show();
-            }
-
-            @Override
-            public void onSaveFail(String reason) {
-                failDialog.setMessage(String.format("Fail with reason:\n%s", reason));
-                failDialog.show();
-            }
-        });
     }
 
     public void doQuery(View view) {
@@ -149,9 +112,10 @@ public class RecordActivity extends AppCompatActivity {
         for (int idx = 0; idx < this.recordKeyFields.length; idx++) {
             String keyString = this.recordKeyFields[idx].getText().toString();
             String valueString = this.recordValueFields[idx].getText().toString();
+            int operatorIndex = this.operatorSpinners[idx].getSelectedItemPosition();
 
             if (keyString.length() > 0) {
-                query.equalTo(keyString, valueString);
+                this.appendQueryPredicate(query, operatorIndex, keyString, valueString);
             }
         }
 
@@ -168,8 +132,8 @@ public class RecordActivity extends AppCompatActivity {
         skygear.getPublicDatabase().query(query, new RecordQueryResponseHandler() {
             @Override
             public void onQuerySuccess(Record[] records) {
-                RecordActivity.this.records = records;
-                RecordActivity.this.updateRecordDisplay();
+                RecordQueryActivity.this.records = records;
+                RecordQueryActivity.this.updateRecordDisplay();
 
                 successDialog.setMessage(
                         String.format("Successfully got %d records", records.length)
@@ -194,7 +158,7 @@ public class RecordActivity extends AppCompatActivity {
         if (this.records == null || this.records.length == 0) {
             new AlertDialog.Builder(this)
                     .setTitle("No records")
-                    .setMessage("No records found. Please perform query first")
+                    .setMessage("No records selected. You may perform query first")
                     .show();
         } else {
             new AlertDialog.Builder(this)
@@ -204,7 +168,7 @@ public class RecordActivity extends AppCompatActivity {
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            RecordActivity.this.doDeleteWithConfirm();
+                            RecordQueryActivity.this.doDeleteWithConfirm();
                         }
                     })
                     .show();
@@ -230,8 +194,8 @@ public class RecordActivity extends AppCompatActivity {
         skygear.getPublicDatabase().delete(this.records, new RecordDeleteResponseHandler() {
             @Override
             public void onDeleteSuccess(String[] ids) {
-                RecordActivity.this.records = null;
-                RecordActivity.this.updateRecordDisplay();
+                RecordQueryActivity.this.records = null;
+                RecordQueryActivity.this.updateRecordDisplay();
 
                 successDialog.setMessage(
                         String.format("Successfully delete %d records", ids.length)
@@ -241,7 +205,7 @@ public class RecordActivity extends AppCompatActivity {
 
             @Override
             public void onDeletePartialSuccess(String[] ids, Map<String, String> reasons) {
-                RecordActivity.this.records = null;
+                RecordQueryActivity.this.records = null;
                 partiallySuccessDialog.setMessage(
                         String.format("%d successes\n%d fails", ids.length, reasons.size())
                 );

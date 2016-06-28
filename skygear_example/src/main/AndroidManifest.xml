@@ -21,7 +21,8 @@
         <activity android:name=".SignupActivity" android:screenOrientation="portrait" />
         <activity android:name=".LoginActivity" android:screenOrientation="portrait" />
         <activity android:name=".LogoutActivity" android:screenOrientation="portrait" />
-        <activity android:name=".RecordActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".RecordCreateActivity" android:screenOrientation="portrait" />
+        <activity android:name=".RecordQueryActivity" android:screenOrientation="portrait" />
     </application>
 
 </manifest>
