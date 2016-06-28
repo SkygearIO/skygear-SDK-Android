@@ -150,7 +150,7 @@
                 android:layout_weight="1"
                 android:layout_marginLeft="1dp"
                 android:layout_marginRight="1dp"
-                android:onClick="goLogout"
+                android:onClick="doLogout"
                 android:text="@string/logout" />
         </LinearLayout>
 
