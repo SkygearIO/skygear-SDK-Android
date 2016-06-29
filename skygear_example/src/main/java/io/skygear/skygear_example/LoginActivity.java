@@ -1,6 +1,7 @@
 package io.skygear.skygear_example;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,11 +43,18 @@ public class LoginActivity extends AppCompatActivity {
         final AlertDialog successDialog = new AlertDialog.Builder(this)
                 .setTitle("Login success")
                 .setMessage("")
+                .setPositiveButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        LoginActivity.this.finish();
+                    }
+                })
                 .create();
 
         final AlertDialog failDialog = new AlertDialog.Builder(this)
                 .setTitle("Login failed")
                 .setMessage("")
+                .setNeutralButton("Dismiss", null)
                 .create();
 
         Log.i(LOG_TAG, "doLogin: Signup with username: " + username);

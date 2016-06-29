@@ -10,7 +10,7 @@
     android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".RecordActivity">
+    tools:context=".RecordCreateActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -78,8 +78,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center">
+        android:layout_marginTop="10dp">
 
         <Button
             android:layout_width="0dp"
@@ -89,16 +88,11 @@
             android:text="@string/save" />
 
         <Button
+            android:id="@+id/delete_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="doQuery"
-            android:text="@string/query" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:enabled="false"
             android:onClick="doDelete"
             android:text="@string/delete" />
 

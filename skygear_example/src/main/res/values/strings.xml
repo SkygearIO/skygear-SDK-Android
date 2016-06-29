@@ -14,12 +14,12 @@
     <string name="undefined">undefined</string>
     <string name="user_authentication">User Authentication</string>
     <string name="record_management">Record Management</string>
-    <string name="record_create_save">Create / Save</string>
     <string name="record_fields">Record Fields</string>
     <string name="key">Key</string>
     <string name="value">Value</string>
     <string name="save">Save</string>
-    <string name="record_crud">Record CRUD</string>
+    <string name="record_create_delete">Create / Delete</string>
     <string name="query">Query</string>
     <string name="delete">Delete</string>
+    <string name="record_query">Query</string>
 </resources>
