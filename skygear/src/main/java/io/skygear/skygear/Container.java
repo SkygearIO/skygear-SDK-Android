@@ -12,6 +12,7 @@ public final class Container implements AuthResolver {
 
     private final PersistentStore persistentStore;
     private final Context context;
+    private final Pubsub pubsub;
     private Configuration config;
     private RequestManager requestManager;
     private Database publicDatabase;
@@ -27,6 +28,7 @@ public final class Container implements AuthResolver {
         this.context = context.getApplicationContext();
         this.config = config;
         this.requestManager = new RequestManager(context, config);
+        this.pubsub = new Pubsub(this);
         this.persistentStore = new PersistentStore(context);
         this.publicDatabase = Database.publicDatabase(this);
         this.privateDatabase = Database.privateDatabase(this);
@@ -63,6 +65,7 @@ public final class Container implements AuthResolver {
 
         this.config = config;
         this.requestManager.configure(config);
+        this.pubsub.configure(config);
     }
 
     /**
@@ -139,6 +142,15 @@ public final class Container implements AuthResolver {
         this.persistentStore.save();
 
         this.requestManager.accessToken = user != null ? user.accessToken : null;
+    }
+
+    /**
+     * Gets pubsub.
+     *
+     * @return the pubsub
+     */
+    public Pubsub getPubsub() {
+        return pubsub;
     }
 
     /**
