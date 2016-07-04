@@ -13,13 +13,16 @@ import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
@@ -38,7 +41,12 @@ public class PubsubUnitTest {
         }
 
         @Override
-        public void send(String s) {
+        public boolean isConnecting() {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        @Override
+        public void sendMessage(String message) throws NotYetConnectedException {
             throw new UnsupportedOperationException("Not yet implemented");
         }
 
@@ -121,9 +129,14 @@ public class PubsubUnitTest {
         final boolean[] checkpoints = new boolean[]{ false, false };
         WebSocketClient webSocketClient = new WebSocketClientEmptyImpl(){
             @Override
-            public void send(String s) {
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
                 try {
-                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject jsonObject = new JSONObject(message);
                     assertEquals("sub", jsonObject.getString("action"));
                     assertEquals("test_channel_1", jsonObject.getString("channel"));
 
@@ -153,9 +166,14 @@ public class PubsubUnitTest {
         final int[] checkCounts = new int[]{ 0, 0 };
         WebSocketClient webSocketClient = new WebSocketClientEmptyImpl(){
             @Override
-            public void send(String s) {
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
                 try {
-                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject jsonObject = new JSONObject(message);
                     String channelName = jsonObject.getString("channel");
                     if (channelName.equals("test_channel_0")) {
                         checkCounts[0]++;
@@ -201,7 +219,12 @@ public class PubsubUnitTest {
         final boolean[] checkpoints = new boolean[]{ false, false, false };
         WebSocketClient webSocketClient = new WebSocketClientEmptyImpl(){
             @Override
-            public void send(String s) {
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
                 // Do nothing
             }
         };
@@ -269,9 +292,14 @@ public class PubsubUnitTest {
         final boolean[] checkpoints = new boolean[]{ false, false };
         WebSocketClient webSocketClient = new WebSocketClientEmptyImpl(){
             @Override
-            public void send(String s) {
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
                 try {
-                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject jsonObject = new JSONObject(message);
                     if (jsonObject.getString("action").equals("unsub")) {
                         assertEquals("test_channel_1", jsonObject.getString("channel"));
                         checkpoints[0] = true;
@@ -305,9 +333,14 @@ public class PubsubUnitTest {
         final boolean[] checkpoints = new boolean[]{ false, false };
         WebSocketClient webSocketClient = new WebSocketClientEmptyImpl(){
             @Override
-            public void send(String s) {
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
                 try {
-                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject jsonObject = new JSONObject(message);
                     if (jsonObject.getString("action").equals("unsub")) {
                         assertEquals("test_channel_1", jsonObject.getString("channel"));
                         checkpoints[0] = true;
@@ -346,9 +379,14 @@ public class PubsubUnitTest {
         final boolean[] checkpoints = new boolean[]{ false, false };
         WebSocketClient webSocketClient = new WebSocketClientEmptyImpl(){
             @Override
-            public void send(String s) {
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
                 try {
-                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject jsonObject = new JSONObject(message);
                     if (jsonObject.getString("action").equals("unsub")) {
                         assertEquals("test_channel_1", jsonObject.getString("channel"));
                         checkpoints[0] = true;
@@ -391,9 +429,14 @@ public class PubsubUnitTest {
         final boolean[] checkpoints = new boolean[]{ false, false };
         WebSocketClient webSocketClient = new WebSocketClientEmptyImpl(){
             @Override
-            public void send(String s) {
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
                 try {
-                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject jsonObject = new JSONObject(message);
                     assertEquals("pub", jsonObject.getString("action"));
                     assertEquals("test_channel_1", jsonObject.getString("channel"));
 
@@ -416,5 +459,114 @@ public class PubsubUnitTest {
         );
 
         assertTrue(checkpoints[0]);
+    }
+
+    @Test
+    public void testHandledSubscribeWhenNotConnected() throws Exception {
+        WebSocketClient webSocketClient = new WebSocketClientEmptyImpl() {
+            @Override
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
+                try {
+                    JSONObject jsonObject = new JSONObject(message);
+                    String action = jsonObject.getString("action");
+                    if (action.equals("sub") || action.equals("unsub")) {
+                        throw new NotYetConnectedException("Test Not Yet Connected Exception");
+                    }
+
+                    fail("Should not have other actions");
+                } catch (JSONException e) {
+                    fail(e.getMessage());
+                }
+            }
+        };
+
+        Pubsub pubsub = new Pubsub(instrumentationContainer);
+        pubsub.webSocket = webSocketClient;
+
+        pubsub.subscribe("HelloWorld", new Pubsub.Handler() {
+            @Override
+            public void handle(JSONObject data) {
+                fail("Should not run handle function");
+            }
+        });
+        assertEquals(1, pubsub.handlers.get("HelloWorld").size());
+
+        pubsub.unsubscribeAll("HelloWorld");
+        assertNull(pubsub.handlers.get("HelloWorld"));
+    }
+
+    @Test
+    public void testResendSubscribeWhenConnectionOpen() throws Exception {
+        final Map<String, Boolean> checkpoints = new HashMap<>();
+        checkpoints.put("HelloWorld", false);
+        checkpoints.put("FooBar", false);
+        checkpoints.put("Haha-123", false);
+
+        WebSocketClient emptyWebSocketClient = new WebSocketClientEmptyImpl() {
+            @Override
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
+                // Do nothing
+            }
+        };
+
+        WebSocketClient checkingWebSocketClient = new WebSocketClientEmptyImpl() {
+            @Override
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
+                try {
+                    JSONObject jsonObject = new JSONObject(message);
+                    if (jsonObject.getString("action").equals("sub")) {
+                        checkpoints.put(jsonObject.getString("channel"), true);
+                    }
+                } catch (JSONException e) {
+                    fail(e.getMessage());
+                }
+            }
+        };
+
+        Pubsub pubsub = new Pubsub(instrumentationContainer);
+        pubsub.webSocket = emptyWebSocketClient;
+
+        pubsub.subscribe("HelloWorld", new Pubsub.Handler() {
+            @Override
+            public void handle(JSONObject data) {
+                fail("Should not run handle function");
+            }
+        });
+
+        pubsub.subscribe("FooBar", new Pubsub.Handler() {
+            @Override
+            public void handle(JSONObject data) {
+                fail("Should not run handle function");
+            }
+        });
+
+        pubsub.subscribe("Haha-123", new Pubsub.Handler() {
+            @Override
+            public void handle(JSONObject data) {
+                fail("Should not run handle function");
+            }
+        });
+
+        pubsub.webSocket = checkingWebSocketClient;
+        pubsub.onOpen(101, "Switching Protocols");
+
+        assertTrue(checkpoints.get("HelloWorld"));
+        assertTrue(checkpoints.get("FooBar"));
+        assertTrue(checkpoints.get("Haha-123"));
     }
 }

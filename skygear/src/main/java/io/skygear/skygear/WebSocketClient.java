@@ -17,11 +17,19 @@ public interface WebSocketClient {
     boolean isOpen();
 
     /**
+     * Checks whether it is connecting
+     *
+     * @return the boolean indicating whether it is connecting
+     */
+    boolean isConnecting();
+
+    /**
      * Sends a message.
      *
-     * @param s the message
+     * @param message the message
+     * @throws NotYetConnectedException an exception indicating websocket not yet connected
      */
-    void send(String s);
+    void sendMessage(String message) throws NotYetConnectedException;
 
     /**
      * The Message Receive Callback.
@@ -29,5 +37,19 @@ public interface WebSocketClient {
      * @param message the message
      */
     void onMessage(String message);
+
+    /**
+     * WebSocket Not Yet Connected Exception.
+     */
+    class NotYetConnectedException extends Exception {
+        /**
+         * Instantiates a new Not Yet Connected Exception.
+         *
+         * @param detailMessage the detail message
+         */
+        public NotYetConnectedException(String detailMessage) {
+            super(detailMessage);
+        }
+    }
 }
 

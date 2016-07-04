@@ -1,13 +1,13 @@
 package io.skygear.skygear;
 
 import org.java_websocket.drafts.Draft_17;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
-import java.security.InvalidParameterException;
 
 /**
  * The WebSocket Client Implementation.
@@ -18,7 +18,7 @@ class WebSocketClientImpl
 {
     static private final String TAG = WebSocketClientImpl.class.getSimpleName();
 
-    private final WeakReference<EventHandler> eventHandler;
+    final WeakReference<EventHandler> eventHandler;
 
     /**
      * Instantiates a new WebSocket Client.
@@ -37,46 +37,68 @@ class WebSocketClientImpl
      * @return the event handler
      */
     EventHandler getEventHandler() {
-        EventHandler eventHandler = this.eventHandler.get();
-        if (eventHandler == null) {
-            throw new InvalidParameterException("Missing event handler");
-        }
-
-        return eventHandler;
+        return this.eventHandler.get();
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        this.getEventHandler().onOpen(
-                handshakedata.getHttpStatus(),
-                handshakedata.getHttpStatusMessage()
-        );
+        EventHandler eventHandler = this.getEventHandler();
+        if (eventHandler != null) {
+            eventHandler.onOpen(
+                    handshakedata.getHttpStatus(),
+                    handshakedata.getHttpStatusMessage()
+            );
+        }
+    }
+
+    @Override
+    public void sendMessage(String message) throws NotYetConnectedException {
+        try {
+            super.send(message);
+        } catch (java.nio.channels.NotYetConnectedException e) {
+            throw new NotYetConnectedException("Network not yet connected");
+        } catch (WebsocketNotConnectedException e) {
+            throw new NotYetConnectedException("WebSocket not yet connected");
+        }
     }
 
     @Override
     public void onMessage(String message) {
         EventHandler eventHandler = this.getEventHandler();
-        try {
-            eventHandler.onMessage(new JSONObject(message));
-        } catch (JSONException e) {
-            eventHandler.onError(new Exception(e.getMessage()));
+        if (eventHandler != null) {
+            try {
+                eventHandler.onMessage(new JSONObject(message));
+            } catch (JSONException e) {
+                eventHandler.onError(new Exception(e.getMessage()));
+            }
         }
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        this.getEventHandler().onClose(reason);
+        EventHandler eventHandler = this.getEventHandler();
+        if (eventHandler != null) {
+            this.getEventHandler().onClose(reason);
+        }
     }
 
     @Override
     public void onError(java.lang.Exception ex) {
-        Exception exception = new Exception(ex.getMessage());
-        this.getEventHandler().onError(exception);
+        EventHandler eventHandler = this.getEventHandler();
+        if (eventHandler != null) {
+            Exception exception = new Exception(ex.getMessage());
+            this.getEventHandler().onError(exception);
+        }
     }
 
     @Override
     public boolean isOpen() {
         return this.getConnection().isOpen();
+    }
+
+    @Override
+    public boolean isConnecting() {
+        return this.getConnection().isConnecting();
     }
 
     /**

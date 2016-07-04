@@ -19,19 +19,41 @@ import java.util.Set;
  * The Skygear Pubsub.
  */
 public class Pubsub implements WebSocketClientImpl.EventHandler {
+    /**
+     * The constant to indicate infinite retry limit.
+     */
+    public static final long RETRY_LIMIT_INFINITE = -1;
+    /**
+     * The constant to tell minimum retry .
+     */
+    public static final long MIN_RETRY_WAIT = 100;
+
     private static final String TAG = Pubsub.class.getSimpleName();
+    private static final long DEFAULT_RETRY_LIMIT = RETRY_LIMIT_INFINITE;
+    private static final long DEFAULT_RETRY_WAIT = 3000;
+
+    /**
+     * The Handlers Map
+     * <p>
+     *     Mapping Channel Name to Pubsub Handlers
+     * </p>
+     */
     final Map<String, Set<Handler>> handlers;
 
     private URI uri;
     private String apiKey;
+    private long retryCount;
     private WeakReference<Container> containerRef;
 
+    /**
+     * The WebSocket Client.
+     */
     WebSocketClient webSocket;
 
     /**
      * Instantiates a new Skygear Pubsub.
      * <p>
-     *     Please be reminded that the skygear container passed in would be weakly referenced.
+     * Please be reminded that the skygear container passed in would be weakly referenced.
      * </p>
      *
      * @param container the skygear container
@@ -39,6 +61,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     public Pubsub(Container container) {
         this.containerRef = new WeakReference<>(container);
         this.handlers = new HashMap<>();
+        this.retryCount = 0;
 
         this.configure(container.getConfig());
     }
@@ -46,7 +69,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     /**
      * Updates the Configuration.
      * <p>
-     *     Please be reminded that the connection will be re-initiate after the config update.
+     * Please be reminded that the connection will be re-initiate after the config update.
      * </p>
      *
      * @param config the skygear config
@@ -84,8 +107,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
                 this.apiKey
         ));
 
-        this.webSocket = new WebSocketClientImpl(this.uri, this);
-        this.webSocket.connect();
+        this.connect();
     }
 
     /**
@@ -96,7 +118,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     public Container getContainer() {
         Container container = this.containerRef.get();
         if (container == null) {
-            throw new InvalidParameterException("Missing container for database");
+            throw new InvalidParameterException("Missing container for pubsub");
         }
 
         return container;
@@ -112,12 +134,143 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     }
 
     /**
+     * Gets retry limit.
+     *
+     * @return the retry limit
+     */
+    public long getRetryLimit() {
+        return DEFAULT_RETRY_LIMIT;
+    }
+
+    /**
+     * Gets retry wait time.
+     *
+     * @return the retry wait time
+     */
+    public long getRetryWaitTime() {
+        return DEFAULT_RETRY_WAIT;
+    }
+
+    private long getBoundedRetryWaitTime() {
+        long retryWaitTime = this.getRetryWaitTime();
+        if (retryWaitTime < MIN_RETRY_WAIT) {
+            return MIN_RETRY_WAIT;
+        }
+
+        return retryWaitTime;
+    }
+
+    /**
      * Checks whether it is connected.
      *
      * @return the boolean indicating whether it is connected
      */
     public boolean isConnected() {
-        return this.webSocket.isOpen();
+        return this.webSocket != null && this.webSocket.isOpen();
+    }
+
+    /**
+     * Checks whether it is connecting.
+     *
+     * @return the boolean indicating whether it is connecting
+     */
+    public boolean isConnecting() {
+        return this.webSocket != null && this.webSocket.isConnecting();
+    }
+
+    /**
+     * Connect.
+     */
+    public void connect() {
+        this.retryCount = 0;
+        this.reconnect();
+    }
+
+    private void reconnect() {
+        long retryLimit = this.getRetryLimit();
+        if (retryLimit != RETRY_LIMIT_INFINITE && this.retryCount < retryLimit) {
+            Log.i(TAG, String.format("Pubsub reconnection count > %d. Give up.", retryLimit));
+            return;
+        }
+
+        if (this.isConnecting()) {
+            long retryWaitTime = this.getBoundedRetryWaitTime();
+
+            Log.i(TAG, String.format("Pubsub connecting, retry in %dms", retryWaitTime));
+            this.delayReconnect(retryWaitTime);
+            return;
+        }
+
+        if (!this.isConnected()) {
+            Log.i(TAG, String.format(
+                    "[RetryCount=%d] Pubsub Connecting to: %s",
+                    this.retryCount,
+                    this.getPubsubEndpoint()
+            ));
+            this.retryCount++;
+
+            /*
+             *  Note: org.java_websocket.client.WebSocketClient does not allow being reused.
+             *        So, A new instance should be generated for each reconnection.
+             */
+            if (this.webSocket != null) {
+                // Clean up the old WebSocketClient
+                ((WebSocketClientImpl) this.webSocket).eventHandler.clear();
+            }
+
+            this.webSocket = new WebSocketClientImpl(this.uri, this);
+            this.webSocket.connect();
+        }
+    }
+
+    private void delayReconnect(long delay) {
+        Log.i(TAG, String.format("Pubsub reconnect in %dms", delay));
+
+        Context context = this.getContainer().getContext();
+        android.os.Handler handler = new android.os.Handler(context.getMainLooper());
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Pubsub.this.reconnect();
+            }
+        }, delay);
+    }
+
+    private void sendWebSocketSubscribe(String channel) {
+        try {
+            if (!this.isConnected()) {
+                throw new WebSocketClient.NotYetConnectedException("WebSocket not yet connected");
+            }
+
+            JSONObject request = new JSONObject();
+            request.put("action", "sub");
+            request.put("channel", channel);
+
+            this.webSocket.sendMessage(request.toString());
+        } catch (JSONException e) {
+            throw new InvalidParameterException("Invalid JSON format");
+        } catch (WebSocketClient.NotYetConnectedException e) {
+            Log.i(TAG, "WebSocket not yet connected, skip sending subscribe.");
+        }
+    }
+
+    private void sendWebSocketUnsubscribe(String channel) {
+        try {
+            if (!this.isConnected()) {
+                throw new WebSocketClient.NotYetConnectedException("WebSocket not yet connected");
+            }
+
+            JSONObject request = new JSONObject();
+            request.put("action", "unsub");
+            request.put("channel", channel);
+
+            this.webSocket.sendMessage(request.toString());
+        } catch (JSONException e) {
+            throw new InvalidParameterException("Invalid JSON format");
+        } catch (WebSocketClient.NotYetConnectedException e) {
+            Log.i(TAG, "WebSocket not yet connected, skip sending unsubscribe.");
+        }
     }
 
     /**
@@ -149,18 +302,8 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
         this.handlers.put(trimmed, channelHandlers);
 
         if (isNewSubscription) {
-            try {
-                JSONObject request = new JSONObject();
-                request.put("action", "sub");
-                request.put("channel", channel);
-
-                this.webSocket.send(request.toString());
-            } catch (JSONException e) {
-                throw new InvalidParameterException("Invalid JSON format");
-            }
+            this.sendWebSocketSubscribe(trimmed);
         }
-
-        // TODO: handle if not yet connected
 
         return handler;
     }
@@ -177,16 +320,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
             throw new InvalidParameterException("Cannot unsubscribe to channel with empty name");
         }
 
-        // TODO: handle if not yet connected
-        try {
-            JSONObject request = new JSONObject();
-            request.put("action", "unsub");
-            request.put("channel", channel);
-
-            this.webSocket.send(request.toString());
-        } catch (JSONException e) {
-            throw new InvalidParameterException("Invalid JSON format");
-        }
+        this.sendWebSocketUnsubscribe(trimmed);
 
         Set<Handler> channelHandlers = this.handlers.get(trimmed);
         if (channelHandlers != null) {
@@ -229,17 +363,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
             this.handlers.put(channel, channelHandlers);
         } else {
             this.handlers.remove(trimmed);
-
-            // TODO: handle if not yet connected
-            try {
-                JSONObject request = new JSONObject();
-                request.put("action", "unsub");
-                request.put("channel", channel);
-
-                this.webSocket.send(request.toString());
-            } catch (JSONException e) {
-                throw new InvalidParameterException("Invalid JSON format");
-            }
+            this.sendWebSocketUnsubscribe(trimmed);
         }
 
         return handler;
@@ -252,14 +376,16 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
      * @param data    the data
      */
     public void publish(String channel, JSONObject data) {
-        // TODO: handle if not yet connected
-
         String trimmed = channel.trim();
         if (trimmed.length() == 0) {
             throw new InvalidParameterException("Cannot publish event to channel with empty name");
         }
 
         try {
+            if (!this.isConnected()) {
+                throw new WebSocketClient.NotYetConnectedException("WebSocket not yet connected");
+            }
+
             JSONObject request = new JSONObject();
             request.put("action", "pub");
             request.put("channel", channel);
@@ -267,19 +393,24 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
                 request.put("data", data);
             }
 
-            this.webSocket.send(request.toString());
+            this.webSocket.sendMessage(request.toString());
         } catch (JSONException e) {
             throw new InvalidParameterException("Invalid JSON format");
+        } catch (WebSocketClient.NotYetConnectedException e) {
+            // TODO: handle if not yet connected
+            Log.i(TAG, "WebSocket not yet connected, message has been queued up.");
         }
     }
 
     @Override
     public void onOpen(int statusCode, String statusMessage) {
-        Log.i(TAG, String.format(
-                "onOpen: %d %s",
-                statusCode,
-                statusMessage
-        ));
+        Log.i(TAG, String.format("Pubsub connection opened: %d %s", statusCode, statusMessage));
+        this.retryCount = 0;
+
+        Set<String> allChannels = this.handlers.keySet();
+        for (String perChannel : allChannels) {
+            this.sendWebSocketSubscribe(perChannel);
+        }
     }
 
     @Override
@@ -317,12 +448,13 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
 
     @Override
     public void onError(WebSocketClientImpl.Exception exception) {
-        Log.i(TAG, "onError: " + exception.getMessage());
+        Log.i(TAG, "Pubsub connection error: " + exception.getMessage());
     }
 
     @Override
     public void onClose(String reason) {
-        Log.i(TAG, "onClose: " + reason);
+        Log.i(TAG, "Pubsub connection close: " + reason);
+        this.delayReconnect(this.getBoundedRetryWaitTime());
     }
 
     /**
