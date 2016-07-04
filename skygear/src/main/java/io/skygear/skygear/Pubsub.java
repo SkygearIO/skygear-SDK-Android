@@ -12,7 +12,9 @@ import java.net.URISyntaxException;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -35,7 +37,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     /**
      * The Handlers Map
      * <p>
-     *     Mapping Channel Name to Pubsub Handlers
+     * Mapping Channel Name to Pubsub Handlers
      * </p>
      */
     final Map<String, Set<Handler>> handlers;
@@ -51,6 +53,11 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     WebSocketClient webSocket;
 
     /**
+     * The Pending Messages.
+     */
+    Queue<Message> pendingMessages;
+
+    /**
      * Instantiates a new Skygear Pubsub.
      * <p>
      * Please be reminded that the skygear container passed in would be weakly referenced.
@@ -61,6 +68,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     public Pubsub(Container container) {
         this.containerRef = new WeakReference<>(container);
         this.handlers = new HashMap<>();
+        this.pendingMessages = new LinkedList<>();
         this.retryCount = 0;
 
         this.configure(container.getConfig());
@@ -397,8 +405,8 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
         } catch (JSONException e) {
             throw new InvalidParameterException("Invalid JSON format");
         } catch (WebSocketClient.NotYetConnectedException e) {
-            // TODO: handle if not yet connected
             Log.i(TAG, "WebSocket not yet connected, message has been queued up.");
+            this.pendingMessages.offer(new Message(channel, data));
         }
     }
 
@@ -410,6 +418,14 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
         Set<String> allChannels = this.handlers.keySet();
         for (String perChannel : allChannels) {
             this.sendWebSocketSubscribe(perChannel);
+        }
+
+        Queue<Message> pendingMessages = this.pendingMessages;
+        this.pendingMessages = new LinkedList<>();
+
+        while (pendingMessages.peek() != null) {
+            Message message = pendingMessages.poll();
+            this.publish(message.channel, message.data);
         }
     }
 
@@ -467,5 +483,31 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
          * @param data the data
          */
         void handle(JSONObject data);
+    }
+
+    /**
+     * The Pubsub Message.
+     */
+    static class Message {
+        /**
+         * The Message Channel.
+         */
+        final String channel;
+        /**
+         * The Message Data.
+         */
+        final JSONObject data;
+
+        /**
+         * Instantiates a new Pubsub Message.
+         *
+         * @param channel the pubsub channel
+         * @param data    the pubsub data
+         */
+        Message(String channel, JSONObject data) {
+            super();
+            this.channel = channel;
+            this.data = data;
+        }
     }
 }

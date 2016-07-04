@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -568,5 +569,115 @@ public class PubsubUnitTest {
         assertTrue(checkpoints.get("HelloWorld"));
         assertTrue(checkpoints.get("FooBar"));
         assertTrue(checkpoints.get("Haha-123"));
+    }
+
+    @Test
+    public void testQueueUpMessagesWhenNotConnected() throws Exception {
+        WebSocketClientEmptyImpl webSocketClient = new WebSocketClientEmptyImpl() {
+            @Override
+            public boolean isOpen() {
+                return false;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
+                // Do nothing
+            }
+        };
+
+        Pubsub pubsub = new Pubsub(instrumentationContainer);
+        pubsub.webSocket = webSocketClient;
+
+        pubsub.publish(
+                "test_channel",
+                new JSONObject("{\"msg\": \"test_msg_1\"}")
+        );
+        pubsub.publish(
+                "test_channel",
+                new JSONObject("{\"msg\": \"test_msg_2\"}")
+        );
+        pubsub.publish(
+                "test_channel",
+                new JSONObject("{\"msg\": \"test_msg_3\"}")
+        );
+
+        Queue<Pubsub.Message> pendingMessages = pubsub.pendingMessages;
+        assertEquals(3, pendingMessages.size());
+
+        Pubsub.Message message1 = pendingMessages.remove();
+        assertEquals("test_channel", message1.channel);
+        assertEquals("{\"msg\":\"test_msg_1\"}", message1.data.toString());
+
+        Pubsub.Message message2 = pendingMessages.remove();
+        assertEquals("test_channel", message2.channel);
+        assertEquals("{\"msg\":\"test_msg_2\"}", message2.data.toString());
+
+        Pubsub.Message message3 = pendingMessages.remove();
+        assertEquals("test_channel", message3.channel);
+        assertEquals("{\"msg\":\"test_msg_3\"}", message3.data.toString());
+    }
+
+    @Test
+    public void testResendPendingMessageWhenConnected() throws Exception {
+        final Map<String, Boolean> checkpoints = new HashMap<>();
+        checkpoints.put("test_msg_1", false);
+        checkpoints.put("test_msg_2", false);
+        checkpoints.put("test_msg_3", false);
+
+        WebSocketClient disconnectedWebSocketClient = new WebSocketClientEmptyImpl() {
+            @Override
+            public boolean isOpen() {
+                return false;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
+                // Do nothing
+            }
+        };
+
+        WebSocketClient connectedWebSocketClient = new WebSocketClientEmptyImpl() {
+            @Override
+            public boolean isOpen() {
+                return true;
+            }
+
+            @Override
+            public void sendMessage(String message) throws NotYetConnectedException {
+                try {
+                    JSONObject jsonObject = new JSONObject(message);
+                    if (jsonObject.getString("action").equals("pub") &&
+                            jsonObject.getString("channel").equals("test_channel"))
+                    {
+                        checkpoints.put(jsonObject.getJSONObject("data").getString("msg"), true);
+                    }
+                } catch (JSONException e) {
+                    fail(e.getMessage());
+                }
+            }
+        };
+
+        Pubsub pubsub = new Pubsub(instrumentationContainer);
+        pubsub.webSocket = disconnectedWebSocketClient;
+
+        pubsub.publish(
+                "test_channel",
+                new JSONObject("{\"msg\": \"test_msg_1\"}")
+        );
+        pubsub.publish(
+                "test_channel",
+                new JSONObject("{\"msg\": \"test_msg_2\"}")
+        );
+        pubsub.publish(
+                "test_channel",
+                new JSONObject("{\"msg\": \"test_msg_3\"}")
+        );
+
+        pubsub.webSocket = connectedWebSocketClient;
+        pubsub.onOpen(101, "Switching Protocols");
+
+        assertTrue(checkpoints.get("test_msg_1"));
+        assertTrue(checkpoints.get("test_msg_2"));
+        assertTrue(checkpoints.get("test_msg_3"));
     }
 }
