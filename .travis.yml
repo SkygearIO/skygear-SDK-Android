@@ -45,6 +45,18 @@ deploy:
     on:
       repo: SkygearIO/skygear-SDK-Android
       tags: true
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: "docs.skygear.io"
+    skip_cleanup: true
+    acl: public_read
+    local_dir: "skygear/build/reports/androidTests/connected"
+    upload-dir: "android/tests"
+    cache_control: "max-age=604800"
+    on:
+      repo: SkygearIO/skygear-SDK-Android
+      tags: true
 
 env:
   global:
