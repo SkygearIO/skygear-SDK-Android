@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context="io.skygear.skygear_example.PubsubActivity">
+
+    <EditText
+        android:id="@+id/channel_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:hint="@string/channel_name"
+        android:imeOptions="actionDone"
+        android:lines="1"
+        android:maxLines="1"
+        android:inputType="text" />
+
+    <LinearLayout
+        android:id="@+id/sub_unsub_button_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/channel_name">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onSubscribeButtonClick"
+            android:text="@string/subscribe" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onUnsubscribeButtonClick"
+            android:text="@string/unsubscribe" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/send_message_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:onClick="onSendButtonClick"
+            android:text="@string/send" />
+
+        <EditText
+            android:id="@+id/message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/send_button"
+            android:layout_toStartOf="@id/send_button"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:hint="@string/message"
+            android:imeOptions="actionDone"
+            android:lines="1"
+            android:maxLines="1"
+            android:inputType="text" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/pubsub_display_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/sub_unsub_button_group"
+        android:layout_above="@id/send_message_group"
+        android:focusable="false">
+
+        <TextView
+            android:id="@+id/pubsub_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true"
+            android:focusable="false" />
+    </ScrollView>
+
+</RelativeLayout>

@@ -22,4 +22,11 @@
     <string name="query">Query</string>
     <string name="delete">Delete</string>
     <string name="record_query">Query</string>
+    <string name="channel">Channel</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="message">Message</string>
+    <string name="send">Send</string>
+    <string name="channel_name">Channel Name</string>
+    <string name="pubsub">Pubsub</string>
 </resources>

@@ -125,4 +125,8 @@ public class MainActivity extends AppCompatActivity {
     public void goRecordQuery(View view) {
         startActivity(new Intent(this, RecordQueryActivity.class));
     }
+
+    public void goPubsub(View view) {
+        startActivity(new Intent(this, PubsubActivity.class));
+    }
 }
