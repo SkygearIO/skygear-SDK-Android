@@ -1,11 +1,15 @@
 package io.skygear.skygear;
 
+import android.support.test.runner.AndroidJUnit4;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
 
+@RunWith(AndroidJUnit4.class)
 public class ConfigurationUnitTest {
     @Test
     public void testDefaultConfigurationNormalFlow() throws Exception {
