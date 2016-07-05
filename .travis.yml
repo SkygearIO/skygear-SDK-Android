@@ -24,21 +24,37 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew :skygear:test :skygear:connectedAndroidTest --info --stacktrace
+  - ./gradlew :skygear:build :skygear:test :skygear:connectedAndroidTest --info --stacktrace
 
 deploy:
-  provider: script
-  script: scripts/deploy.sh
-  skip_cleanup: true
-  on:
-    repo: SkygearIO/skygear-SDK-Android
-    tags: true
+  - provider: script
+    script: scripts/deploy.sh
+    skip_cleanup: true
+    on:
+      repo: SkygearIO/skygear-SDK-Android
+      tags: true
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: "docs.skygear.io"
+    skip_cleanup: true
+    acl: public_read
+    local_dir: "skygear/build/docs/javadoc"
+    upload-dir: "android/reference"
+    cache_control: "max-age=604800"
+    on:
+      repo: SkygearIO/skygear-SDK-Android
+      tags: true
 
 env:
   global:
     - BINTRAY_USER="skygeario-builder"
     # BINTRAY_API_KEY
     - secure: "AA1JqW1GST/LEaaRCfdYmBPvMfoutSzSQlXOzTDOK/gccatphpW2vqf3KbA7ukDKpSwiIAVn4yttV/5MVQ8corvHXF5Vz5SqYfjM/g92JaKdP6DA4q5sAWzP86JhRqbuD12Vi9JvxlWbAWGcAF6CfMuXIeL09XdA0BQwm0D29+RyGkfv/Lit2aTBIcUWbhnOI3VF22lqwi9iwoJvMXkTzNcXQNSpViLjYhnsI/s0GFdqV45kLwY7ZeWzODG76sVJov9cIIegD8PKdO/wtO5HXBbDqsCC1GYSRQ7YmW1ec8VFBSghdb0IuQzh7mcCIauD0jTeRg4Kgz8Kj7sHvgrd4JUSv0kROSq+ANY0oX5W+S/WnvuT/IqluPCzfmDcv0Quyw4w2vSG/G8aVqXkX5eASbV9p4dMCnuM+PDdvQSKEA/jRCU0PatMRh30G3LdLn8NuNue8KBox36VTpZNYj0eIaoU8Sbab92iWnnEGS/LiAu1Th/dCSXHcKlRkOgI2GeggLnntOzqK/6VDhyrIyo9tWcNXRBNzWaqITPuER3Ryd2I218doPrOlDQAh+cOX1t7j8BPZTFeFRuEbLBcIQmN9IhjnczI6yBL7C0jLWu1RLOS9AQgcyV3CnpTBr5enBxCaLzJoUH4mDU4sEqdjtwnE996n87XI5HAF9DZNPhZSZw="
+    # AWS_ACCESS_KEY_ID
+    - secure: "M1QPeS6Bzvf0xRxhY5ZB8y3dCnEUgwLTMrayY4Jn1rHklwF6/b8hf2ATXlblRNQloTtbMGYUL/YmYp4G5FNkhbnUdKB33rsB7lKPSEW7lioUFDY9lJEEWp5mVQYWYlQTodm//5yVSUBrYHzvBaG3wEbyiRJ2ErEHWZRCT5mxGSB3wNSdbassoq1EknEttFJAYHxWnEtm+qdq7T7kH96ddvEuplBukJgRawMd+35ZPG/hQO0zghMxRqQWGpl1VLtTWVUpCohjHTxQzbk6sghXKsdPY/Eh2fBXMxyxJS8634nneCgRv1mtC67fx6/T/HGFBgVaMdJJb0OvruFjN0Nngb8Fay30GnW7/tAudFy9QQI3aOPP/8l/8sqQu5WsDDZYkDfxS1yPr1sbIugmxfmohvgDxWnLhSUJPhkZiv/8MEDJKKI7RL9/xrEDrGItsuDXqkvYh7wk4XJuTk4IWC1p6fEXODtJh7CGdG6vcCH1uE7wmfIQEeaHqoAyUnbF/YAOfvFnrSDa6FDvCFXOXGTEM+NOv9e4yXY83Xp01MBwHPsWNS1G8lCWjNczpBaF6aPzCzRh05Omlj6sOS95P0D28PsbANWKBmIIdp/xDp0zTbgc3jbAfg2Gsi+nNhivWOaNDDvgcj0QUyMAx/iW2Lx5umEksdEjR3JsQASPTElHre8="
+    # AWS_SECRET_ACCESS_KEY
+    - secure: "MOaEWmQCEAr7kgFw36ZemUZWrHtzW59U6i0JWHmaqlKO7Xmi//XEnFuWhdxn4jweKDWtJj2J+DuX/CUYZTfgTzi9mBlRvcjoyyY9/ItIMNqMltTVEWFiFreGHxL+Oy0WBj8Js1eppVkBtl1PiAQDEVqfJqlh+QdtUuWu39/8Lf5DrYDjMVq3NEbazzVMh0UF1AxhFqQZuuhcAohXGqmHWObZvyj/xHpQxeSBgv22eDIeUKHnzNUqld29AevcnAbyo0ejppL+eS7kIYIZSdfwS+NBWxrdcRkJS+jnRjbaSGhgDVGzYWlDVYQYCY3NPXhffQwa+zj4OcxgtbB/Lv3JrvwUryJ/8iPdvr2XKpMMULpbbZola3to956H5bSE42P9JbWlopgpIRhp+e8GRdLfGbbP6lCmO/O89ep3a1f+hkOvjkYlE9HJZGzXBWhLLb6gK0mQwvjUGB7UFpn1S+54LBgv6ZMPCdiQAUmwk10U/AU4SgEhYOulgRh+ez0HZelcKd7FDAP2+RYMaaxRYg0h2ugio8zy94F2hJwV8O81qpJNlEn4oRfVN9J76+12CyfzrNtWB/GkSOPN7SYVmjOAWsZlNQlW2wxLzkQP+e1JImZf3BA/yJNMfZ9hSmlGDGbVUbX1vg8gJhR5DJCweGONQGCXEIAjICM+TyD3pIz2pD8="
 
 notifications:
   slack:
