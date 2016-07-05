@@ -75,6 +75,11 @@ class WebSocketClientImpl
     }
 
     @Override
+    public void cleanup() {
+        this.eventHandler.clear();
+    }
+
+    @Override
     public void onClose(int code, String reason, boolean remote) {
         EventHandler eventHandler = this.getEventHandler();
         if (eventHandler != null) {

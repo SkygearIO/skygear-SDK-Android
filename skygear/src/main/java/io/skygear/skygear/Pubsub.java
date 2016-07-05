@@ -222,8 +222,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
              *        So, A new instance should be generated for each reconnection.
              */
             if (this.webSocket != null) {
-                // Clean up the old WebSocketClient
-                ((WebSocketClientImpl) this.webSocket).eventHandler.clear();
+                this.webSocket.cleanup();
             }
 
             this.webSocket = new WebSocketClientImpl(this.uri, this);

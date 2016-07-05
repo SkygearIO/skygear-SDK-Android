@@ -30,19 +30,9 @@ import static junit.framework.Assert.fail;
 @RunWith(AndroidJUnit4.class)
 public class PubsubUnitTest {
 
-    private class WebSocketClientEmptyImpl implements WebSocketClient {
+    private abstract class WebSocketClientEmptyImpl implements WebSocketClient {
         @Override
         public void connect() {
-            throw new UnsupportedOperationException("Not yet implemented");
-        }
-
-        @Override
-        public boolean isOpen() {
-            throw new UnsupportedOperationException("Not yet implemented");
-        }
-
-        @Override
-        public boolean isConnecting() {
             throw new UnsupportedOperationException("Not yet implemented");
         }
 
@@ -54,6 +44,16 @@ public class PubsubUnitTest {
         @Override
         public void onMessage(String message) {
             throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        @Override
+        public void cleanup() {
+            // Do nothing
+        }
+
+        @Override
+        public boolean isConnecting() {
+            return false;
         }
     }
 
@@ -573,7 +573,7 @@ public class PubsubUnitTest {
 
     @Test
     public void testQueueUpMessagesWhenNotConnected() throws Exception {
-        WebSocketClientEmptyImpl webSocketClient = new WebSocketClientEmptyImpl() {
+        WebSocketClient webSocketClient = new WebSocketClientEmptyImpl() {
             @Override
             public boolean isOpen() {
                 return false;

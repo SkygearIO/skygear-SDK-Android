@@ -39,6 +39,11 @@ public interface WebSocketClient {
     void onMessage(String message);
 
     /**
+     * Cleans up the client.
+     */
+    void cleanup();
+
+    /**
      * WebSocket Not Yet Connected Exception.
      */
     class NotYetConnectedException extends Exception {
