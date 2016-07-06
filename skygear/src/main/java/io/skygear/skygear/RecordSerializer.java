@@ -13,8 +13,10 @@ import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The Skygear Record Serializer.
@@ -30,7 +32,8 @@ public class RecordSerializer {
             "_updated_by",
             "_access"
     );
-    private static List<? extends Class> CompatibleValueClasses = Arrays.asList(
+
+    private static Set<? extends Class> CompatibleValueClasses = new HashSet<>(Arrays.asList(
             Boolean.class,
             Byte.class,
             Character.class,
@@ -40,8 +43,10 @@ public class RecordSerializer {
             Long.class,
             Short.class,
             String.class,
+            JSONObject.class,
+            JSONArray.class,
             Date.class
-    );
+    ));
 
     /**
      * Check if a record type is valid
