@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 @SuppressLint("CommitPrefEdits")
@@ -124,5 +126,71 @@ public class PersistentStoreUnitTest {
                 Context.MODE_PRIVATE
         );
         assertEquals("{}", pref.getString(PersistentStore.CURRENT_USER_KEY, "{}"));
+    }
+
+    @Test
+    public void testPersistentStoreRestoreDefaultAccessControl() throws Exception {
+        SharedPreferences pref = instrumentationContext.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(
+                PersistentStore.DEFAULT_ACCESS_CONTROL_KEY,
+                "[{" +
+                    "\"public\": true," +
+                    "\"level\": \"write\"" +
+
+                "}]"
+        );
+        editor.commit();
+
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        AccessControl defaultAccessControl = persistentStore.defaultAccessControl;
+        assertEquals(AccessControl.Level.READ_WRITE, defaultAccessControl.getPublicAccess().getLevel());
+    }
+
+    @Test
+    public void testPersistentStoreRestoreDefaultAccessControlFromEmptyState() throws Exception {
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        assertEquals(
+                AccessControl.Level.READ_ONLY,
+                persistentStore.defaultAccessControl.getPublicAccess().getLevel()
+        );
+    }
+
+    @Test
+    public void testPersistentStoreSaveDefaultAccessControl() throws Exception {
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        persistentStore.defaultAccessControl = new AccessControl(new AccessControl.Entry[]{
+                new AccessControl.Entry(AccessControl.Level.READ_WRITE)
+        });
+        persistentStore.save();
+
+        SharedPreferences pref = instrumentationContext.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+
+        String defaultAccessControlString
+                = pref.getString(PersistentStore.DEFAULT_ACCESS_CONTROL_KEY, "[]");
+        JSONArray defaultAccessControlJson = new JSONArray(defaultAccessControlString);
+
+        assertEquals(1, defaultAccessControlJson.length());
+        assertTrue(defaultAccessControlJson.getJSONObject(0).getBoolean("public"));
+        assertEquals("write", defaultAccessControlJson.getJSONObject(0).getString("level"));
+    }
+
+    @Test
+    public void testPersistentStoreSaveNullDefaultAccessControl() throws Exception {
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        persistentStore.defaultAccessControl = null;
+        persistentStore.save();
+
+        SharedPreferences pref = instrumentationContext.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        assertEquals("[]", pref.getString(PersistentStore.DEFAULT_ACCESS_CONTROL_KEY, "[]"));
     }
 }

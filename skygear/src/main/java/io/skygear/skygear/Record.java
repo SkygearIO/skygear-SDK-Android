@@ -13,6 +13,8 @@ import java.util.UUID;
  * The Skygear Record.
  */
 public class Record {
+    static AccessControl defaultAccessControl = null;
+
     String id;
     String type;
 
@@ -58,7 +60,7 @@ public class Record {
         this.createdAt = null;
         this.updatedAt = null;
 
-        this.access = AccessControl.defaultAccessControl();
+        this.access = Record.defaultAccessControl;
 
         this.data = new HashMap<>();
 

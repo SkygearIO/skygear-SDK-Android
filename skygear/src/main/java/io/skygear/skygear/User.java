@@ -59,6 +59,8 @@ public class User {
      * @param json the json string
      * @return the skygear user
      * @throws JSONException the json exception
+     *
+     * FIXME: Change to use JSONObject as media
      */
     public static User fromJsonString(String json) throws JSONException {
         JSONObject currentUserJson = new JSONObject(json);
@@ -82,6 +84,8 @@ public class User {
      * Encode a Skygear User to JSON String
      *
      * @return the json string
+     *
+     * FIXME: Change to use JSONObject as media
      */
     public String toJsonString() {
         JSONObject jsonObject = new JSONObject();
