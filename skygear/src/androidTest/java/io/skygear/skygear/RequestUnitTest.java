@@ -1,14 +1,20 @@
 package io.skygear.skygear;
 
+import android.support.test.runner.AndroidJUnit4;
+
 import org.json.JSONObject;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+
+@RunWith(AndroidJUnit4.class)
 public class RequestUnitTest {
     static Map<String, Object> sampleData;
     static Request.ResponseHandler sampleHandler;
@@ -46,9 +52,9 @@ public class RequestUnitTest {
                 RequestUnitTest.sampleHandler
         );
 
-        Assert.assertEquals("test:action", req.action);
-        Assert.assertEquals(RequestUnitTest.sampleData, req.data);
-        Assert.assertEquals(RequestUnitTest.sampleHandler, req.responseHandler);
+        assertEquals("test:action", req.action);
+        assertEquals(RequestUnitTest.sampleData, req.data);
+        assertEquals(RequestUnitTest.sampleHandler, req.responseHandler);
     }
 
     @Test
@@ -58,8 +64,8 @@ public class RequestUnitTest {
                 RequestUnitTest.sampleData
         );
 
-        Assert.assertEquals("test:action", req.action);
-        Assert.assertEquals(RequestUnitTest.sampleData, req.data);
-        Assert.assertNull(req.responseHandler);
+        assertEquals("test:action", req.action);
+        assertEquals(RequestUnitTest.sampleData, req.data);
+        assertNull(req.responseHandler);
     }
 }

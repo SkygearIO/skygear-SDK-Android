@@ -1,12 +1,16 @@
 package io.skygear.skygear;
 
+import android.support.test.runner.AndroidJUnit4;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
 
+@RunWith(AndroidJUnit4.class)
 public class LoginRequestUnitTest {
     @Test
     public void testLoginRequestUsernameFlow() throws Exception {
