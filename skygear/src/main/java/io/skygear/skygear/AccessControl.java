@@ -142,6 +142,19 @@ public class AccessControl {
     }
 
     /**
+     * Gets the public access control entry.
+     *
+     * @return the public access control entry
+     */
+    public Entry getPublicAccess() {
+        if (this.publicEntryQueue.size() == 0) {
+            return new Entry(Level.NO_ACCESS);
+        }
+
+        return this.publicEntryQueue.peek();
+    }
+
+    /**
      * The Skygear Access Control Entry.
      */
     static class Entry implements Comparable<Entry> {

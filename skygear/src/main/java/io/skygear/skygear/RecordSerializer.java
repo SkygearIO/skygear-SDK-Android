@@ -115,18 +115,7 @@ public class RecordSerializer {
 
             JSONObject jsonObject = new JSONObject(recordData);
             jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
-
-            // add public readable ACL, i.e. [{"level": "read", "public": true}]
-            JSONObject publicReadable = new JSONObject();
-            publicReadable.put("public", true);
-            publicReadable.put("level", "read");
-
-            JSONArray acl = new JSONArray();
-            acl.put(publicReadable);
-
-            jsonObject.put("_access", acl);
-
-            // TODO: Handle ACL (_access)
+            jsonObject.put("_access", AccessControlSerializer.serialize(record.getAccess()));
 
             return jsonObject;
         } catch (JSONException e) {
@@ -170,7 +159,12 @@ public class RecordSerializer {
         record.updaterId = jsonObject.getString("_updated_by");
         record.ownerId = jsonObject.getString("_ownerID");
 
-        // TODO: Handle ACL (_access)
+        JSONArray accessJsonArray = null;
+        if (jsonObject.has("_access")) {
+            accessJsonArray = jsonObject.getJSONArray("_access");
+        }
+
+        record.access = AccessControlSerializer.deserialize(accessJsonArray);
 
         Iterator<String> keys = jsonObject.keys();
         while(keys.hasNext()) {

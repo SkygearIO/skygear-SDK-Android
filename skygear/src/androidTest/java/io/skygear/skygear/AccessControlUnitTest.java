@@ -75,7 +75,7 @@ public class AccessControlUnitTest {
         // TODO: add test for user-based ACEs
 
         assertEquals(3, accessControl.publicEntryQueue.size());
-        assertEquals(new Entry(Level.READ_WRITE), accessControl.publicEntryQueue.peek());
+        assertEquals(new Entry(Level.READ_WRITE), accessControl.getPublicAccess());
     }
 
     @Test
@@ -85,18 +85,18 @@ public class AccessControlUnitTest {
 
         accessControl.addEntry(new Entry(Level.READ_ONLY));
         assertEquals(1, accessControl.publicEntryQueue.size());
-        assertEquals(new Entry(Level.READ_ONLY), accessControl.publicEntryQueue.peek());
+        assertEquals(new Entry(Level.READ_ONLY), accessControl.getPublicAccess());
 
         // TODO: add test for role-based ACEs
         // TODO: add test for user-based ACEs
 
         accessControl.addEntry(new Entry(Level.NO_ACCESS));
         assertEquals(2, accessControl.publicEntryQueue.size());
-        assertEquals(new Entry(Level.READ_ONLY), accessControl.publicEntryQueue.peek());
+        assertEquals(new Entry(Level.READ_ONLY), accessControl.getPublicAccess());
 
         accessControl.addEntry(new Entry(Level.READ_WRITE));
         assertEquals(3, accessControl.publicEntryQueue.size());
-        assertEquals(new Entry(Level.READ_WRITE), accessControl.publicEntryQueue.peek());
+        assertEquals(new Entry(Level.READ_WRITE), accessControl.getPublicAccess());
     }
 
     @Test
@@ -107,18 +107,18 @@ public class AccessControlUnitTest {
                 new Entry(Level.NO_ACCESS)
         });
         assertEquals(3, accessControl.publicEntryQueue.size());
-        assertEquals(new Entry(Level.READ_WRITE), accessControl.publicEntryQueue.peek());
+        assertEquals(new Entry(Level.READ_WRITE), accessControl.getPublicAccess());
 
         // TODO: add test for role-based ACEs
         // TODO: add test for user-based ACEs
 
         accessControl.removeEntry(new Entry(Level.READ_WRITE));
         assertEquals(2, accessControl.publicEntryQueue.size());
-        assertEquals(new Entry(Level.READ_ONLY), accessControl.publicEntryQueue.peek());
+        assertEquals(new Entry(Level.READ_ONLY), accessControl.getPublicAccess());
 
         accessControl.removeEntry(new Entry(Level.NO_ACCESS));
         assertEquals(1, accessControl.publicEntryQueue.size());
-        assertEquals(new Entry(Level.READ_ONLY), accessControl.publicEntryQueue.peek());
+        assertEquals(new Entry(Level.READ_ONLY), accessControl.getPublicAccess());
 
         accessControl.removeEntry(new Entry(Level.READ_ONLY));
         assertEquals(0, accessControl.publicEntryQueue.size());
