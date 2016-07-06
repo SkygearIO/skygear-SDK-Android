@@ -1,6 +1,7 @@
 package io.skygear.skygear;
 
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -11,10 +12,12 @@ import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -97,6 +100,7 @@ public class RecordSerializerUnitTest {
         Record aNote = new Record("Note", data);
         JSONObject jsonObject = RecordSerializer.serialize(aNote);
 
+        assertNotNull(jsonObject);
         assertEquals(0, jsonObject.getString("_id").indexOf("Note/"));
 
         assertEquals("world", jsonObject.getString("hello"));
@@ -113,6 +117,53 @@ public class RecordSerializerUnitTest {
         JSONObject publicReadable = acl.getJSONObject(0);
         assertTrue(publicReadable.getBoolean("public"));
         assertEquals("read", publicReadable.getString("level"));
+    }
+
+    @Test
+    /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/23 */
+    public void testRecordSerializeJsonObject() throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        data.put("obj", new JSONObject("{ \"hello\": \"world\"}"));
+
+        Record aNote = new Record("Note", data);
+        JSONObject jsonObject = RecordSerializer.serialize(aNote);
+
+        assertNotNull(jsonObject);
+
+        JSONObject obj = jsonObject.getJSONObject("obj");
+        assertEquals("world", obj.getString("hello"));
+    }
+
+    @Test
+    /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/23 */
+    public void testRecordSerializeEmptyArray() throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        data.put("empty-array", new String[0]);
+
+        Record aNote = new Record("Note", data);
+        JSONObject jsonObject = RecordSerializer.serialize(aNote);
+
+        assertNotNull(jsonObject);
+
+        JSONArray emptyArray = jsonObject.getJSONArray("empty-array");
+        assertEquals(0, emptyArray.length());
+    }
+
+    @Test
+    /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/23 */
+    public void testRecordSerializeArray() throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        data.put("non-empty-array", new String[]{ "hello", "world" });
+
+        Record aNote = new Record("Note", data);
+        JSONObject jsonObject = RecordSerializer.serialize(aNote);
+
+        assertNotNull(jsonObject);
+
+        JSONArray nonEmptyArray = jsonObject.getJSONArray("non-empty-array");
+        assertEquals(2, nonEmptyArray.length());
+        assertEquals("hello", nonEmptyArray.get(0));
+        assertEquals("world", nonEmptyArray.get(1));
     }
 
     @Test
@@ -171,5 +222,43 @@ public class RecordSerializerUnitTest {
         jsonObject.put("abc", 12.345);
 
         RecordSerializer.deserialize(jsonObject);
+    }
+
+    @Test
+    /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/23 */
+    public void testRecordDeserializeJsonObject() throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
+        jsonObject.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
+        jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
+        jsonObject.put("_updated_at", "2016-06-15T07:55:33.342Z");
+        jsonObject.put("_updated_by", "5a497b0b-cf93-4720-bea4-14637478cfc2");
+        jsonObject.put("object", new JSONObject("{\"hello\": \"world\"}"));
+
+        Record record = RecordSerializer.deserialize(jsonObject);
+        JSONObject obj = (JSONObject) record.get("object");
+
+        assertEquals("world", obj.getString("hello"));
+    }
+
+    @Test
+    /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/23 */
+    public void testRecordDeserializeArray() throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
+        jsonObject.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
+        jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
+        jsonObject.put("_updated_at", "2016-06-15T07:55:33.342Z");
+        jsonObject.put("_updated_by", "5a497b0b-cf93-4720-bea4-14637478cfc2");
+        jsonObject.put("array", new JSONArray("[\"hello\", \"world\"]"));
+
+        Record record = RecordSerializer.deserialize(jsonObject);
+        JSONArray arr = (JSONArray) record.get("array");
+
+        assertEquals(2, arr.length());
+        assertEquals("hello", arr.get(0));
+        assertEquals("world", arr.get(1));
     }
 }
