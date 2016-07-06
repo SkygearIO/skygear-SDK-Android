@@ -130,7 +130,7 @@ public class RecordSerializer {
 
             return jsonObject;
         } catch (JSONException e) {
-            Log.w("Skygear SDK", "Fail to serialize record object");
+            Log.w("Skygear SDK", "Fail to serialize record object", e);
         }
 
         return null;
