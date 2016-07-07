@@ -202,6 +202,29 @@ public final class Container implements AuthResolver {
     }
 
     /**
+     * Gets user by email.
+     *
+     * @param email   the email
+     * @param handler the response handler
+     */
+    public void getUserByEmail(String email, UserQueryResponseHandler handler) {
+        this.getUserByEmails(new String[] { email }, handler);
+    }
+
+    /**
+     * Gets user by emails.
+     *
+     * @param emails  the emails
+     * @param handler the response handler
+     */
+    public void getUserByEmails(String[] emails, UserQueryResponseHandler handler) {
+        UserQueryRequest request = new UserQueryRequest(emails);
+        request.responseHandler = handler;
+
+        this.requestManager.sendRequest(request);
+    }
+
+    /**
      * Send a request.
      *
      * @param request the request
