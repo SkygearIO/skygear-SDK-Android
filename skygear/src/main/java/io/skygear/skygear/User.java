@@ -1,5 +1,8 @@
 package io.skygear.skygear;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * The Skygear User Model.
  */
@@ -20,6 +23,11 @@ public class User {
      * The Email.
      */
     String email;
+
+    /**
+     * The Roles.
+     */
+    Set<Role> roles;
 
     /**
      * Instantiates a new Skygear User.
@@ -46,6 +54,7 @@ public class User {
         this.accessToken = accessToken;
         this.username = username;
         this.email = email;
+        this.roles = new TreeSet<>();
     }
 
     /**
@@ -82,5 +91,44 @@ public class User {
      */
     public String getEmail() {
         return email;
+    }
+
+    /**
+     * Get all user roles.
+     *
+     * @return the roles
+     */
+    public Role[] getRoles() {
+        return this.roles.toArray(
+                new Role[this.roles.size()]
+        );
+    }
+
+    /**
+     * Add a role.
+     *
+     * @param aRole the role
+     */
+    public void addRole(Role aRole) {
+        this.roles.add(aRole);
+    }
+
+    /**
+     * Remove a role.
+     *
+     * @param aRole the role
+     */
+    public void removeRole(Role aRole) {
+        this.roles.remove(aRole);
+    }
+
+    /**
+     * Check whether has a specific role.
+     *
+     * @param aRole the role
+     * @return the boolean indicating whether the user has the specific role.
+     */
+    public boolean hasRole(Role aRole) {
+        return this.roles.contains(aRole);
     }
 }

@@ -1,5 +1,6 @@
 package io.skygear.skygear;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,6 +31,13 @@ public class UserSerializer {
             userObject.put("username", user.getUsername());
             userObject.put("email", user.getEmail());
 
+            JSONArray roles = new JSONArray();
+            for (Role perRole : user.roles) {
+                roles.put(perRole.getName());
+            }
+
+            userObject.put("roles", roles);
+
             return userObject;
         } catch (JSONException e) {
             throw new InvalidParameterException(e.getMessage());
@@ -54,11 +62,22 @@ public class UserSerializer {
             throw new JSONException("Missing _id or user_id field");
         }
 
-        return new User(
+        User theUser = new User(
                 userId,
                 userObject.optString("access_token"),
                 userObject.optString("username"),
                 userObject.optString("email")
         );
+
+        JSONArray userRoleArray = userObject.optJSONArray("roles");
+        if (userRoleArray != null) {
+            int roleCount = userRoleArray.length();
+            for (int idx = 0; idx < roleCount; idx++) {
+                String perRoleName = userRoleArray.getString(idx);
+                theUser.addRole(new Role(perRoleName));
+            }
+        }
+
+        return theUser;
     }
 }

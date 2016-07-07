@@ -3,7 +3,7 @@ package io.skygear.skygear;
 /**
  * The Skygear User Role.
  */
-public class Role {
+public class Role implements Comparable<Role> {
     private final String name;
 
     /**
@@ -25,7 +25,12 @@ public class Role {
     }
 
     @Override
+    public int compareTo(Role another) {
+        return this.name.compareTo(another.name);
+    }
+
+    @Override
     public boolean equals(Object another) {
-        return another instanceof Role && this.name.equals(((Role) another).name);
+        return another instanceof Role && this.compareTo((Role) another) == 0;
     }
 }
