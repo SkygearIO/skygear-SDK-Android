@@ -66,7 +66,7 @@ public class PersistentStoreUnitTest {
         editor.putString(
                 PersistentStore.CURRENT_USER_KEY,
                 "{" +
-                        "\"user_id\": \"123\"," +
+                        "\"_id\": \"123\"," +
                         "\"access_token\": \"token_123\"," +
                         "\"username\": \"user_123\"," +
                         "\"email\": \"user123@skygear.dev\"" +
@@ -78,7 +78,7 @@ public class PersistentStoreUnitTest {
         PersistentStore persistentStore = new PersistentStore(instrumentationContext);
         User currentUser = persistentStore.currentUser;
 
-        assertEquals("123", currentUser.userId);
+        assertEquals("123", currentUser.id);
         assertEquals("token_123", currentUser.accessToken);
         assertEquals("user_123", currentUser.username);
         assertEquals("user123@skygear.dev", currentUser.email);
@@ -109,7 +109,7 @@ public class PersistentStoreUnitTest {
         String currentUserString = pref.getString(PersistentStore.CURRENT_USER_KEY, "{}");
         JSONObject currentUserJson = new JSONObject(currentUserString);
 
-        assertEquals("12345", currentUserJson.getString("user_id"));
+        assertEquals("12345", currentUserJson.getString("_id"));
         assertEquals("token_12345", currentUserJson.getString("access_token"));
         assertEquals("user_12345", currentUserJson.getString("username"));
         assertEquals("user12345@skygear.dev", currentUserJson.getString("email"));

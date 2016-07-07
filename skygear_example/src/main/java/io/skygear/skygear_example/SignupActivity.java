@@ -64,10 +64,10 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onAuthSuccess(User user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + user.accessToken);
+                successDialog.setMessage("Success with token:\n" + user.getAccessToken());
                 successDialog.show();
 
-                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.accessToken);
+                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.getAccessToken());
             }
 
             @Override

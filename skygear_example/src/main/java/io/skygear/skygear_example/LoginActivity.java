@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAuthSuccess(User user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + user.accessToken);
+                successDialog.setMessage("Success with token:\n" + user.getAccessToken());
                 successDialog.show();
             }
 

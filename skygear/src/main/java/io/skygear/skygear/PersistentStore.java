@@ -6,6 +6,7 @@ import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * The Skygear persistent store.
@@ -61,7 +62,9 @@ class PersistentStore {
         String currentUserString = pref.getString(CURRENT_USER_KEY, "{}");
 
         try {
-            this.currentUser = User.fromJsonString(currentUserString);
+            this.currentUser = UserSerializer.deserialize(
+                    new JSONObject(currentUserString)
+            );
         } catch (JSONException e) {
             Log.w("Skygear SDK", "Fail to decode saved current user object");
             this.currentUser = null;
@@ -73,7 +76,9 @@ class PersistentStore {
         SharedPreferences.Editor authUserEditor = pref.edit();
 
         if (this.currentUser != null) {
-            authUserEditor.putString(CURRENT_USER_KEY, this.currentUser.toJsonString());
+            authUserEditor.putString(CURRENT_USER_KEY,
+                    UserSerializer.serialize(this.currentUser).toString()
+            );
         } else {
             authUserEditor.remove(CURRENT_USER_KEY);
         }

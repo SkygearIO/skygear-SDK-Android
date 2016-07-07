@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private void updateUserInfoDisplay() {
         User currentUser = this.skygear.getCurrentUser();
         if (currentUser != null) {
-            this.accessTokenDisplay.setText(currentUser.accessToken);
-            this.userIdDisplay.setText(currentUser.userId);
-            this.usernameDisplay.setText(currentUser.username);
+            this.accessTokenDisplay.setText(currentUser.getAccessToken());
+            this.userIdDisplay.setText(currentUser.getId());
+            this.usernameDisplay.setText(currentUser.getUsername());
         } else {
             this.accessTokenDisplay.setText(R.string.undefined);
             this.userIdDisplay.setText(R.string.undefined);

@@ -20,7 +20,7 @@ public class AuthResponseHandlerUnitTest {
             @Override
             public void onAuthSuccess(User user) {
                 checkpoints[0] = true;
-                assertEquals("user_001", user.userId);
+                assertEquals("user_001", user.id);
                 assertEquals("my-token", user.accessToken);
             }
 
