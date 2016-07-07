@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView apiKeyDisplay;
     private TextView accessTokenDisplay;
     private TextView userIdDisplay;
-    private TextView usernameDisplay;
+    private TextView emailDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         this.apiKeyDisplay = (TextView) findViewById(R.id.api_key_display);
         this.accessTokenDisplay = (TextView) findViewById(R.id.access_token_display);
         this.userIdDisplay = (TextView) findViewById(R.id.user_id_display);
-        this.usernameDisplay = (TextView) findViewById(R.id.username_display);
+        this.emailDisplay = (TextView) findViewById(R.id.email_display);
 
         this.skygear = Container.defaultContainer(this);
     }
@@ -53,11 +53,11 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             this.accessTokenDisplay.setText(currentUser.getAccessToken());
             this.userIdDisplay.setText(currentUser.getId());
-            this.usernameDisplay.setText(currentUser.getUsername());
+            this.emailDisplay.setText(currentUser.getEmail());
         } else {
             this.accessTokenDisplay.setText(R.string.undefined);
             this.userIdDisplay.setText(R.string.undefined);
-            this.usernameDisplay.setText(R.string.undefined);
+            this.emailDisplay.setText(R.string.undefined);
         }
     }
 
@@ -128,5 +128,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void goPubsub(View view) {
         startActivity(new Intent(this, PubsubActivity.class));
+    }
+
+    public void goUserQuery(View view) {
+        startActivity(new Intent(this, UserQueryActivity.class));
     }
 }

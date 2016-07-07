@@ -20,17 +20,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/user_name" />
+            android:text="@string/email" />
 
         <EditText
-            android:id="@+id/username_input"
+            android:id="@+id/email_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:lines="1"
             android:maxLines="1"
-            android:inputType="text" />
+            android:inputType="textEmailAddress" />
 
     </LinearLayout>
 
