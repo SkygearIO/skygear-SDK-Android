@@ -1,7 +1,6 @@
 package io.skygear.skygear;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -12,7 +11,6 @@ import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
@@ -98,6 +96,9 @@ public class RecordSerializerUnitTest {
         data.put("publish_date", new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate());
 
         Record aNote = new Record("Note", data);
+        aNote.access = new AccessControl()
+                .addEntry(new AccessControl.Entry(AccessControl.Level.READ_WRITE));
+
         JSONObject jsonObject = RecordSerializer.serialize(aNote);
 
         assertNotNull(jsonObject);
@@ -116,7 +117,7 @@ public class RecordSerializerUnitTest {
 
         JSONObject publicReadable = acl.getJSONObject(0);
         assertTrue(publicReadable.getBoolean("public"));
-        assertEquals("read", publicReadable.getString("level"));
+        assertEquals("write", publicReadable.getString("level"));
     }
 
     @Test
@@ -175,7 +176,7 @@ public class RecordSerializerUnitTest {
         jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
         jsonObject.put("_updated_at", "2016-06-15T07:55:33.342Z");
         jsonObject.put("_updated_by", "5a497b0b-cf93-4720-bea4-14637478cfc2");
-        jsonObject.put("_access", null);
+        jsonObject.put("_access", new JSONArray("[{\"public\":true,\"level\":\"write\"}]"));
         jsonObject.put("hello", "world");
         jsonObject.put("foobar", 3);
         jsonObject.put("abc", 12.345);
@@ -206,6 +207,8 @@ public class RecordSerializerUnitTest {
         assertEquals("world", record.get("hello"));
         assertEquals(3, record.get("foobar"));
         assertEquals(12.345, record.get("abc"));
+
+        assertTrue(record.isPublicWritable());
 
         assertEquals(
                 new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate(),

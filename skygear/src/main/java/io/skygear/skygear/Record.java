@@ -13,11 +13,15 @@ import java.util.UUID;
  * The Skygear Record.
  */
 public class Record {
+    static AccessControl defaultAccessControl = null;
+
     String id;
     String type;
 
     Date createdAt;
     Date updatedAt;
+
+    AccessControl access;
 
     String creatorId;
     String updaterId;
@@ -55,6 +59,8 @@ public class Record {
         this.updaterId = null;
         this.createdAt = null;
         this.updatedAt = null;
+
+        this.access = Record.defaultAccessControl;
 
         this.data = new HashMap<>();
 
@@ -104,8 +110,9 @@ public class Record {
 
     /**
      * Gets the whole set of attributes.
-     *
+     * <p>
      * Please be reminded that the cloned map is returned.
+     * </p>
      *
      * @return the set of attributes
      */
@@ -175,6 +182,57 @@ public class Record {
      */
     public String getOwnerId() {
         return ownerId;
+    }
+
+    /**
+     * Gets access control.
+     *
+     * @return the access control
+     */
+    public AccessControl getAccess() {
+        return access;
+    }
+
+    /**
+     * Sets public read-write access.
+     */
+    public void setPublicReadWrite() {
+        this.access.addEntry(new AccessControl.Entry(AccessControl.Level.READ_WRITE));
+    }
+
+    /**
+     * Sets public read-only access.
+     */
+    public void setPublicReadOnly() {
+        this.access.removeEntry(new AccessControl.Entry(AccessControl.Level.READ_WRITE));
+        this.access.addEntry(new AccessControl.Entry(AccessControl.Level.READ_ONLY));
+    }
+
+    /**
+     * Sets public no access.
+     */
+    public void setPublicNoAccess() {
+        this.access.clearEntries(AccessControl.Entry.Type.PUBLIC);
+    }
+
+    /**
+     * Checks whether it is public writable.
+     *
+     * @return the boolean indicating whether it is public writable
+     */
+    public boolean isPublicWritable() {
+        return this.getAccess().getPublicAccess().getLevel() == AccessControl.Level.READ_WRITE;
+    }
+
+    /**
+     * Checks whether it is public readable
+     *
+     * @return the boolean indicating whether it is public readable
+     */
+    public boolean isPublicReadable() {
+        AccessControl.Level level = this.getAccess().getPublicAccess().getLevel();
+
+        return level == AccessControl.Level.READ_WRITE || level == AccessControl.Level.READ_ONLY;
     }
 
     /**

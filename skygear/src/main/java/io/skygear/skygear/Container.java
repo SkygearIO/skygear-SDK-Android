@@ -36,6 +36,10 @@ public final class Container implements AuthResolver {
         if (this.persistentStore.currentUser != null) {
             this.requestManager.accessToken = this.persistentStore.currentUser.accessToken;
         }
+
+        if (this.persistentStore.defaultAccessControl != null) {
+            Record.defaultAccessControl = this.persistentStore.defaultAccessControl;
+        }
     }
 
     /**
@@ -174,6 +178,27 @@ public final class Container implements AuthResolver {
         }
 
         return privateDatabase;
+    }
+
+    /**
+     * Gets default access control.
+     *
+     * @return the access control
+     */
+    public AccessControl getDefaultAccessControl() {
+        return this.persistentStore.defaultAccessControl;
+    }
+
+    /**
+     * Sets default access control.
+     *
+     * @param accessControl the access control
+     */
+    public void setDefaultAccessControl(AccessControl accessControl) {
+        this.persistentStore.defaultAccessControl = accessControl;
+        this.persistentStore.save();
+
+        Record.defaultAccessControl = accessControl;
     }
 
     /**

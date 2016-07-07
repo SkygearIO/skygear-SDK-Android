@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class RecordUnitTest {
@@ -74,5 +76,22 @@ public class RecordUnitTest {
     public void testRecordNotAllowSettingIncompatibleValue() throws Exception {
         Record aNote = new Record("Note");
         aNote.set("foo", new Object());
+    }
+
+    @Test
+    public void testRecordPublicAccessManagement() throws Exception {
+        Record aNote = new Record("Note");
+        aNote.access = new AccessControl()
+                .addEntry(new AccessControl.Entry(AccessControl.Level.READ_WRITE));
+        assertTrue(aNote.isPublicReadable());
+        assertTrue(aNote.isPublicWritable());
+
+        aNote.setPublicReadOnly();
+        assertTrue(aNote.isPublicReadable());
+        assertFalse(aNote.isPublicWritable());
+
+        aNote.setPublicNoAccess();
+        assertFalse(aNote.isPublicReadable());
+        assertFalse(aNote.isPublicWritable());
     }
 }
