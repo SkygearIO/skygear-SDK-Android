@@ -225,6 +225,19 @@ public final class Container implements AuthResolver {
     }
 
     /**
+     * Save user.
+     *
+     * @param user    the user
+     * @param handler the response handler
+     */
+    public void saveUser(User user, UserSaveResponseHandler handler) {
+        UserSaveRequest request = new UserSaveRequest(user);
+        request.responseHandler = handler;
+
+        this.requestManager.sendRequest(request);
+    }
+
+    /**
      * Send a request.
      *
      * @param request the request
