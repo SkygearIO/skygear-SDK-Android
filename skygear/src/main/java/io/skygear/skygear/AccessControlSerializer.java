@@ -47,7 +47,17 @@ public class AccessControlSerializer {
             }
         }
 
-        // TODO: serialize role-based ACEs
+        for (String perRoleName : access.roleEntryMap.keySet()) {
+            Queue<Entry> perRoleEntryQueue = access.roleEntryMap.get(perRoleName);
+            if (perRoleEntryQueue.size() > 0) {
+                Entry perRoleHighestAccess = perRoleEntryQueue.peek();
+                JSONObject perRoleHighestAccessObject
+                        = EntrySerializer.serialize(perRoleHighestAccess);
+                if (perRoleHighestAccessObject != null) {
+                    jsonArray.put(perRoleHighestAccessObject);
+                }
+            }
+        }
 
         return jsonArray;
     }
@@ -103,9 +113,11 @@ public class AccessControlSerializer {
                         jsonObject.put("user_id", entry.getUserId());
 
                         return jsonObject;
-                    }
+                    } else if (entryType == Entry.Type.ROLE_BASED) {
+                        jsonObject.put("role", entry.getRole().getName());
 
-                    // TODO: serialize role-based ACE
+                        return jsonObject;
+                    }
                 } catch (JSONException e) {
                     Log.w("Skygear SDK", "Fail to serialize AccessControl Entry", e);
                 }
@@ -143,9 +155,10 @@ public class AccessControlSerializer {
             } else if (jsonObject.has("user_id")) {
                 String userId = jsonObject.getString("user_id");
                 entry = new Entry(userId, level);
+            } else if (jsonObject.has("role")) {
+                String roleName = jsonObject.getString("role");
+                entry = new Entry(new Role(roleName), level);
             }
-
-            // TODO: deserialize role-based ACE
 
             return entry;
         }

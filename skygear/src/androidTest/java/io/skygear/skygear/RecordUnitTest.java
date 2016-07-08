@@ -126,5 +126,37 @@ public class RecordUnitTest {
         assertTrue(aNote.isWritable("user456"));
     }
 
-    // TODO: Test Record Role-based Access Management
+    @Test
+    public void testRecordRoleAccessManagement() throws Exception {
+        Role godRole = new Role("God");
+        Role humanRole = new Role("Human");
+
+        Record aNote = new Record("Note");
+        aNote.access = new AccessControl()
+                .addEntry(new AccessControl.Entry(godRole, AccessControl.Level.READ_WRITE))
+                .addEntry(new AccessControl.Entry(humanRole, AccessControl.Level.READ_ONLY));
+
+        assertTrue(aNote.isReadable(godRole));
+        assertTrue(aNote.isWritable(godRole));
+        assertTrue(aNote.isReadable(humanRole));
+        assertFalse(aNote.isWritable(humanRole));
+
+        aNote.setReadOnly(godRole);
+        assertTrue(aNote.isReadable(godRole));
+        assertFalse(aNote.isWritable(godRole));
+        assertTrue(aNote.isReadable(humanRole));
+        assertFalse(aNote.isWritable(humanRole));
+
+        aNote.setNoAccess(godRole);
+        assertFalse(aNote.isReadable(godRole));
+        assertFalse(aNote.isWritable(godRole));
+        assertTrue(aNote.isReadable(humanRole));
+        assertFalse(aNote.isWritable(humanRole));
+
+        aNote.setReadWriteAccess(humanRole);
+        assertFalse(aNote.isReadable(godRole));
+        assertFalse(aNote.isWritable(godRole));
+        assertTrue(aNote.isReadable(humanRole));
+        assertTrue(aNote.isWritable(humanRole));
+    }
 }

@@ -24,6 +24,11 @@ public class AccessControl {
     final Map<String, Queue<Entry>> userEntryMap;
 
     /**
+     * The Role-based Access Entry Map.
+     */
+    final Map<String, Queue<Entry>> roleEntryMap;
+
+    /**
      * Gets the default access control access control.
      *
      * @return the access control
@@ -47,8 +52,7 @@ public class AccessControl {
 
         this.publicEntryQueue = new EntryQueue(Entry.Type.PUBLIC);
         this.userEntryMap = new HashMap<>();
-
-        // TODO: add data structure role-based ACEs
+        this.roleEntryMap = new HashMap<>();
     }
 
     /**
@@ -79,6 +83,7 @@ public class AccessControl {
 
         if (type == Entry.Type.PUBLIC) {
             this.publicEntryQueue.add(entry);
+
         } else if (type == Entry.Type.USER_BASED) {
             String userId = entry.getUserId();
             Queue<Entry> entryQueue = this.userEntryMap.get(userId);
@@ -88,9 +93,16 @@ public class AccessControl {
 
             entryQueue.add(entry);
             this.userEntryMap.put(userId, entryQueue);
-        }
 
-        // TODO: support role-based ACEs
+        } else if (type == Entry.Type.ROLE_BASED) {
+            String roleName = entry.getRole().getName();
+            Queue<Entry> entryQueue = this.roleEntryMap.get(roleName);
+            if (entryQueue == null) {
+                entryQueue = new EntryQueue(Entry.Type.ROLE_BASED);
+            }
+            entryQueue.add(entry);
+            this.roleEntryMap.put(roleName, entryQueue);
+        }
 
         return this;
     }
@@ -110,9 +122,9 @@ public class AccessControl {
             this.publicEntryQueue.clear();
         } else if (type == Entry.Type.USER_BASED) {
             this.userEntryMap.clear();
+        } else if (type == Entry.Type.ROLE_BASED) {
+            this.roleEntryMap.clear();
         }
-
-        // TODO: support role-based ACEs
 
         return this;
     }
@@ -133,6 +145,21 @@ public class AccessControl {
     }
 
     /**
+     * Removes all role-based entries for a specific role.
+     *
+     * <p>
+     * This method return the access control itself, in order to chain up different methods
+     * </p>
+     *
+     * @param role the role
+     * @return the access control
+     */
+    public AccessControl clearEntries(Role role) {
+        this.roleEntryMap.remove(role.getName());
+        return this;
+    }
+
+    /**
      * Removes all entries.
      *
      * <p>
@@ -142,10 +169,9 @@ public class AccessControl {
      * @return the access control itself
      */
     public AccessControl clearEntries() {
-        // TODO: support role-based ACEs
-
         return this.clearEntries(Entry.Type.PUBLIC)
-                .clearEntries(Entry.Type.USER_BASED);
+                .clearEntries(Entry.Type.USER_BASED)
+                .clearEntries(Entry.Type.ROLE_BASED);
     }
 
     /**
@@ -170,9 +196,14 @@ public class AccessControl {
                 entryQueue.remove(entry);
                 this.userEntryMap.put(userId, entryQueue);
             }
+        } else if (type == Entry.Type.ROLE_BASED) {
+            String roleName = entry.getRole().getName();
+            Queue<Entry> entryQueue = this.roleEntryMap.get(roleName);
+            if (entryQueue != null) {
+                entryQueue.remove(entry);
+                this.roleEntryMap.put(roleName, entryQueue);
+            }
         }
-
-        // TODO: support role-based ACEs
 
         return this;
     }
@@ -216,6 +247,21 @@ public class AccessControl {
     }
 
     /**
+     * Gets access for a role.
+     *
+     * @param role the role
+     * @return the access
+     */
+    public Entry getAccess(Role role) {
+        Queue<Entry> entryQueue = this.roleEntryMap.get(role.getName());
+        if (entryQueue == null || entryQueue.size() == 0) {
+            return new Entry(role, Level.NO_ACCESS);
+        }
+
+        return entryQueue.peek();
+    }
+
+    /**
      * The Skygear Access Control Entry Queue.
      *
      * <p>
@@ -253,8 +299,7 @@ public class AccessControl {
         private boolean isPublic = false;
         private Level level = null;
         private String userId = null;
-
-        // TODO: support role-based ACEs
+        private Role role = null;
 
         /**
          * Instantiates a new Public Access Control Entry.
@@ -293,6 +338,19 @@ public class AccessControl {
         }
 
         /**
+         * Instantiates a new Role-based Access Control Entry.
+         *
+         * @param role  the role
+         * @param level the level
+         */
+        public Entry(Role role, Level level) {
+            super();
+
+            this.role = role;
+            this.level = level;
+        }
+
+        /**
          * Checks whether it is a public access control entry.
          *
          * @return the boolean indicating whether it is a public access control entry.
@@ -308,6 +366,15 @@ public class AccessControl {
          */
         public String getUserId() {
             return userId;
+        }
+
+        /**
+         * Gets role.
+         *
+         * @return the role
+         */
+        public Role getRole() {
+            return role;
         }
 
         /**
@@ -329,9 +396,9 @@ public class AccessControl {
                 return Type.PUBLIC;
             } else if (this.getUserId() != null) {
                 return Type.USER_BASED;
+            } else if (this.getRole() != null) {
+                return Type.ROLE_BASED;
             }
-
-            // TODO: support role-based ACEs
 
             throw new IllegalStateException("Unknown Access Control Entry Type");
         }
@@ -354,9 +421,13 @@ public class AccessControl {
                 throw new InvalidParameterException(
                         "User-based Access Control Entry with different user IDs cannot be compared"
                 );
+            } else if (entryType == Type.ROLE_BASED &&
+                    !this.getRole().getName().equals(another.getRole().getName()))
+            {
+                throw new InvalidParameterException(
+                        "Role-based Access Control Entry with different roles cannot be compared"
+                );
             }
-
-            // TODO: support role-based ACE
 
             return this.getLevel().compareTo(another.getLevel());
         }
@@ -382,9 +453,8 @@ public class AccessControl {
              * the Public type.
              */
             PUBLIC,
-            USER_BASED
-
-            // TODO: support role-based ACEs
+            USER_BASED,
+            ROLE_BASED
         }
     }
 
