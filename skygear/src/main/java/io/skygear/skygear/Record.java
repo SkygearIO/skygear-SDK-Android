@@ -214,6 +214,89 @@ public class Record {
     }
 
     /**
+     * Sets read write access for a user.
+     *
+     * @param user the user
+     */
+    public void setReadWriteAccess(User user) {
+        this.setReadWriteAccess(user.getId());
+    }
+
+    /**
+     * Sets read only for a user.
+     *
+     * @param user the user
+     */
+    public void setReadOnly(User user) {
+        this.setReadOnly(user.getId());
+    }
+
+    /**
+     * Sets no access for a user.
+     *
+     * @param user the user
+     */
+    public void setNoAccess(User user) {
+        this.setNoAccess(user.getId());
+    }
+
+    /**
+     * Sets read write access for a user id.
+     *
+     * @param userId the user id
+     */
+    public void setReadWriteAccess(String userId) {
+        this.access.addEntry(new AccessControl.Entry(userId, AccessControl.Level.READ_WRITE));
+    }
+
+    /**
+     * Sets read only for a user id.
+     *
+     * @param userId the user id
+     */
+    public void setReadOnly(String userId) {
+        this.access.removeEntry(new AccessControl.Entry(userId, AccessControl.Level.READ_WRITE));
+        this.access.addEntry(new AccessControl.Entry(userId, AccessControl.Level.READ_ONLY));
+    }
+
+    /**
+     * Sets no access for a user id.
+     *
+     * @param userId the user id
+     */
+    public void setNoAccess(String userId) {
+        this.access.clearEntries(userId);
+    }
+
+    /**
+     * Sets read write access for a role.
+     *
+     * @param role the role
+     */
+    public void setReadWriteAccess(Role role) {
+        this.access.addEntry(new AccessControl.Entry(role, AccessControl.Level.READ_WRITE));
+    }
+
+    /**
+     * Sets read only for a role.
+     *
+     * @param role the role
+     */
+    public void setReadOnly(Role role) {
+        this.access.removeEntry(new AccessControl.Entry(role, AccessControl.Level.READ_WRITE));
+        this.access.addEntry(new AccessControl.Entry(role, AccessControl.Level.READ_ONLY));
+    }
+
+    /**
+     * Sets no access for a role.
+     *
+     * @param role the role
+     */
+    public void setNoAccess(Role role) {
+        this.access.clearEntries(role);
+    }
+
+    /**
      * Checks whether it is public writable.
      *
      * @return the boolean indicating whether it is public writable
@@ -229,6 +312,74 @@ public class Record {
      */
     public boolean isPublicReadable() {
         AccessControl.Level level = this.getAccess().getPublicAccess().getLevel();
+
+        return level == AccessControl.Level.READ_WRITE || level == AccessControl.Level.READ_ONLY;
+    }
+
+    /**
+     * Checks whether it is writable for a user.
+     *
+     * @param user the user
+     * @return the boolean indicating whether it is writable for a user.
+     */
+    public boolean isWritable(User user) {
+        return this.isWritable(user.getId());
+    }
+
+    /**
+     * Checks whether it is readable for a user.
+     *
+     * @param user the user
+     * @return the boolean indicating whether it is readable for a user.
+     */
+    public boolean isReadable(User user) {
+        return this.isReadable(user.getId());
+    }
+
+    /**
+     * Checks whether it is writable for a user id.
+     *
+     * @param userId the user id
+     * @return the boolean indicating whether it is writable for a user.
+     */
+    public boolean isWritable(String userId) {
+        AccessControl.Level level = this.getAccess().getAccess(userId).getLevel();
+
+        return level == AccessControl.Level.READ_WRITE;
+    }
+
+    /**
+     * Checks whether it is readable for a user id.
+     *
+     * @param userId the user id
+     * @return the boolean indicating whether it is readable for a user.
+     */
+    public boolean isReadable(String userId) {
+        AccessControl.Level level = this.getAccess().getAccess(userId).getLevel();
+
+        return level == AccessControl.Level.READ_WRITE || level == AccessControl.Level.READ_ONLY;
+    }
+
+    /**
+     * Checks whether it is writable for a role.
+     *
+     * @param role  the role
+     * @return the boolean indicating whether it is writable for a role.
+     */
+    public boolean isWritable(Role role) {
+        AccessControl.Level level = this.getAccess().getAccess(role).getLevel();
+
+        return level == AccessControl.Level.READ_WRITE;
+    }
+
+    /**
+     * Checks whether it is readable for a role.
+     *
+     * @param role the role
+     * @return the boolean indicating whether it is readable for a user.
+     */
+    public boolean isReadable(Role role) {
+        AccessControl.Level level = this.getAccess().getAccess(role).getLevel();
 
         return level == AccessControl.Level.READ_WRITE || level == AccessControl.Level.READ_ONLY;
     }

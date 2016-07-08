@@ -22,6 +22,7 @@ import io.skygear.skygear.Query;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordDeleteResponseHandler;
 import io.skygear.skygear.RecordQueryResponseHandler;
+import io.skygear.skygear.RecordSaveResponseHandler;
 
 public class RecordQueryActivity extends AppCompatActivity {
     private static final String TAG = RecordQueryActivity.class.getSimpleName();
