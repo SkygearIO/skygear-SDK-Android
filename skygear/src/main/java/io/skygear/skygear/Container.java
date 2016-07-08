@@ -38,7 +38,7 @@ public final class Container implements AuthResolver {
         }
 
         if (this.persistentStore.defaultAccessControl != null) {
-            Record.defaultAccessControl = this.persistentStore.defaultAccessControl;
+            AccessControl.defaultAccessControl = this.persistentStore.defaultAccessControl;
         }
     }
 
@@ -186,7 +186,7 @@ public final class Container implements AuthResolver {
      * @return the access control
      */
     public AccessControl getDefaultAccessControl() {
-        return this.persistentStore.defaultAccessControl;
+        return AccessControl.defaultAccessControl();
     }
 
     /**
@@ -198,7 +198,7 @@ public final class Container implements AuthResolver {
         this.persistentStore.defaultAccessControl = accessControl;
         this.persistentStore.save();
 
-        Record.defaultAccessControl = accessControl;
+        AccessControl.defaultAccessControl = accessControl;
     }
 
     /**

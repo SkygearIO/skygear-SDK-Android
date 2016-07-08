@@ -11,6 +11,8 @@ import java.util.Queue;
 public class AccessControl {
     private static final int ENTRY_QUEUE_DEFAULT_SIZE = 5;
 
+    static AccessControl defaultAccessControl = null;
+
     /**
      * The Public Access Entry Queue.
      */
@@ -22,12 +24,14 @@ public class AccessControl {
      * @return the access control
      */
     static AccessControl defaultAccessControl() {
+        AccessControl defaultAccessControl = AccessControl.defaultAccessControl;
+        if (defaultAccessControl == null) {
+            defaultAccessControl = new AccessControl(new Entry[]{
+                    new Entry(Level.READ_ONLY)
+            });
+        }
 
-        // TODO: get default ACL from persistent store
-
-        return new AccessControl(new Entry[]{
-                new Entry(Level.READ_ONLY)
-        });
+        return defaultAccessControl;
     }
 
     /**
