@@ -73,6 +73,24 @@ public final class Container implements AuthResolver {
     }
 
     /**
+     * Sets request timeout (in milliseconds).
+     *
+     * @param timeout the timeout
+     */
+    public void setRequestTimeout(int timeout) {
+        this.requestManager.requestTimeout = timeout;
+    }
+
+    /**
+     * Gets request timeout (in milliseconds).
+     *
+     * @return the request timeout
+     */
+    public int getRequestTimeout() {
+        return this.requestManager.requestTimeout;
+    }
+
+    /**
      * Sign up with username.
      *
      * @param username the username

@@ -3,6 +3,7 @@ package io.skygear.skygear;
 import android.content.Context;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -17,6 +18,9 @@ import java.util.Map;
  * The Skygear request manager.
  */
 public class RequestManager {
+    /** The default request timeout in milliseconds */
+    public static final int DEFAULT_TIMEOUT = DefaultRetryPolicy.DEFAULT_TIMEOUT_MS;
+
     /**
      * The Request Queue.
      */
@@ -36,6 +40,11 @@ public class RequestManager {
     public String accessToken;
 
     /**
+     * The Request Timeout (in milliseconds).
+     */
+    public int requestTimeout;
+
+    /**
      * Instantiates a new Request manager.
      *
      * @param context the context
@@ -43,6 +52,7 @@ public class RequestManager {
      */
     public RequestManager(Context context, Configuration config) {
         this.queue = Volley.newRequestQueue(context);
+        this.requestTimeout = DEFAULT_TIMEOUT;
         this.configure(config);
     }
 
@@ -118,6 +128,12 @@ public class RequestManager {
                 request,
                 request
         );
+
+        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(
+                this.requestTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
 
         this.queue.add(jsonRequest);
     }
