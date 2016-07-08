@@ -96,25 +96,41 @@ public class AccessControlSerializerUnitTest {
         AccessControl accessControl = new AccessControl()
                 .addEntry(new Entry(Level.READ_ONLY))
                 .addEntry(new Entry(Level.READ_WRITE))
-                .addEntry(new Entry(Level.NO_ACCESS));
+                .addEntry(new Entry(Level.NO_ACCESS))
+                .addEntry(new Entry("user123", Level.READ_ONLY))
+                .addEntry(new Entry("user123", Level.READ_WRITE))
+                .addEntry(new Entry("user123", Level.NO_ACCESS));
 
         // TODO: Add role-based entries to test serialization
-        // TODO: Add user-based entries to test serialization
 
         jsonArray = AccessControlSerializer.serialize(accessControl);
-        assertEquals(1, jsonArray.length());
+        assertEquals(2, jsonArray.length());
         assertTrue(jsonArray.getJSONObject(0).getBoolean("public"));
         assertEquals("write", jsonArray.getJSONObject(0).getString("level"));
 
 
         accessControl.removeEntry(new Entry(Level.READ_WRITE));
         jsonArray = AccessControlSerializer.serialize(accessControl);
-        assertEquals(1, jsonArray.length());
+        assertEquals(2, jsonArray.length());
         assertTrue(jsonArray.getJSONObject(0).getBoolean("public"));
         assertEquals("read", jsonArray.getJSONObject(0).getString("level"));
 
 
         accessControl.removeEntry(new Entry(Level.READ_ONLY));
+        jsonArray = AccessControlSerializer.serialize(accessControl);
+        assertEquals(1, jsonArray.length());
+        assertEquals("user123", jsonArray.getJSONObject(0).getString("user_id"));
+        assertEquals("write", jsonArray.getJSONObject(0).getString("level"));
+
+
+        accessControl.removeEntry(new Entry("user123", Level.READ_WRITE));
+        jsonArray = AccessControlSerializer.serialize(accessControl);
+        assertEquals(1, jsonArray.length());
+        assertEquals("user123", jsonArray.getJSONObject(0).getString("user_id"));
+        assertEquals("read", jsonArray.getJSONObject(0).getString("level"));
+
+
+        accessControl.removeEntry(new Entry("user123", Level.READ_ONLY));
         jsonArray = AccessControlSerializer.serialize(accessControl);
         assertEquals(0, jsonArray.length());
     }
@@ -128,7 +144,6 @@ public class AccessControlSerializerUnitTest {
         jsonArray.put(new JSONObject("{\"public\": true, \"level\": \"write\"}"));
 
         // TODO: Add role-based entries to test deserialization
-        // TODO: Add user-based entries to test deserialization
 
         accessControl = AccessControlSerializer.deserialize(jsonArray);
         assertEquals(1, accessControl.publicEntryQueue.size());
@@ -149,5 +164,29 @@ public class AccessControlSerializerUnitTest {
 
         accessControl = AccessControlSerializer.deserialize(jsonArray);
         assertEquals(0, accessControl.publicEntryQueue.size());
+
+
+        jsonArray = new JSONArray();
+        jsonArray.put(new JSONObject("{\"user_id\": \"user123\", \"level\": \"write\"}"));
+
+        accessControl = AccessControlSerializer.deserialize(jsonArray);
+        assertEquals(1, accessControl.userEntryMap.get("user123").size());
+        assertEquals("user123", accessControl.userEntryMap.get("user123").peek().getUserId());
+        assertEquals(Level.READ_WRITE, accessControl.userEntryMap.get("user123").peek().getLevel());
+
+
+        jsonArray = new JSONArray();
+        jsonArray.put(new JSONObject("{\"user_id\": \"user123\", \"level\": \"read\"}"));
+
+        accessControl = AccessControlSerializer.deserialize(jsonArray);
+        assertEquals(1, accessControl.userEntryMap.get("user123").size());
+        assertEquals("user123", accessControl.userEntryMap.get("user123").peek().getUserId());
+        assertEquals(Level.READ_ONLY, accessControl.userEntryMap.get("user123").peek().getLevel());
+
+
+        jsonArray = new JSONArray();
+
+        accessControl = AccessControlSerializer.deserialize(jsonArray);
+        assertEquals(0, accessControl.userEntryMap.size());
     }
 }

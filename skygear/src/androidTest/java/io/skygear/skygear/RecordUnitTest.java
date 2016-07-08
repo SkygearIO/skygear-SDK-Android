@@ -94,4 +94,37 @@ public class RecordUnitTest {
         assertFalse(aNote.isPublicReadable());
         assertFalse(aNote.isPublicWritable());
     }
+
+    @Test
+    public void testRecordUserAccessManagement() throws Exception {
+        Record aNote = new Record("Note");
+        aNote.access = new AccessControl()
+                .addEntry(new AccessControl.Entry("user123", AccessControl.Level.READ_WRITE))
+                .addEntry(new AccessControl.Entry("user456", AccessControl.Level.READ_ONLY));
+
+        assertTrue(aNote.isReadable("user123"));
+        assertTrue(aNote.isWritable("user123"));
+        assertTrue(aNote.isReadable("user456"));
+        assertFalse(aNote.isWritable("user456"));
+
+        aNote.setReadOnly("user123");
+        assertTrue(aNote.isReadable("user123"));
+        assertFalse(aNote.isWritable("user123"));
+        assertTrue(aNote.isReadable("user456"));
+        assertFalse(aNote.isWritable("user456"));
+
+        aNote.setNoAccess("user123");
+        assertFalse(aNote.isReadable("user123"));
+        assertFalse(aNote.isWritable("user123"));
+        assertTrue(aNote.isReadable("user456"));
+        assertFalse(aNote.isWritable("user456"));
+
+        aNote.setReadWriteAccess("user456");
+        assertFalse(aNote.isReadable("user123"));
+        assertFalse(aNote.isWritable("user123"));
+        assertTrue(aNote.isReadable("user456"));
+        assertTrue(aNote.isWritable("user456"));
+    }
+
+    // TODO: Test Record Role-based Access Management
 }

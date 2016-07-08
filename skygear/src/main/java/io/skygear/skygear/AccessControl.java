@@ -2,6 +2,8 @@ package io.skygear.skygear;
 
 import java.security.InvalidParameterException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -9,14 +11,17 @@ import java.util.Queue;
  * The Skygear Access Control.
  */
 public class AccessControl {
-    private static final int ENTRY_QUEUE_DEFAULT_SIZE = 5;
-
     static AccessControl defaultAccessControl = null;
 
     /**
      * The Public Access Entry Queue.
      */
     final Queue<Entry> publicEntryQueue;
+
+    /**
+     * The User-based Access Entry Map.
+     */
+    final Map<String, Queue<Entry>> userEntryMap;
 
     /**
      * Gets the default access control access control.
@@ -40,13 +45,10 @@ public class AccessControl {
     public AccessControl() {
         super();
 
-        this.publicEntryQueue = new PriorityQueue<>(
-                ENTRY_QUEUE_DEFAULT_SIZE,
-                Collections.<Entry>reverseOrder()
-        );
+        this.publicEntryQueue = new EntryQueue(Entry.Type.PUBLIC);
+        this.userEntryMap = new HashMap<>();
 
         // TODO: add data structure role-based ACEs
-        // TODO: add data structure user-based ACEs
     }
 
     /**
@@ -77,10 +79,18 @@ public class AccessControl {
 
         if (type == Entry.Type.PUBLIC) {
             this.publicEntryQueue.add(entry);
+        } else if (type == Entry.Type.USER_BASED) {
+            String userId = entry.getUserId();
+            Queue<Entry> entryQueue = this.userEntryMap.get(userId);
+            if (entryQueue == null) {
+                entryQueue = new EntryQueue(Entry.Type.USER_BASED);
+            }
+
+            entryQueue.add(entry);
+            this.userEntryMap.put(userId, entryQueue);
         }
 
         // TODO: support role-based ACEs
-        // TODO: support user-based ACEs
 
         return this;
     }
@@ -98,11 +108,27 @@ public class AccessControl {
     public AccessControl clearEntries(Entry.Type type) {
         if (type == Entry.Type.PUBLIC) {
             this.publicEntryQueue.clear();
+        } else if (type == Entry.Type.USER_BASED) {
+            this.userEntryMap.clear();
         }
 
         // TODO: support role-based ACEs
-        // TODO: support user-based ACEs
 
+        return this;
+    }
+
+    /**
+     * Removes all user-based entries for a specific user id.
+     *
+     * <p>
+     * This method return the access control itself, in order to chain up different methods
+     * </p>
+     *
+     * @param userId the user id
+     * @return the access control
+     */
+    public AccessControl clearEntries(String userId) {
+        this.userEntryMap.remove(userId);
         return this;
     }
 
@@ -117,9 +143,9 @@ public class AccessControl {
      */
     public AccessControl clearEntries() {
         // TODO: support role-based ACEs
-        // TODO: support user-based ACEs
 
-        return this.clearEntries(Entry.Type.PUBLIC);
+        return this.clearEntries(Entry.Type.PUBLIC)
+                .clearEntries(Entry.Type.USER_BASED);
     }
 
     /**
@@ -137,10 +163,16 @@ public class AccessControl {
 
         if (type == Entry.Type.PUBLIC) {
             this.publicEntryQueue.remove(entry);
+        } else if (type == Entry.Type.USER_BASED) {
+            String userId = entry.getUserId();
+            Queue<Entry> entryQueue = this.userEntryMap.get(userId);
+            if (entryQueue != null) {
+                entryQueue.remove(entry);
+                this.userEntryMap.put(userId, entryQueue);
+            }
         }
 
         // TODO: support role-based ACEs
-        // TODO: support user-based ACEs
 
         return this;
     }
@@ -159,14 +191,70 @@ public class AccessControl {
     }
 
     /**
+     * Gets access for a user.
+     *
+     * @param user the user
+     * @return the access
+     */
+    public Entry getAccess(User user) {
+        return this.getAccess(user.getId());
+    }
+
+    /**
+     * Gets access for a user id.
+     *
+     * @param userId the user id
+     * @return the access
+     */
+    public Entry getAccess(String userId) {
+        Queue<Entry> entryQueue = this.userEntryMap.get(userId);
+        if (entryQueue == null || entryQueue.size() == 0) {
+            return new Entry(userId, Level.NO_ACCESS);
+        }
+
+        return entryQueue.peek();
+    }
+
+    /**
+     * The Skygear Access Control Entry Queue.
+     *
+     * <p>
+     * EntryQueue is a {@link PriorityQueue} for {@link Entry}, which will provide the
+     * highest access level entry at {@link #peek()}.
+     * </p>
+     */
+    static class EntryQueue extends PriorityQueue<Entry> {
+        private static final int ENTRY_QUEUE_DEFAULT_SIZE = 5;
+        private final Entry.Type type;
+
+        public EntryQueue(Entry.Type type) {
+            this(type, ENTRY_QUEUE_DEFAULT_SIZE);
+        }
+
+        public EntryQueue(Entry.Type type, int initialCapacity) {
+            super(initialCapacity, Collections.<Entry>reverseOrder());
+
+            this.type = type;
+        }
+
+        @Override
+        public boolean offer(Entry o) {
+            if (o.getType() != this.type) {
+                throw new InvalidParameterException("Entry type conflict.");
+            }
+            return super.offer(o);
+        }
+    }
+
+    /**
      * The Skygear Access Control Entry.
      */
     static class Entry implements Comparable<Entry> {
         private boolean isPublic = false;
         private Level level = null;
+        private String userId = null;
 
         // TODO: support role-based ACEs
-        // TODO: support user-based ACEs
 
         /**
          * Instantiates a new Public Access Control Entry.
@@ -180,6 +268,30 @@ public class AccessControl {
             this.level = level;
         }
 
+
+        /**
+         * Instantiates a new User-based Access Control Entry.
+         *
+         * @param userId the user id
+         * @param level  the level
+         */
+        public Entry(String userId, Level level) {
+            super();
+
+            this.userId = userId;
+            this.level = level;
+        }
+
+        /**
+         * Instantiates a new User-based Access Control Entry.
+         *
+         * @param user  the user
+         * @param level the level
+         */
+        public Entry(User user, Level level) {
+            this(user.getId(), level);
+        }
+
         /**
          * Checks whether it is a public access control entry.
          *
@@ -187,6 +299,15 @@ public class AccessControl {
          */
         public boolean isPublic() {
             return isPublic;
+        }
+
+        /**
+         * Gets user id.
+         *
+         * @return the user id
+         */
+        public String getUserId() {
+            return userId;
         }
 
         /**
@@ -206,10 +327,11 @@ public class AccessControl {
         Type getType() {
             if (this.isPublic()) {
                 return Type.PUBLIC;
+            } else if (this.getUserId() != null) {
+                return Type.USER_BASED;
             }
 
             // TODO: support role-based ACEs
-            // TODO: support user-based ACEs
 
             throw new IllegalStateException("Unknown Access Control Entry Type");
         }
@@ -220,11 +342,21 @@ public class AccessControl {
                 return 1;
             }
 
-            if (this.getType() != another.getType()) {
+            Type entryType = this.getType();
+
+            if (entryType != another.getType()) {
                 throw new InvalidParameterException(
                         "Access Control Entry with different types cannot be compared"
                 );
             }
+
+            if (entryType == Type.USER_BASED && !this.getUserId().equals(another.getUserId())) {
+                throw new InvalidParameterException(
+                        "User-based Access Control Entry with different user IDs cannot be compared"
+                );
+            }
+
+            // TODO: support role-based ACE
 
             return this.getLevel().compareTo(another.getLevel());
         }
@@ -249,10 +381,10 @@ public class AccessControl {
             /**
              * the Public type.
              */
-            PUBLIC
+            PUBLIC,
+            USER_BASED
 
             // TODO: support role-based ACEs
-            // TODO: support user-based ACEs
         }
     }
 
