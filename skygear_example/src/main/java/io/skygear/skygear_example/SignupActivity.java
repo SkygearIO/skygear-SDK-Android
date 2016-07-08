@@ -17,7 +17,7 @@ public class SignupActivity extends AppCompatActivity {
     private static String LOG_TAG = SignupActivity.class.getSimpleName();
 
     private Container skygear;
-    private EditText usernameInput;
+    private EditText emailInput;
     private EditText passwordInput;
 
     @Override
@@ -25,14 +25,14 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        this.usernameInput = (EditText) findViewById(R.id.username_input);
+        this.emailInput = (EditText) findViewById(R.id.email_input);
         this.passwordInput = (EditText) findViewById(R.id.password_input);
 
         this.skygear = Container.defaultContainer(this);
     }
 
     public void doSignup(View v) {
-        String username = this.usernameInput.getText().toString();
+        String email = this.emailInput.getText().toString();
         String password = this.passwordInput.getText().toString();
 
         final ProgressDialog loading = new ProgressDialog(this);
@@ -57,17 +57,17 @@ public class SignupActivity extends AppCompatActivity {
                 .setNeutralButton("Dismiss", null)
                 .create();
 
-        Log.i(LOG_TAG, "doSignup: Signup with username: " + username);
+        Log.i(LOG_TAG, "doSignup: Signup with email: " + email);
         Log.i(LOG_TAG, "doSignup: Signup with password: " + password);
 
-        this.skygear.signupWithUsername(username, password, new AuthResponseHandler() {
+        this.skygear.signupWithEmail(email, password, new AuthResponseHandler() {
             @Override
             public void onAuthSuccess(User user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + user.accessToken);
+                successDialog.setMessage("Success with token:\n" + user.getAccessToken());
                 successDialog.show();
 
-                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.accessToken);
+                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.getAccessToken());
             }
 
             @Override

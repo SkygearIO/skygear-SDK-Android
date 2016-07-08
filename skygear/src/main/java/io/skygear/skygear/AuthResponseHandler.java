@@ -24,8 +24,7 @@ public abstract class AuthResponseHandler implements Request.ResponseHandler {
     @Override
     public void onSuccess(JSONObject result) {
         try {
-            String resultString = result.toString();
-            this.onAuthSuccess(User.fromJsonString(resultString));
+            this.onAuthSuccess(UserSerializer.deserialize(result));
         } catch (JSONException e) {
             this.onAuthFail("Malformed server response");
         }

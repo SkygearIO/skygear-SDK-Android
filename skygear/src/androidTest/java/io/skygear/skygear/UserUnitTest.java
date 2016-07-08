@@ -2,13 +2,16 @@ package io.skygear.skygear;
 
 import android.support.test.runner.AndroidJUnit4;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class UserUnitTest {
@@ -16,7 +19,7 @@ public class UserUnitTest {
     public void testUserModelNormalFlow() throws Exception {
         User user = new User("user_id_001", "my-token", "user_001", "user001@skygear.dev");
 
-        assertEquals("user_id_001", user.userId);
+        assertEquals("user_id_001", user.id);
         assertEquals("my-token", user.accessToken);
         assertEquals("user_001", user.username);
         assertEquals("user001@skygear.dev", user.email);
@@ -26,63 +29,68 @@ public class UserUnitTest {
     public void testUserModelWithoutUsernameEmail() throws Exception {
         User user = new User("user_id_001", "my-token");
 
-        assertEquals("user_id_001", user.userId);
+        assertEquals("user_id_001", user.id);
         assertEquals("my-token", user.accessToken);
         assertNull(user.username);
         assertNull(user.email);
     }
 
     @Test
-    public void testUserModelFromJsonNormalFlow() throws Exception {
-        String json =
-                "{" +
-                "  \"user_id\": \"456\"," +
-                "  \"access_token\": \"token_456\"," +
-                "  \"username\": \"user_456\"," +
-                "  \"email\": \"user456@skygear.dev\"" +
-                "}";
+    public void testAddRole() throws Exception {
+        User user = new User("user_id_001", "my-token", "user_001", "user001@skygear.dev");
+        Role[] userRoles = user.getRoles();
+        List<Role> roleList;
 
-        User user = User.fromJsonString(json);
+        assertEquals(0, userRoles.length);
 
-        assertEquals("456", user.userId);
-        assertEquals("token_456", user.accessToken);
-        assertEquals("user_456", user.username);
-        assertEquals("user456@skygear.dev", user.email);
-    }
 
-    @Test(expected = JSONException.class)
-    public void testUserModelFromJsonNoUserIdFlow() throws Exception {
-        String json =
-                "{" +
-                "  \"access_token\": \"token_456\"," +
-                "  \"username\": \"user_456\"," +
-                "  \"email\": \"user456@skygear.dev\"" +
-                "}";
+        user.addRole(new Role("Citizen"));
+        user.addRole(new Role("Programmer"));
 
-        User.fromJsonString(json);
-    }
+        userRoles = user.getRoles();
+        roleList = Arrays.asList(userRoles);
 
-    @Test(expected = JSONException.class)
-    public void testUserModelFromJsonNoAccessTokenFlow() throws Exception {
-        String json =
-                "{" +
-                "  \"user_id\": \"456\"," +
-                "  \"username\": \"user_456\"," +
-                "  \"email\": \"user456@skygear.dev\"" +
-                "}";
+        assertEquals(2, userRoles.length);
+        assertTrue(roleList.contains(new Role("Citizen")));
+        assertTrue(roleList.contains(new Role("Programmer")));
 
-        User.fromJsonString(json);
+
+        user.addRole(new Role("Citizen"));
+
+        userRoles = user.getRoles();
+        roleList = Arrays.asList(userRoles);
+
+        assertEquals(2, userRoles.length);
+        assertTrue(roleList.contains(new Role("Citizen")));
+        assertTrue(roleList.contains(new Role("Programmer")));
     }
 
     @Test
-    public void testUserModelToJsonNormalFlow() throws Exception {
+    public void testRemoveRole() throws Exception {
         User user = new User("user_id_001", "my-token", "user_001", "user001@skygear.dev");
-        String jsonString = user.toJsonString();
-        JSONObject json = new JSONObject(jsonString);
+        user.addRole(new Role("Citizen"));
+        user.addRole(new Role("Programmer"));
+        assertEquals(2, user.getRoles().length);
 
-        assertEquals("user_id_001", json.getString("user_id"));
-        assertEquals("my-token", json.getString("access_token"));
-        assertEquals("user_001", json.getString("username"));
-        assertEquals("user001@skygear.dev", json.getString("email"));
+        user.removeRole(new Role("Programmer"));
+        assertEquals(1, user.getRoles().length);
+
+        user.removeRole(new Role("Citizen"));
+        assertEquals(0, user.getRoles().length);
+    }
+
+    @Test
+    public void testHasRole() throws Exception {
+        User user = new User("user_id_001", "my-token", "user_001", "user001@skygear.dev");
+        assertFalse(user.hasRole(new Role("Citizen")));
+        assertFalse(user.hasRole(new Role("Programmer")));
+
+        user.addRole(new Role("Citizen"));
+        assertTrue(user.hasRole(new Role("Citizen")));
+        assertFalse(user.hasRole(new Role("Programmer")));
+
+        user.addRole(new Role("Programmer"));
+        assertTrue(user.hasRole(new Role("Citizen")));
+        assertTrue(user.hasRole(new Role("Programmer")));
     }
 }

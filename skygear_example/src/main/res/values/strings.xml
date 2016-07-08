@@ -29,4 +29,8 @@
     <string name="send">Send</string>
     <string name="channel_name">Channel Name</string>
     <string name="pubsub">Pubsub</string>
+    <string name="user_management">User Management</string>
+    <string name="user_query">Query</string>
+    <string name="email">Email</string>
+    <string name="email_indicator">Email:</string>
 </resources>
