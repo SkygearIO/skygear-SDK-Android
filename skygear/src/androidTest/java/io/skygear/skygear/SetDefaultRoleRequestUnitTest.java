@@ -31,17 +31,4 @@ public class SetDefaultRoleRequestUnitTest {
         assertTrue(roleNameList.contains("God"));
         assertTrue(roleNameList.contains("Boss"));
     }
-
-    @Test
-    public void testSetDefaultRoleRequestCreationWithSingleRole() throws Exception {
-        SetDefaultRoleRequest request = new SetDefaultRoleRequest(new Role("God"));
-
-        assertEquals("role:default", request.action);
-
-        Map<String, Object> data = request.data;
-        String[] roleNames = (String[]) data.get("roles");
-
-        assertEquals(1, roleNames.length);
-        assertEquals("God", roleNames[0]);
-    }
 }

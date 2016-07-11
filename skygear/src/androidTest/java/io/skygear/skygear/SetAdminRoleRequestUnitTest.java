@@ -32,17 +32,4 @@ public class SetAdminRoleRequestUnitTest {
         assertTrue(roleNameList.contains("God"));
         assertTrue(roleNameList.contains("Boss"));
     }
-
-    @Test
-    public void testSetAdminRoleRequestCreationWithSingleRole() throws Exception {
-        SetAdminRoleRequest request = new SetAdminRoleRequest(new Role("God"));
-
-        assertEquals("role:admin", request.action);
-
-        Map<String, Object> data = request.data;
-        String[] roleNames = (String[]) data.get("roles");
-
-        assertEquals(1, roleNames.length);
-        assertEquals("God", roleNames[0]);
-    }
 }

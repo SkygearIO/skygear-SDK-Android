@@ -220,6 +220,52 @@ public final class Container implements AuthResolver {
     }
 
     /**
+     * Sets admin roles.
+     *
+     * @param role    the roles array
+     * @param handler the handler
+     */
+    public void setAdminRole(Role[] role, SetRoleResponseHandler handler) {
+        SetAdminRoleRequest request = new SetAdminRoleRequest(role);
+        request.responseHandler = handler;
+
+        this.requestManager.sendRequest(request);
+    }
+
+    /**
+     * Sets an admin role.
+     *
+     * @param role    the role
+     * @param handler the handler
+     */
+    public void setAdminRole(Role role, SetRoleResponseHandler handler) {
+        this.setAdminRole(new Role[] { role }, handler);
+    }
+
+    /**
+     * Sets default roles.
+     *
+     * @param role    the role array
+     * @param handler the handler
+     */
+    public void setDefaultRole(Role[] role, SetRoleResponseHandler handler) {
+        SetDefaultRoleRequest request = new SetDefaultRoleRequest(role);
+        request.responseHandler = handler;
+
+        this.requestManager.sendRequest(request);
+    }
+
+    /**
+     * Sets a default role.
+     *
+     * @param role    the role
+     * @param handler the handler
+     */
+    public void setDefaultRole(Role role, SetRoleResponseHandler handler) {
+        this.setDefaultRole(new Role[] { role }, handler);
+    }
+
+    /**
      * Gets user by email.
      *
      * @param email   the email

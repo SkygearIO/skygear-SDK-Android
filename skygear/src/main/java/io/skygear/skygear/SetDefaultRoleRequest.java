@@ -23,13 +23,4 @@ public class SetDefaultRoleRequest extends Request {
 
         this.data.put("roles", roleNames);
     }
-
-    /**
-     * Instantiates a new Set Default Role Request with a Role.
-     *
-     * @param role the role
-     */
-    public SetDefaultRoleRequest(Role role) {
-        this(new Role[]{ role });
-    }
 }

@@ -23,13 +23,4 @@ public class SetAdminRoleRequest extends Request {
 
         this.data.put("roles", roleNames);
     }
-
-    /**
-     * Instantiates a new Set Admin Role Request for a Role.
-     *
-     * @param role the role
-     */
-    public SetAdminRoleRequest(Role role) {
-        this(new Role[]{ role });
-    }
 }
