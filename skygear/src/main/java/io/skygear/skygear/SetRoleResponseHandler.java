@@ -5,9 +5,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * The Skygear Admin Role Setup Response Handler.
+ * The Skygear Role Setup Response Handler.
  */
-public abstract class SetAdminRoleResponseHandler implements Request.ResponseHandler {
+public abstract class SetRoleResponseHandler implements Request.ResponseHandler {
     /**
      * Setup success callback.
      *

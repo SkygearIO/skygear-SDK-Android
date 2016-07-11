@@ -14,12 +14,12 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
-public class SetAdminRoleResponseHandlerUnitTest {
+public class SetRoleResponseHandlerUnitTest {
 
     @Test
-    public void testSetAdminRoleResponseHandlerSuccessFlow() throws Exception {
+    public void testSetRoleResponseHandlerSuccessFlow() throws Exception {
         final boolean[] checkpoints = new boolean[] { false };
-        SetAdminRoleResponseHandler handler = new SetAdminRoleResponseHandler() {
+        SetRoleResponseHandler handler = new SetRoleResponseHandler() {
             @Override
             public void onSetSuccess(Role[] roles) {
                 assertEquals(2, roles.length);
@@ -44,9 +44,9 @@ public class SetAdminRoleResponseHandlerUnitTest {
     }
 
     @Test
-    public void testSetAdminRoleResponseHandlerErrorFlow() throws Exception {
+    public void testSetRoleResponseHandlerErrorFlow() throws Exception {
         final boolean[] checkpoints = new boolean[] { false };
-        SetAdminRoleResponseHandler handler = new SetAdminRoleResponseHandler() {
+        SetRoleResponseHandler handler = new SetRoleResponseHandler() {
             @Override
             public void onSetSuccess(Role[] roles) {
                 fail("Should not get success callback");
