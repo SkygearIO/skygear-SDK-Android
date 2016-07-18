@@ -3,6 +3,7 @@ package io.skygear.skygear;
 import android.content.Context;
 
 import java.security.InvalidParameterException;
+import java.util.Objects;
 
 /**
  * Container for Skygear.
@@ -307,6 +308,30 @@ public final class Container implements AuthResolver {
      * @param request the request
      */
     public void sendRequest(Request request) {
+        this.requestManager.sendRequest(request);
+    }
+
+    /**
+     * Call lambda function.
+     *
+     * @param name    the function name
+     * @param handler the response handler
+     */
+    public void callLambdaFunction(String name, LambdaResponseHandler handler) {
+        this.callLambdaFunction(name, null, handler);
+    }
+
+    /**
+     * Call lambda function.
+     *
+     * @param name    the function name
+     * @param args    the arguments
+     * @param handler the response handler
+     */
+    public void callLambdaFunction(String name, Object[] args, LambdaResponseHandler handler) {
+        LambdaRequest request = new LambdaRequest(name, args);
+        request.responseHandler = handler;
+
         this.requestManager.sendRequest(request);
     }
 

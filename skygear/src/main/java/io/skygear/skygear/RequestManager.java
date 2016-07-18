@@ -118,7 +118,7 @@ public class RequestManager {
         String action = request.action;
         String url = this.endpoint + action.replace(":", "/");
 
-        Map<String, Object> data = request.data;
+        Map<String, Object> data = new HashMap<>(request.data);
         data.putAll(this.getExtraData(action));
 
         JsonObjectRequest jsonRequest = new JsonRequest(
