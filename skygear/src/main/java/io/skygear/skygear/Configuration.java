@@ -12,15 +12,49 @@ public final class Configuration {
     /**
      * Skygear Endpoint.
      */
-    public final String endpoint;
+    final String endpoint;
+
     /**
      * Skygear Api key.
      */
-    public final String apiKey;
+    final String apiKey;
 
-    private Configuration(String endpoint, String apiKey) {
+    /**
+     * Boolean indicating whether Pubsub Handler Execution is in Background.
+     */
+    final boolean pubsubHandlerExecutionInBackground;
+
+    private Configuration(String endpoint, String apiKey, boolean pubsubHandlerExecutionInBackground) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
+        this.pubsubHandlerExecutionInBackground = pubsubHandlerExecutionInBackground;
+    }
+
+    /**
+     * Gets Skygear Endpoint.
+     *
+     * @return the endpoint
+     */
+    public String getEndpoint() {
+        return new String(endpoint);
+    }
+
+    /**
+     * Gets Skygear Api key.
+     *
+     * @return the api key
+     */
+    public String getApiKey() {
+        return new String(apiKey);
+    }
+
+    /**
+     * Is pubsub handler execution in background boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isPubsubHandlerExecutionInBackground() {
+        return pubsubHandlerExecutionInBackground;
     }
 
     /**
@@ -31,7 +65,8 @@ public final class Configuration {
     static Configuration defaultConfiguration() {
         return new Configuration(
                 DEFAULT_BASE_URL,
-                DEFAULT_API_KEY
+                DEFAULT_API_KEY,
+                false
         );
     }
 
@@ -41,6 +76,7 @@ public final class Configuration {
     public static final class Builder {
         private String endpoint;
         private String apiKey;
+        private boolean pubsubHandlerExecutionInBackground;
 
         /**
          * Sets the Skygear endpoint.
@@ -64,6 +100,11 @@ public final class Configuration {
             return this;
         }
 
+        public Builder pubsubHandlerExecutionInBackground(boolean isInBackground) {
+            this.pubsubHandlerExecutionInBackground = isInBackground;
+            return this;
+        }
+
         /**
          * Build a configuration.
          *
@@ -78,7 +119,11 @@ public final class Configuration {
                 throw new InvalidParameterException("Missing API Key");
             }
 
-            return new Configuration(this.endpoint, this.apiKey);
+            return new Configuration(
+                    this.endpoint,
+                    this.apiKey,
+                    this.pubsubHandlerExecutionInBackground
+            );
         }
     }
 }

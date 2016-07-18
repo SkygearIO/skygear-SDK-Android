@@ -35,14 +35,14 @@ public class RequestManager {
     String apiKey;
 
     /**
+     * The Request Timeout (in milliseconds).
+     */
+    int requestTimeout;
+
+    /**
      * The Access token.
      */
     public String accessToken;
-
-    /**
-     * The Request Timeout (in milliseconds).
-     */
-    public int requestTimeout;
 
     /**
      * Instantiates a new Request manager.
