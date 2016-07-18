@@ -1,6 +1,7 @@
 package io.skygear.skygear;
 
 import android.content.Context;
+import android.os.HandlerThread;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -46,6 +47,8 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     private String apiKey;
     private long retryCount;
     private WeakReference<Container> containerRef;
+    private boolean handlerExecutionInBackground;
+    private HandlerThread backgroundThread;
 
     /**
      * The WebSocket Client.
@@ -66,10 +69,13 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
      * @param container the skygear container
      */
     public Pubsub(Container container) {
+        super();
+
         this.containerRef = new WeakReference<>(container);
         this.handlers = new HashMap<>();
         this.pendingMessages = new LinkedList<>();
         this.retryCount = 0;
+        this.handlerExecutionInBackground = false;
 
         this.configure(container.getConfig());
     }
@@ -114,6 +120,8 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
                 host,
                 this.apiKey
         ));
+
+        this.handlerExecutionInBackground = config.isPubsubHandlerExecutionInBackground();
 
         this.connect();
     }
@@ -281,6 +289,14 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     }
 
     /**
+     * Check whether Handler Execution is in Background Thread. (Default: false)
+     *
+     * @return the boolean
+     */
+    public boolean isHandlerExecutionInBackground() {
+        return handlerExecutionInBackground;
+    }
+    /**
      * Subscribes to a channel.
      *
      * @param channel the channel name
@@ -445,7 +461,17 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
         }
 
         Context context = this.getContainer().getContext();
-        android.os.Handler handler = new android.os.Handler(context.getMainLooper());
+        android.os.Handler handler;
+
+        if (!this.handlerExecutionInBackground) {
+            handler = new android.os.Handler(context.getMainLooper());
+        } else {
+            if (this.backgroundThread == null || this.backgroundThread.getLooper() == null) {
+                throw new IllegalStateException("Background thread is not yet created");
+            }
+
+            handler = new android.os.Handler(this.backgroundThread.getLooper());
+        }
 
         Set<Handler> channelHandlers = this.handlers.get(channel);
         if (channelHandlers != null) {
