@@ -38,6 +38,9 @@
         <activity
             android:name=".UserQueryActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".LambdaActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

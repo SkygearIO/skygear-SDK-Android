@@ -30,7 +30,11 @@
     <string name="channel_name">Channel Name</string>
     <string name="pubsub">Pubsub</string>
     <string name="user_management">User Management</string>
-    <string name="user_query">Query</string>
+    <string name="user_query">User Query</string>
     <string name="email">Email</string>
     <string name="email_indicator">Email:</string>
+    <string name="lambda_functions">Lambda Functions</string>
+    <string name="others">Others</string>
+    <string name="lambda_function_name">Name</string>
+    <string name="function_arguments">Arguments</string>
 </resources>

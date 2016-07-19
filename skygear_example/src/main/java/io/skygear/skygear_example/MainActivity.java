@@ -133,4 +133,8 @@ public class MainActivity extends AppCompatActivity {
     public void goUserQuery(View view) {
         startActivity(new Intent(this, UserQueryActivity.class));
     }
+
+    public void goLambda(View view) {
+        startActivity(new Intent(this, LambdaActivity.class));
+    }
 }
