@@ -1,3 +1,15 @@
+## 0.14.0 (2016-07-26)
+
+### Features
+
+- Allow to set pubsub handler to run in background (#20)
+- Support for Skygear Lambda Function (#27)
+- Enable to set admin / default roles (#14)
+
+### Bug fixes
+
+- Add exception for invalid pubsub data (SkygearIO/skygear-SDK-JS#27)
+
 ## 0.13.0 (2016-07-08)
 
 ### Features
