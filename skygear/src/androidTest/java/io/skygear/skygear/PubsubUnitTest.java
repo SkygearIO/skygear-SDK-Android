@@ -462,6 +462,21 @@ public class PubsubUnitTest {
         assertTrue(checkpoints[0]);
     }
 
+    @Test(expected = InvalidParameterException.class)
+    public void testPublishNullData() throws Exception {
+        final boolean[] checkpoints = new boolean[]{ false, false };
+        WebSocketClient webSocketClient = new WebSocketClientEmptyImpl(){
+            @Override
+            public boolean isOpen() {
+                return true;
+            }
+        };
+
+        Pubsub pubsub = new Pubsub(instrumentationContainer);
+        pubsub.webSocket = webSocketClient;
+        pubsub.publish("test_channel_1", null);
+    }
+
     @Test
     public void testHandledSubscribeWhenNotConnected() throws Exception {
         WebSocketClient webSocketClient = new WebSocketClientEmptyImpl() {
