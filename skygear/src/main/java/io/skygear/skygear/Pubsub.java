@@ -404,6 +404,10 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
             throw new InvalidParameterException("Cannot publish event to channel with empty name");
         }
 
+        if (data == null) {
+            throw new InvalidParameterException("Missing data to publish");
+        }
+
         try {
             if (!this.isConnected()) {
                 throw new WebSocketClient.NotYetConnectedException("WebSocket not yet connected");
@@ -412,9 +416,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
             JSONObject request = new JSONObject();
             request.put("action", "pub");
             request.put("channel", channel);
-            if (data != null) {
-                request.put("data", data);
-            }
+            request.put("data", data);
 
             this.webSocket.sendMessage(request.toString());
         } catch (JSONException e) {
