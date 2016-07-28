@@ -37,4 +37,10 @@
     <string name="others">Others</string>
     <string name="lambda_function_name">Name</string>
     <string name="function_arguments">Arguments</string>
+    <string name="server_config">Server Configuration</string>
+    <string name="configure">Configure</string>
+    <string name="endpoint">Endpoint</string>
+    <string name="endpoint_hint">http://your-end-point.skygeario.com/</string>
+    <string name="api_key">API Key</string>
+    <string name="api_key_hint">your_api_key</string>
 </resources>

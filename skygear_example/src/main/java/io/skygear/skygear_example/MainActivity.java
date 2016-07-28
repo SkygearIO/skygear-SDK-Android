@@ -137,4 +137,8 @@ public class MainActivity extends AppCompatActivity {
     public void goLambda(View view) {
         startActivity(new Intent(this, LambdaActivity.class));
     }
+
+    public void goServerConfiguration(View view) {
+        startActivity(new Intent(this, ServerConfigurationActivity.class));
+    }
 }
