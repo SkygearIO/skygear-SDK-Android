@@ -1,3 +1,6 @@
+### Other Notes 
+
+- Make Endpoint / API Key configurable for Sample App (#35)
 ## 0.14.0 (2016-07-26)
 
 ### Features
