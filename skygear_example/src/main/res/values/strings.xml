@@ -43,4 +43,5 @@
     <string name="endpoint_hint">http://your-end-point.skygeario.com/</string>
     <string name="api_key">API Key</string>
     <string name="api_key_hint">your_api_key</string>
+    <string name="who_am_i">Who Am I</string>
 </resources>
