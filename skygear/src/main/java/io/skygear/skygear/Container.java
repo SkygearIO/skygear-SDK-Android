@@ -159,6 +159,20 @@ public final class Container implements AuthResolver {
         this.requestManager.sendRequest(req);
     }
 
+    /**
+     * Asks "Who Am I?"
+     *
+     * This API gets current user from server using current access token.
+     *
+     * @param handler the handler
+     */
+    public void whoami(GetCurrentUserResponseHandler handler) {
+        Request req = new GetCurrentUserRequest();
+        req.responseHandler = handler;
+
+        this.requestManager.sendRequest(req);
+    }
+
     @Override
     public void resolveAuthUser(User user) {
         this.persistentStore.currentUser = user;
