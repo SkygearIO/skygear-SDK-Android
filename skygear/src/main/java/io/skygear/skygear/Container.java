@@ -166,9 +166,9 @@ public final class Container implements AuthResolver {
      *
      * @param handler the handler
      */
-    public void whoami(GetCurrentUserResponseHandler handler) {
+    public void whoami(AuthResponseHandler handler) {
         Request req = new GetCurrentUserRequest();
-        req.responseHandler = handler;
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
         this.requestManager.sendRequest(req);
     }

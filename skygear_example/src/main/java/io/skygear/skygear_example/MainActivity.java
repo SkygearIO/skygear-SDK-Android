@@ -9,13 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Configuration;
 import io.skygear.skygear.Container;
-import io.skygear.skygear.GetCurrentUserResponseHandler;
 import io.skygear.skygear.LogoutResponseHandler;
 import io.skygear.skygear.Role;
 import io.skygear.skygear.User;
-import io.skygear.skygear.UserSerializer;
 
 public class MainActivity extends AppCompatActivity {
     private Container skygear;
@@ -131,9 +130,9 @@ public class MainActivity extends AppCompatActivity {
                 .setNeutralButton("Dismiss", null)
                 .create();
 
-        this.skygear.whoami(new GetCurrentUserResponseHandler() {
+        this.skygear.whoami(new AuthResponseHandler() {
             @Override
-            public void onGetCurrentUserSuccess(User user) {
+            public void onAuthSuccess(User user) {
                 loading.dismiss();
 
                 StringBuffer buffer = new StringBuffer();
@@ -154,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onGetCurrentUserFail(String reason) {
+            public void onAuthFail(String reason) {
                 loading.dismiss();
 
                 failDialog.setMessage("Fail with reason:\n" + reason);
