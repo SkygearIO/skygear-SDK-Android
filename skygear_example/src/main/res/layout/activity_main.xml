@@ -184,6 +184,15 @@
                         android:text="@string/logout" />
                 </LinearLayout>
 
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="doGetCurrentUser"
+                    android:text="@string/who_am_i"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp"
+                    />
+
             </LinearLayout>
 
             <LinearLayout

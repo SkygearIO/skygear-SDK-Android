@@ -9,9 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Configuration;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.LogoutResponseHandler;
+import io.skygear.skygear.Role;
 import io.skygear.skygear.User;
 
 public class MainActivity extends AppCompatActivity {
@@ -105,6 +107,56 @@ public class MainActivity extends AppCompatActivity {
                 loading.dismiss();
 
                 failDialog.setMessage("Fail with reason: \n" + reason);
+                failDialog.show();
+            }
+        });
+    }
+
+    public void doGetCurrentUser(View view) {
+        final ProgressDialog loading = new ProgressDialog(this);
+        loading.setTitle("Loading");
+        loading.setMessage("Finding \"Who am I\"...");
+        loading.show();
+
+        final AlertDialog successDialog = new AlertDialog.Builder(this)
+                .setTitle("Success")
+                .setMessage("")
+                .setNeutralButton("Dismiss", null)
+                .create();
+
+        final AlertDialog failDialog = new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage("")
+                .setNeutralButton("Dismiss", null)
+                .create();
+
+        this.skygear.whoami(new AuthResponseHandler() {
+            @Override
+            public void onAuthSuccess(User user) {
+                loading.dismiss();
+
+                StringBuffer buffer = new StringBuffer();
+                buffer.append("Current user:\n");
+                buffer.append(String.format("\tUser ID: %s\n", user.getId()));
+                buffer.append(String.format("\tUsername: %s\n", user.getUsername()));
+                buffer.append(String.format("\tEmail: %s\n", user.getEmail()));
+
+                if (user.getRoles().length > 0) {
+                    buffer.append("\tRoles:\n");
+                    for (Role perRole : user.getRoles()) {
+                        buffer.append("\t\t").append(perRole.getName()).append("\n");
+                    }
+                }
+
+                successDialog.setMessage(buffer.toString());
+                successDialog.show();
+            }
+
+            @Override
+            public void onAuthFail(String reason) {
+                loading.dismiss();
+
+                failDialog.setMessage("Fail with reason:\n" + reason);
                 failDialog.show();
             }
         });
