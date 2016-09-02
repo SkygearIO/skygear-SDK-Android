@@ -1,6 +1,19 @@
+## 0.16.0 (2016-09-02)
+
+### Features
+
+- Add `whoami` API for querying and update currnetUser from server (SkygearIO/skygear-server#111)
+
+### Other Notes
+
+- Update gradle
+
+## 0.15.0 (2016-08-17)
+
 ### Other Notes 
 
 - Make Endpoint / API Key configurable for Sample App (#35)
+
 ## 0.14.0 (2016-07-26)
 
 ### Features
