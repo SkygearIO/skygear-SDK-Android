@@ -145,19 +145,23 @@ public class RecordSerializer {
         record.id = split[1];
 
         // handle _create_at
-        String createdAtString = jsonObject.getString("_created_at");
-        DateTime createdAtDatetime = ISODateTimeFormat.dateTime().parseDateTime(createdAtString);
-        record.createdAt = createdAtDatetime.toDate();
+        if (jsonObject.has("_created_at")) {
+            String createdAtString = jsonObject.getString("_created_at");
+            DateTime createdAtDatetime = ISODateTimeFormat.dateTime().parseDateTime(createdAtString);
+            record.createdAt = createdAtDatetime.toDate();
+        }
 
         // handle _updated_at
-        String updatedAtString = jsonObject.getString("_updated_at");
-        DateTime updatedAtDatetime = ISODateTimeFormat.dateTime().parseDateTime(updatedAtString);
-        record.updatedAt = updatedAtDatetime.toDate();
+        if (jsonObject.has("_created_at")) {
+            String updatedAtString = jsonObject.getString("_updated_at");
+            DateTime updatedAtDatetime = ISODateTimeFormat.dateTime().parseDateTime(updatedAtString);
+            record.updatedAt = updatedAtDatetime.toDate();
+        }
 
         // handler _created_by, _updated_by, _ownerID
-        record.creatorId = jsonObject.getString("_created_by");
-        record.updaterId = jsonObject.getString("_updated_by");
-        record.ownerId = jsonObject.getString("_ownerID");
+        record.creatorId = jsonObject.optString("_created_by");
+        record.updaterId = jsonObject.optString("_updated_by");
+        record.ownerId = jsonObject.optString("_ownerID");
 
         JSONArray accessJsonArray = null;
         if (jsonObject.has("_access")) {

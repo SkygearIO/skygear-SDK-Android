@@ -264,4 +264,14 @@ public class RecordSerializerUnitTest {
         assertEquals("hello", arr.get(0));
         assertEquals("world", arr.get(1));
     }
+
+    @Test
+    /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/45 */
+    public void testRecordDeserializeNotRequiredMetaData() throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("foo", "bar");
+
+        RecordSerializer.deserialize(jsonObject);
+    }
 }
