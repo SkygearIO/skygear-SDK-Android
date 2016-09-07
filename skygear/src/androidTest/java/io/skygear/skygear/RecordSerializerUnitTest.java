@@ -16,6 +16,7 @@ import java.util.Map;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -263,6 +264,23 @@ public class RecordSerializerUnitTest {
         assertEquals(2, arr.length());
         assertEquals("hello", arr.get(0));
         assertEquals("world", arr.get(1));
+    }
+
+    @Test
+    /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/44 */
+    public void testRecordDeserializeWithNullAccess() throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
+        jsonObject.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
+        jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
+        jsonObject.put("_updated_at", "2016-06-15T07:55:33.342Z");
+        jsonObject.put("_updated_by", "5a497b0b-cf93-4720-bea4-14637478cfc2");
+        jsonObject.put("_access", JSONObject.NULL);
+        jsonObject.put("foo", "bar");
+
+        Record record = RecordSerializer.deserialize(jsonObject);
+        assertNull(record.access);
     }
 
     @Test

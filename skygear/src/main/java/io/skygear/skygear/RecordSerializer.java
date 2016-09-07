@@ -164,7 +164,7 @@ public class RecordSerializer {
         record.ownerId = jsonObject.optString("_ownerID");
 
         JSONArray accessJsonArray = null;
-        if (jsonObject.has("_access")) {
+        if (!jsonObject.isNull("_access")) {
             accessJsonArray = jsonObject.getJSONArray("_access");
         }
 
