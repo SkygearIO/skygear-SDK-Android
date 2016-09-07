@@ -102,6 +102,8 @@ public class RecordSerializer {
      * @return the JSON object
      */
     static JSONObject serialize(Record record) {
+        DateTimeFormatter formatter = ISODateTimeFormat.dateTime().withZoneUTC();
+
         try {
             HashMap<String, Object> recordData = record.data;
 
@@ -115,6 +117,12 @@ public class RecordSerializer {
 
             JSONObject jsonObject = new JSONObject(recordData);
             jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
+            jsonObject.put("_created_at", formatter.print(new DateTime(record.createdAt)));
+            jsonObject.put("_updated_at", formatter.print(new DateTime(record.updatedAt)));
+            jsonObject.put("_created_by", record.creatorId);
+            jsonObject.put("_updated_by", record.updaterId);
+            jsonObject.put("_ownerID", record.ownerId);
+
             jsonObject.put("_access", AccessControlSerializer.serialize(record.getAccess()));
 
             return jsonObject;
@@ -152,7 +160,7 @@ public class RecordSerializer {
         }
 
         // handle _updated_at
-        if (jsonObject.has("_created_at")) {
+        if (jsonObject.has("_updated_at")) {
             String updatedAtString = jsonObject.getString("_updated_at");
             DateTime updatedAtDatetime = ISODateTimeFormat.dateTime().parseDateTime(updatedAtString);
             record.updatedAt = updatedAtDatetime.toDate();

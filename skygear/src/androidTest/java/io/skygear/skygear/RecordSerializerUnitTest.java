@@ -97,6 +97,11 @@ public class RecordSerializerUnitTest {
         data.put("publish_date", new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate());
 
         Record aNote = new Record("Note", data);
+        aNote.ownerId = "user123";
+        aNote.creatorId = "user123";
+        aNote.updaterId = "user456";
+        aNote.createdAt = new DateTime(2016, 6, 14, 4, 55, 34, 342, DateTimeZone.UTC).toDate();
+        aNote.updatedAt = new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate();
         aNote.access = new AccessControl()
                 .addEntry(new AccessControl.Entry(AccessControl.Level.READ_WRITE));
 
@@ -104,6 +109,11 @@ public class RecordSerializerUnitTest {
 
         assertNotNull(jsonObject);
         assertEquals(0, jsonObject.getString("_id").indexOf("Note/"));
+        assertEquals("user123", jsonObject.getString("_ownerID"));
+        assertEquals("user123", jsonObject.getString("_created_by"));
+        assertEquals("user456", jsonObject.getString("_updated_by"));
+        assertEquals("2016-06-14T04:55:34.342Z", jsonObject.getString("_created_at"));
+        assertEquals("2016-06-15T07:55:34.342Z", jsonObject.getString("_updated_at"));
 
         assertEquals("world", jsonObject.getString("hello"));
         assertEquals(3, jsonObject.getInt("foobar"));
