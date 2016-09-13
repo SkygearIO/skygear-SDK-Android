@@ -1,5 +1,6 @@
 package io.skygear.skygear;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +31,20 @@ public class UserSerializer {
             userObject.put("access_token", user.getAccessToken());
             userObject.put("username", user.getUsername());
             userObject.put("email", user.getEmail());
+
+            if (user.lastLoginTime != null) {
+                userObject.put(
+                        "last_login_at",
+                        RecordSerializer.dateTimeFormatter.print(new DateTime(user.lastLoginTime))
+                );
+            }
+
+            if (user.lastSeenTime != null) {
+                userObject.put(
+                        "last_seen_at",
+                        RecordSerializer.dateTimeFormatter.print(new DateTime(user.lastSeenTime))
+                );
+            }
 
             JSONArray roles = new JSONArray();
             for (Role perRole : user.roles) {
@@ -68,6 +83,18 @@ public class UserSerializer {
                 userObject.optString("username"),
                 userObject.optString("email")
         );
+
+        if (userObject.has("last_login_at")) {
+            String lastLoginAt = userObject.getString("last_login_at");
+            DateTime lastLoginAtDateTime = RecordSerializer.dateTimeFormatter.parseDateTime(lastLoginAt);
+            theUser.lastLoginTime = lastLoginAtDateTime.toDate();
+        }
+
+        if (userObject.has("last_seen_at")) {
+            String lastSeenAt = userObject.getString("last_seen_at");
+            DateTime lastSeenAtDatetime = RecordSerializer.dateTimeFormatter.parseDateTime(lastSeenAt);
+            theUser.lastSeenTime = lastSeenAtDatetime.toDate();
+        }
 
         JSONArray userRoleArray = userObject.optJSONArray("roles");
         if (userRoleArray != null) {
