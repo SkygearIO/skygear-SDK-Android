@@ -153,6 +153,20 @@ public class MainActivity extends AppCompatActivity {
                 buffer.append(String.format("\tUsername: %s\n", user.getUsername()));
                 buffer.append(String.format("\tEmail: %s\n", user.getEmail()));
 
+                if (user.getLastLoginTime() != null) {
+                    buffer.append(String.format(
+                            "\tLast Login: %s\n",
+                            user.getLastLoginTime().toString())
+                    );
+                }
+
+                if (user.getLastSeenTime() != null) {
+                    buffer.append(String.format(
+                            "\tLast Seen: %s\n",
+                            user.getLastSeenTime().toString())
+                    );
+                }
+
                 if (user.getRoles().length > 0) {
                     buffer.append("\tRoles:\n");
                     for (Role perRole : user.getRoles()) {
