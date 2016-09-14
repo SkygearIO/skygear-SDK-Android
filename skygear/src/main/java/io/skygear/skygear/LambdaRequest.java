@@ -7,6 +7,7 @@ import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,28 +40,20 @@ public class LambdaRequest extends Request {
         this.data = new HashMap<>();
 
         if (args != null) {
-            this.data.put("args", args);
+            for (int idx = 0; idx < args.length; idx++) {
+                if (!this.isCompatibleArgument(args[idx])) {
+                    throw new InvalidParameterException(
+                            String.format("Argument at index %d is incompatible", idx)
+                    );
+                }
+            }
+
+            List<Object> argList = Arrays.asList(args);
+            this.data.put("args", new JSONArray(argList));
         }
     }
 
     private boolean isCompatibleArgument(Object arg) {
         return arg == null || LambdaRequest.CompatibleValueClasses.contains(arg.getClass());
-    }
-
-    @Override
-    protected void validate() throws Exception {
-        Object[] args = (Object[]) this.data.get("args");
-        if (args == null) {
-            return;
-        }
-
-        for (int idx = 0; idx < args.length; idx++) {
-            Object arg = args[idx];
-            if (!this.isCompatibleArgument(arg)) {
-                throw new InvalidParameterException(
-                        String.format("Argument at index %d is incompatible", idx)
-                );
-            }
-        }
     }
 }

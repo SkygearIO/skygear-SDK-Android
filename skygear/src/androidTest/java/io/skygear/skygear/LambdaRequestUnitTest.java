@@ -13,6 +13,7 @@ import java.util.Date;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class LambdaRequestUnitTest {
@@ -25,13 +26,11 @@ public class LambdaRequestUnitTest {
 
         assertEquals("test:op1", request.action);
 
-        Object[] args = (Object[]) request.data.get("args");
-        assertEquals(3, args.length);
-        assertEquals("hello", args[0]);
-        assertEquals("world", args[1]);
-        assertEquals(123, args[2]);
-
-        request.validate();
+        JSONArray args = (JSONArray) request.data.get("args");
+        assertEquals(3, args.length());
+        assertEquals("hello", args.get(0));
+        assertEquals("world", args.get(1));
+        assertEquals(123, args.get(2));
     }
 
     @Test
@@ -41,8 +40,6 @@ public class LambdaRequestUnitTest {
         assertEquals("test:op1", request.action);
         assertNull(request.data.get("args"));
         assertFalse(request.data.keySet().contains("args"));
-
-        request.validate();
     }
 
     @Test
@@ -54,13 +51,11 @@ public class LambdaRequestUnitTest {
 
         assertEquals("test:op1", request.action);
 
-        Object[] args = (Object[]) request.data.get("args");
-        assertEquals(3, args.length);
-        assertEquals("hello", args[0]);
-        assertEquals("world", args[1]);
-        assertNull(args[2]);
-
-        request.validate();
+        JSONArray args = (JSONArray) request.data.get("args");
+        assertEquals(3, args.length());
+        assertEquals("hello", args.get(0));
+        assertEquals("world", args.get(1));
+        assertTrue(args.isNull(2));
     }
 
     @Test
@@ -87,11 +82,6 @@ public class LambdaRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testLambdaRequestIncompatibleValueValidation() throws Exception {
-        LambdaRequest request = new LambdaRequest(
-                "test:op1",
-                new Object[]{new Date()}
-        );
-
-        request.validate();
+        new LambdaRequest("test:op1", new Object[]{new Date()});
     }
 }
