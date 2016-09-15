@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.android.volley.AuthFailureError;
+import com.android.volley.error.AuthFailureError;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.Volley;
 
