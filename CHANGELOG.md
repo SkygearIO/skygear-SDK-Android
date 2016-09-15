@@ -1,3 +1,14 @@
+## 0.17.0 (2016-09-15)
+
+### Features
+
+- Add last login / last seen fields to user model (SkygearIO/skygear-server#110)
+
+### Bug fixes
+
+- Fix lambda function argument serialization issue (#46)
+
+
 ## 0.16.0 (2016-09-02)
 
 ### Features
@@ -8,11 +19,13 @@
 
 - Update gradle
 
+
 ## 0.15.0 (2016-08-17)
 
-### Other Notes 
+### Other Notes
 
 - Make Endpoint / API Key configurable for Sample App (#35)
+
 
 ## 0.14.0 (2016-07-26)
 
@@ -25,6 +38,7 @@
 ### Bug fixes
 
 - Add exception for invalid pubsub data (SkygearIO/skygear-SDK-JS#27)
+
 
 ## 0.13.0 (2016-07-08)
 
@@ -44,6 +58,7 @@
 
 - Upload Javadoc to [Documentation Site](https://docs.skygear.io/android/reference/)
 
+
 ## 0.0.1 (2016-06-28)
 
 This is the initial release of Skygear Android SDK. The SDK includes the
@@ -52,4 +67,3 @@ followings features:
 - Config for connnecting Skygear Server
 - User Signup, Login and Logout
 - Record Create, Query, Update and Delete
-
