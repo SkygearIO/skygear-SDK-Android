@@ -46,6 +46,7 @@ public class ServerConfigurationActivity extends AppCompatActivity {
                 .build();
 
         this.skygear.configure(config);
+        this.saveConfiguration(config);
 
         new AlertDialog.Builder(this)
                 .setTitle("Server Configuration")
@@ -57,5 +58,10 @@ public class ServerConfigurationActivity extends AppCompatActivity {
                     }
                 })
                 .show();
+    }
+
+    private void saveConfiguration(Configuration config) {
+        ServerConfigurationPreference pref = new ServerConfigurationPreference(this);
+        pref.update(config);
     }
 }

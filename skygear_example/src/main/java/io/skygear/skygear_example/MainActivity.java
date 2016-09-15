@@ -1,8 +1,10 @@
 package io.skygear.skygear_example;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         this.emailDisplay = (TextView) findViewById(R.id.email_display);
 
         this.skygear = Container.defaultContainer(this);
+        this.restoreServerConfiguration();
     }
 
     @Override
@@ -48,6 +51,15 @@ public class MainActivity extends AppCompatActivity {
         this.apiKeyDisplay.setText(skygearConfig.getApiKey());
 
         this.updateUserInfoDisplay();
+    }
+
+    private void restoreServerConfiguration() {
+        ServerConfigurationPreference pref = new ServerConfigurationPreference(this);
+        Configuration config = pref.get();
+
+        if (config != null) {
+            this.skygear.configure(config);
+        }
     }
 
     private void updateUserInfoDisplay() {
@@ -140,6 +152,20 @@ public class MainActivity extends AppCompatActivity {
                 buffer.append(String.format("\tUser ID: %s\n", user.getId()));
                 buffer.append(String.format("\tUsername: %s\n", user.getUsername()));
                 buffer.append(String.format("\tEmail: %s\n", user.getEmail()));
+
+                if (user.getLastLoginTime() != null) {
+                    buffer.append(String.format(
+                            "\tLast Login: %s\n",
+                            user.getLastLoginTime().toString())
+                    );
+                }
+
+                if (user.getLastSeenTime() != null) {
+                    buffer.append(String.format(
+                            "\tLast Seen: %s\n",
+                            user.getLastSeenTime().toString())
+                    );
+                }
 
                 if (user.getRoles().length > 0) {
                     buffer.append("\tRoles:\n");

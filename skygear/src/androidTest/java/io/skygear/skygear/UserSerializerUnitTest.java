@@ -2,6 +2,8 @@ package io.skygear.skygear;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +67,62 @@ public class UserSerializerUnitTest {
 
         assertTrue(user.hasRole(new Role("Programmer")));
         assertTrue(user.hasRole(new Role("Citizen")));
+    }
+
+    @Test
+    public void testUserSerializationLastLoginAt() throws Exception {
+        User user = new User("456", "token_456", "user_456", "user456@skygear.dev");
+        user.lastLoginTime = new DateTime(2016, 9, 13, 5, 45, 51, 845, DateTimeZone.UTC).toDate();
+
+        JSONObject userObject = UserSerializer.serialize(user);
+        assertEquals("2016-09-13T05:45:51.845Z", userObject.getString("last_login_at"));
+    }
+
+    @Test
+    public void testUserSerializationLastSeenAt() throws Exception {
+        User user = new User("456", "token_456", "user_456", "user456@skygear.dev");
+        user.lastSeenTime = new DateTime(2016, 9, 13, 5, 45, 51, 845, DateTimeZone.UTC).toDate();
+
+        JSONObject userObject = UserSerializer.serialize(user);
+        assertEquals("2016-09-13T05:45:51.845Z", userObject.getString("last_seen_at"));
+    }
+
+    @Test
+    public void testUserDeserializationLastLoginAt() throws Exception {
+        JSONObject userObject = new JSONObject(
+                "{" +
+                "  \"_id\": \"456\"," +
+                "  \"access_token\": \"token_456\"," +
+                "  \"username\": \"user_456\"," +
+                "  \"email\": \"user456@skygear.dev\"," +
+                "  \"last_login_at\": \"2016-09-13T05:45:51.845Z\"," +
+                "  \"roles\": [\"Programmer\", \"Citizen\"]" +
+                "}"
+        );
+        User user = UserSerializer.deserialize(userObject);
+        assertEquals(
+                new DateTime(2016, 9, 13, 5, 45, 51, 845, DateTimeZone.UTC).toDate(),
+                user.lastLoginTime
+        );
+    }
+
+    @Test
+    public void testUserDeserializationLastSeenAt() throws Exception {
+        JSONObject userObject = new JSONObject(
+                "{" +
+                "  \"_id\": \"456\"," +
+                "  \"access_token\": \"token_456\"," +
+                "  \"username\": \"user_456\"," +
+                "  \"email\": \"user456@skygear.dev\"," +
+                "  \"last_seen_at\": \"2016-09-13T05:45:51.845Z\"," +
+                "  \"roles\": [\"Programmer\", \"Citizen\"]" +
+                "}"
+        );
+        User user = UserSerializer.deserialize(userObject);
+        assertEquals(
+                new DateTime(2016, 9, 13, 5, 45, 51, 845, DateTimeZone.UTC).toDate(),
+                user.lastSeenTime
+        );
     }
 
     @Test(expected = InvalidParameterException.class)

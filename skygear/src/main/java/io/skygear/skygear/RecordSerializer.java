@@ -49,6 +49,11 @@ public class RecordSerializer {
     ));
 
     /**
+     * The Datetime Formatter for Skygear in ISO Format.
+     */
+    static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime().withZoneUTC();
+
+    /**
      * Check if a record type is valid
      *
      * @param type the record type
@@ -115,6 +120,12 @@ public class RecordSerializer {
 
             JSONObject jsonObject = new JSONObject(recordData);
             jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
+            jsonObject.put("_created_at", RecordSerializer.dateTimeFormatter.print(new DateTime(record.createdAt)));
+            jsonObject.put("_updated_at", RecordSerializer.dateTimeFormatter.print(new DateTime(record.updatedAt)));
+            jsonObject.put("_created_by", record.creatorId);
+            jsonObject.put("_updated_by", record.updaterId);
+            jsonObject.put("_ownerID", record.ownerId);
+
             jsonObject.put("_access", AccessControlSerializer.serialize(record.getAccess()));
 
             return jsonObject;
@@ -145,22 +156,26 @@ public class RecordSerializer {
         record.id = split[1];
 
         // handle _create_at
-        String createdAtString = jsonObject.getString("_created_at");
-        DateTime createdAtDatetime = ISODateTimeFormat.dateTime().parseDateTime(createdAtString);
-        record.createdAt = createdAtDatetime.toDate();
+        if (jsonObject.has("_created_at")) {
+            String createdAtString = jsonObject.getString("_created_at");
+            DateTime createdAtDatetime = RecordSerializer.dateTimeFormatter.parseDateTime(createdAtString);
+            record.createdAt = createdAtDatetime.toDate();
+        }
 
         // handle _updated_at
-        String updatedAtString = jsonObject.getString("_updated_at");
-        DateTime updatedAtDatetime = ISODateTimeFormat.dateTime().parseDateTime(updatedAtString);
-        record.updatedAt = updatedAtDatetime.toDate();
+        if (jsonObject.has("_updated_at")) {
+            String updatedAtString = jsonObject.getString("_updated_at");
+            DateTime updatedAtDatetime = RecordSerializer.dateTimeFormatter.parseDateTime(updatedAtString);
+            record.updatedAt = updatedAtDatetime.toDate();
+        }
 
         // handler _created_by, _updated_by, _ownerID
-        record.creatorId = jsonObject.getString("_created_by");
-        record.updaterId = jsonObject.getString("_updated_by");
-        record.ownerId = jsonObject.getString("_ownerID");
+        record.creatorId = jsonObject.optString("_created_by");
+        record.updaterId = jsonObject.optString("_updated_by");
+        record.ownerId = jsonObject.optString("_ownerID");
 
         JSONArray accessJsonArray = null;
-        if (jsonObject.has("_access")) {
+        if (!jsonObject.isNull("_access")) {
             accessJsonArray = jsonObject.getJSONArray("_access");
         }
 
@@ -189,8 +204,6 @@ public class RecordSerializer {
      * This class converts between date object and JSON object in Skygear defined format.
      */
     static class DateSerializer {
-        private static DateTimeFormatter formatter = ISODateTimeFormat.dateTime().withZoneUTC();
-
         /**
          * Serialize a date object.
          *
@@ -201,7 +214,7 @@ public class RecordSerializer {
             try {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("$type", "date");
-                jsonObject.put("$date", DateSerializer.formatter.print(new DateTime(date)));
+                jsonObject.put("$date", RecordSerializer.dateTimeFormatter.print(new DateTime(date)));
 
                 return jsonObject;
             } catch (JSONException e) {
@@ -221,7 +234,7 @@ public class RecordSerializer {
             if (typeValue.equals("date")) {
                 String dateString = dateJsonObject.getString("$date");
 
-                return DateSerializer.formatter.parseDateTime(dateString).toDate();
+                return RecordSerializer.dateTimeFormatter.parseDateTime(dateString).toDate();
             }
 
             throw new JSONException("Invalid $type value: " + typeValue);

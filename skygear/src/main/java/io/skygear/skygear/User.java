@@ -1,5 +1,6 @@
 package io.skygear.skygear;
 
+import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -28,6 +29,16 @@ public class User {
      * The Roles.
      */
     Set<Role> roles;
+
+    /**
+     * The last login time.
+     */
+    Date lastLoginTime;
+
+    /**
+     * The last seen time.
+     */
+    Date lastSeenTime;
 
     /**
      * Instantiates a new Skygear User.
@@ -91,6 +102,24 @@ public class User {
      */
     public String getEmail() {
         return email;
+    }
+
+    /**
+     * Gets last login time.
+     *
+     * @return the last login time
+     */
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    /**
+     * Gets last seen time.
+     *
+     * @return the last seen time
+     */
+    public Date getLastSeenTime() {
+        return lastSeenTime;
     }
 
     /**
