@@ -5,6 +5,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.android.volley.error.AuthFailureError;
+import com.android.volley.request.MultiPartRequest;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.Volley;
 
@@ -418,6 +419,65 @@ public class RequestManagerUnitTest {
         requestManager.sendRequest(request);
 
         latch.await(1, TimeUnit.SECONDS);
+        assertTrue(checkpoints[0]);
+    }
+
+    @Test
+    public void testSendAssetPostRequest() throws Exception {
+        RequestManager requestManager = new RequestManager(
+                RequestManagerUnitTest.instrumentationContext,
+                Configuration.defaultConfiguration()
+        );
+        requestManager.queue = Volley.newRequestQueue(
+                RequestManagerUnitTest.instrumentationContext,
+                new MockHttpStack(new MockHttpStack.RequestValidator() {
+                    @Override
+                    public void validate(
+                            com.android.volley.Request request,
+                            Map<String, String> additionalHeaders
+                    ) throws AuthFailureError {
+                        assertTrue(request instanceof MultiPartRequest);
+                        MultiPartRequest multiPartRequest = (MultiPartRequest) request;
+
+                        Map<String, MultiPartRequest.MultiPartParam> multipartParams
+                                = multiPartRequest.getMultipartParams();
+                        assertEquals("world", multipartParams.get("hello").value);
+                        assertEquals("bar", multipartParams.get("foo").value);
+
+                        assertTrue(multiPartRequest.getFilesToUpload().keySet().contains("file"));
+                    }
+                })
+        );
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final boolean[] checkpoints = { false };
+
+        Asset asset = new Asset("hello.txt", "text/plain", "hello world".getBytes());
+        Map<String, String> extraFields = new HashMap<>();
+        extraFields.put("hello", "world");
+        extraFields.put("foo", "bar");
+
+        AssetPostRequest request = new AssetPostRequest(
+                asset,
+                "http://skygear.dev/asset/upload",
+                extraFields
+        );
+        request.responseHandler = new AssetPostRequest.ResponseHandler() {
+            @Override
+            public void onPostSuccess(Asset asset, String response) {
+                checkpoints[0] = true;
+                latch.countDown();
+            }
+
+            @Override
+            public void onPostFail(Asset asset, String reason) {
+                fail("Should not get fail callback");
+            }
+        };
+
+        requestManager.sendAssetPostRequest(request);
+
+        latch.await();
         assertTrue(checkpoints[0]);
     }
 }

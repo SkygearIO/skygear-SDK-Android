@@ -30,17 +30,33 @@ public class Asset {
     String mimeType;
 
     /**
-     * Instantiates a new Asset.
+     * Instantiates a new Asset with name, MIME type and file data.
      *
      * @param name     the name
      * @param mimeType the MIME type
      * @param data     the data
      */
     public Asset(String name, String mimeType, byte[] data) {
+        super();
+
         this.name = name;
         this.mimeType = mimeType;
         this.data = data;
         this.pendingUpload = true;
+    }
+
+    /**
+     * Instantiates a new Asset with name and url.
+     *
+     * @param name the name
+     * @param url  the url
+     */
+    public Asset(String name, String url) {
+        super();
+
+        this.name = name;
+        this.url = url;
+        this.pendingUpload = false;
     }
 
     /**

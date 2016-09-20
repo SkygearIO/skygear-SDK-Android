@@ -3,7 +3,6 @@ package io.skygear.skygear;
 import android.content.Context;
 
 import java.security.InvalidParameterException;
-import java.util.Objects;
 
 /**
  * Container for Skygear.
@@ -323,6 +322,37 @@ public final class Container implements AuthResolver {
      */
     public void sendRequest(Request request) {
         this.requestManager.sendRequest(request);
+    }
+
+    /**
+     * Upload asset.
+     *
+     * @param asset           the asset
+     * @param responseHandler the response handler
+     */
+    public void uploadAsset(
+            final Asset asset,
+            final AssetPostRequest.ResponseHandler responseHandler
+    ) {
+        final RequestManager requestManager = this.requestManager;
+
+        AssetPreparePostRequest preparePostRequest = new AssetPreparePostRequest(asset);
+        preparePostRequest.responseHandler = new AssetPreparePostResponseHandler(asset) {
+            @Override
+            public void onPreparePostSuccess(AssetPostRequest postRequest) {
+                postRequest.responseHandler = responseHandler;
+                requestManager.sendAssetPostRequest(postRequest);
+            }
+
+            @Override
+            public void onPreparePostFail(String reason) {
+                if (responseHandler != null) {
+                    responseHandler.onPostFail(asset, reason);
+                }
+            }
+        };
+
+        requestManager.sendRequest(preparePostRequest);
     }
 
     /**

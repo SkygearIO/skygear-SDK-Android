@@ -1,18 +1,26 @@
 package io.skygear.skygear;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.android.volley.error.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.error.AuthFailureError;
 import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The Skygear request manager.
@@ -25,6 +33,10 @@ public class RequestManager {
      * The Request Queue.
      */
     RequestQueue queue;
+    /**
+     * The Context.
+     */
+    Context context;
     /**
      * The Endpoint.
      */
@@ -51,6 +63,7 @@ public class RequestManager {
      * @param config  the config
      */
     public RequestManager(Context context, Configuration config) {
+        this.context = context;
         this.queue = Volley.newRequestQueue(context);
         this.requestTimeout = DEFAULT_TIMEOUT;
         this.configure(config);
@@ -138,6 +151,90 @@ public class RequestManager {
         this.queue.add(jsonRequest);
     }
 
+    public void sendAssetPostRequest(final AssetPostRequest request) {
+        try {
+            request.validate();
+        } catch (Exception e) {
+            request.onValidationError(e);
+            return;
+        }
+
+        // write the asset data to a temp file
+        File tempFile;
+        try {
+            tempFile = File.createTempFile("Skygear", null);
+
+            FileOutputStream tempFileStream = new FileOutputStream(tempFile);
+            tempFileStream.write(request.getAsset().data);
+            tempFileStream.close();
+        } catch (IOException e) {
+            Log.e("Skygear RequestManager", "Fail to create temporary file", e);
+            request.onValidationError(e);
+            return;
+        }
+
+        // support relative URL
+        URI uri;
+        try {
+            uri = new URI(request.getAction());
+        } catch (URISyntaxException e) {
+            Log.e("Skygear RequestManager", "Got malformed URL", e);
+            request.onValidationError(e);
+            return;
+        }
+
+        String uriString = uri.toString();
+        if (!uri.isAbsolute()) {
+            uriString = this.endpoint + uriString.substring(1);
+        }
+
+        // make multipart request
+        MultiPartRequest multiPartRequest = new MultiPartRequest(
+                uriString,
+                this.getExtraHeaders(),
+                request,
+                request
+        );
+
+        Map<String, String> extraFields = request.getExtraFields();
+        Set<String> extraFieldKeys = extraFields.keySet();
+        for (String perKey : extraFieldKeys) {
+            String perValue = extraFields.get(perKey);
+            multiPartRequest.addStringParam(perKey, perValue);
+        }
+
+        multiPartRequest.addFile("file", tempFile.getAbsolutePath());
+        this.queue.add(multiPartRequest);
+    }
+
+    private static class MultiPartRequest extends SimpleMultiPartRequest {
+        private Map<String, String> extraHeaders;
+
+        public MultiPartRequest(
+                String url,
+                Map<String, String> extraHeaders,
+                Response.Listener<String> listener,
+                Response.ErrorListener errorListener
+        ) {
+            super(url, listener, errorListener);
+
+            this.extraHeaders = extraHeaders;
+        }
+
+        @Override
+        public Map<String, String> getHeaders() throws AuthFailureError {
+            Map<String, String> headers = new HashMap<>(super.getHeaders());
+            headers.putAll(this.extraHeaders);
+
+            return headers;
+        }
+
+        @Override
+        public boolean isFixedStreamingMode() {
+            return true;
+        }
+    }
+
     private static class JsonRequest extends JsonObjectRequest {
         private Map<String, String> extraHeaders;
 
@@ -161,7 +258,10 @@ public class RequestManager {
 
         @Override
         public Map<String, String> getHeaders() throws AuthFailureError {
-            return this.extraHeaders;
+            Map<String, String> headers = new HashMap<>(super.getHeaders());
+            headers.putAll(this.extraHeaders);
+
+            return headers;
         }
 
         @Override
