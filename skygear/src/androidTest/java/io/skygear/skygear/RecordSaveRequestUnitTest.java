@@ -86,4 +86,16 @@ public class RecordSaveRequestUnitTest {
         );
         recordSaveRequest.validate();
     }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testRecordSaveRequestNotAllowSavingRecordWithPendingAsset() throws Exception {
+        Record note = new Record("Note");
+        note.set("attachment", new Asset("hello.txt", "text/plain", "hello world".getBytes()));
+
+        RecordSaveRequest recordSaveRequest = new RecordSaveRequest(
+                new Record[]{ note },
+                instrumentationPublicDatabase
+        );
+        recordSaveRequest.validate();
+    }
 }

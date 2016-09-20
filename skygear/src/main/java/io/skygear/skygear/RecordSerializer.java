@@ -45,7 +45,8 @@ public class RecordSerializer {
             String.class,
             JSONObject.class,
             JSONArray.class,
-            Date.class
+            Date.class,
+            Asset.class
     ));
 
     /**
@@ -105,13 +106,15 @@ public class RecordSerializer {
         DateTimeFormatter formatter = ISODateTimeFormat.dateTime().withZoneUTC();
 
         try {
-            HashMap<String, Object> recordData = record.data;
+            HashMap<String, Object> recordData = (HashMap<String, Object>) record.data.clone();
 
             for (String perKey : recordData.keySet()) {
                 Object perValue = recordData.get(perKey);
 
                 if (perValue instanceof Date) {
                     recordData.put(perKey, DateSerializer.serialize((Date) perValue));
+                } else if (perValue instanceof Asset) {
+                    recordData.put(perKey, AssetSerializer.serialize((Asset) perValue));
                 }
             }
 
@@ -186,6 +189,8 @@ public class RecordSerializer {
 
                 if (DateSerializer.isDateFormat(nextValue)) {
                     record.set(nextKey, DateSerializer.deserialize((JSONObject) nextValue));
+                } else if (AssetSerializer.isAssetFormat(nextValue)) {
+                    record.set(nextKey, AssetSerializer.deserialize((JSONObject) nextValue));
                 } else {
                     record.set(nextKey, nextValue);
                 }
@@ -250,7 +255,75 @@ public class RecordSerializer {
                 JSONObject jsonObject = (JSONObject) object;
 
                 return jsonObject.getString("$type").equals("date") &&
-                        jsonObject.getString("$date").length() > 0;
+                        !jsonObject.isNull("$date");
+            } catch (ClassCastException e) {
+                return false;
+            } catch (JSONException e) {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * The Skygear Asset Serializer.
+     *
+     * This class converts between asset object and JSON object in Skygear defined format.
+     */
+    static class AssetSerializer {
+
+        /**
+         * Serialize an asset
+         *
+         * @param asset the asset
+         * @return the json object
+         */
+        static JSONObject serialize(Asset asset) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("$type", "asset");
+                jsonObject.put("$name", asset.getName());
+
+                if (asset.getUrl() != null) {
+                    jsonObject.put("$url", asset.getUrl());
+                }
+
+                return jsonObject;
+            } catch (JSONException e) {
+                return null;
+            }
+        }
+
+        /**
+         * Deserialize an asset from json object.
+         *
+         * @param assetJSONObject the asset json object
+         * @return the asset
+         * @throws JSONException the json exception
+         */
+        static Asset deserialize(JSONObject assetJSONObject) throws JSONException {
+            String typeValue = assetJSONObject.getString("$type");
+            if (typeValue.equals("asset")) {
+                String assetName = assetJSONObject.getString("$name");
+                String assetUrl = assetJSONObject.getString("$url");
+
+                return new Asset(assetName, assetUrl);
+            }
+
+            throw new JSONException("Invalid $type value: " + typeValue);
+        }
+
+        /**
+         * Determines whether an object is a JSON object in Skygear defined asset format.
+         *
+         * @param object the object
+         * @return the indicating boolean
+         */
+        static boolean isAssetFormat(Object object) {
+            try {
+                JSONObject jsonObject = (JSONObject) object;
+                return jsonObject.getString("$type").equals("asset") &&
+                        !jsonObject.isNull("$name") &&
+                        !jsonObject.isNull("$url");
             } catch (ClassCastException e) {
                 return false;
             } catch (JSONException e) {

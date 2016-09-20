@@ -95,6 +95,10 @@ public class RecordSerializerUnitTest {
         data.put("foobar", 3);
         data.put("abc", 12.345);
         data.put("publish_date", new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate());
+        data.put("attachment", new Asset(
+                "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
+                "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt"
+        ));
 
         Record aNote = new Record("Note", data);
         aNote.ownerId = "user123";
@@ -122,6 +126,17 @@ public class RecordSerializerUnitTest {
         JSONObject publishDateObject = jsonObject.getJSONObject("publish_date");
         assertEquals("date", publishDateObject.getString("$type"));
         assertEquals("2016-06-15T07:55:34.342Z", publishDateObject.getString("$date"));
+
+        JSONObject attachmentObject = jsonObject.getJSONObject("attachment");
+        assertEquals("asset", attachmentObject.getString("$type"));
+        assertEquals(
+                "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
+                attachmentObject.getString("$name")
+        );
+        assertEquals(
+                "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
+                attachmentObject.getString("$url")
+        );
 
         JSONArray acl = jsonObject.getJSONArray("_access");
         assertEquals(1, acl.length());
@@ -198,6 +213,13 @@ public class RecordSerializerUnitTest {
 
         jsonObject.put("publish_date", publishDateObject);
 
+        JSONObject attachmentObject = new JSONObject();
+        attachmentObject.put("$type", "asset");
+        attachmentObject.put("$name", "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt");
+        attachmentObject.put("$url", "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt");
+
+        jsonObject.put("attachment", attachmentObject);
+
         Record record = RecordSerializer.deserialize(jsonObject);
 
         assertEquals("Note", record.getType());
@@ -224,6 +246,13 @@ public class RecordSerializerUnitTest {
         assertEquals(
                 new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate(),
                 record.get("publish_date")
+        );
+
+        Asset attachment = (Asset) record.get("attachment");
+        assertEquals("928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt", attachment.getName());
+        assertEquals(
+                "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
+                attachment.getUrl()
         );
     }
 
