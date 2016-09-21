@@ -29,6 +29,8 @@ Pull Requests Welcome!
 We really want to see Skygear grows and thrives in the open source community.
 If you have any fixes or suggestions, simply send us a pull request!
 
+The current project setup assume Android Studio 2.2+. Download it here:
+https://developer.android.com/studio/index.html and start your contribution!
 
 ## Continuous Delivery
 
