@@ -63,6 +63,12 @@ public class RecordSaveRequest extends Request {
         Set<String> typeSet = new HashSet<>();
         for (Record perRecord : this.records) {
             typeSet.add(perRecord.type);
+
+            for (Object perRecordPerValue : perRecord.getData().values()) {
+                if (perRecordPerValue instanceof Asset && ((Asset) perRecordPerValue).isPendingUpload()) {
+                    throw new InvalidParameterException("Cannot save records with pending upload asset");
+                }
+            }
         }
 
         if (typeSet.size() > 1) {

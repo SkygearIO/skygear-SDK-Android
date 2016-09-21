@@ -44,4 +44,6 @@
     <string name="api_key">API Key</string>
     <string name="api_key_hint">your_api_key</string>
     <string name="who_am_i">Who Am I</string>
+    <string name="set_image">Set Image</string>
+    <string name="remove_image">Remove Image</string>
 </resources>
