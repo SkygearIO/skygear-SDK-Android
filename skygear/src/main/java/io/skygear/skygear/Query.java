@@ -2,6 +2,7 @@ package io.skygear.skygear;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.InvalidParameterException;
 import java.util.LinkedList;
@@ -15,6 +16,7 @@ public class Query {
     private final String type;
     private final List<JSONArray> predicates;
     private final JSONArray sortPredicate;
+    private final JSONObject transientPredicate;
 
     private boolean negation;
 
@@ -29,6 +31,7 @@ public class Query {
         this.negation = false;
         this.predicates = new LinkedList<>();
         this.sortPredicate = new JSONArray();
+        this.transientPredicate = new JSONObject();
     }
 
     /**
@@ -457,6 +460,38 @@ public class Query {
     }
 
     /**
+     * Transient include record reference.
+     *
+     * @param key the key
+     * @return the query
+     */
+    public Query transientInclude(String key) {
+        return this.transientInclude(key, key);
+    }
+
+    /**
+     * Transient include record reference.
+     *
+     * @param key        the key
+     * @param mappingKey the mapping key
+     * @return the query
+     */
+    public Query transientInclude(String key, String mappingKey) {
+        try {
+            this.transientPredicate.put(
+                    mappingKey,
+                    QueryPredicate.keypathRepresentation(key)
+            );
+        } catch (JSONException e) {
+            throw new InvalidParameterException(
+                    String.format("Cannot build transient predicate for key: %s => %s", mappingKey, key)
+            );
+        }
+
+        return this;
+    }
+
+    /**
      * Or query.
      *
      * @param queries the queries
@@ -535,5 +570,14 @@ public class Query {
      */
     public JSONArray getSortPredicateJson() {
         return this.sortPredicate;
+    }
+
+    /**
+     * Gets transient predicate json.
+     *
+     * @return the transient predicate json
+     */
+    public JSONObject getTransientPredicateJson() {
+        return this.transientPredicate;
     }
 }

@@ -324,6 +324,22 @@ public class QueryUnitTest {
     }
 
     @Test
+    public void testTransient() throws Exception {
+        Query noteQuery = new Query("Note")
+                .transientInclude("comment")
+                .transientInclude("writer", "owner");
+
+        JSONObject transientPredicateJson = noteQuery.getTransientPredicateJson();
+        JSONObject commentTransient = transientPredicateJson.getJSONObject("comment");
+        assertEquals("keypath", commentTransient.getString("$type"));
+        assertEquals("comment", commentTransient.getString("$val"));
+
+        JSONObject ownerTransient = transientPredicateJson.getJSONObject("owner");
+        assertEquals("keypath", ownerTransient.getString("$type"));
+        assertEquals("writer", ownerTransient.getString("$val"));
+    }
+
+    @Test
     public void testMultiplePredicates() throws Exception {
         Query noteQuery = new Query("Note")
                 .caseInsensitiveLike("title", "Hello")
