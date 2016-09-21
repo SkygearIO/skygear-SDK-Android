@@ -34,6 +34,7 @@ public class RecordSerializer {
     );
 
     private static Set<? extends Class> CompatibleValueClasses = new HashSet<>(Arrays.asList(
+            /* Primitive types */
             Boolean.class,
             Byte.class,
             Character.class,
@@ -43,10 +44,15 @@ public class RecordSerializer {
             Long.class,
             Short.class,
             String.class,
+
+            /* JSON types */
             JSONObject.class,
             JSONArray.class,
+
+            /* Other types */
             Date.class,
-            Asset.class
+            Asset.class,
+            Reference.class
     ));
 
     /**
@@ -118,6 +124,8 @@ public class RecordSerializer {
                     recordData.put(perKey, DateSerializer.serialize((Date) perValue));
                 } else if (perValue instanceof Asset) {
                     recordData.put(perKey, AssetSerializer.serialize((Asset) perValue));
+                } else if (perValue instanceof Reference) {
+                    recordData.put(perKey, ReferenceSerializer.serialize((Reference) perValue));
                 }
             }
 
@@ -194,6 +202,8 @@ public class RecordSerializer {
                     record.set(nextKey, DateSerializer.deserialize((JSONObject) nextValue));
                 } else if (AssetSerializer.isAssetFormat(nextValue)) {
                     record.set(nextKey, AssetSerializer.deserialize((JSONObject) nextValue));
+                } else if (ReferenceSerializer.isReferenceFormat(nextValue)) {
+                    record.set(nextKey, ReferenceSerializer.deserialize((JSONObject) nextValue));
                 } else {
                     record.set(nextKey, nextValue);
                 }

@@ -90,16 +90,27 @@ public class RecordSerializerUnitTest {
 
     @Test
     public void testRecordSerializationNormalFlow() throws Exception {
+        // prepare reference record data
+        Map<String, Object> referenceRecordData = new HashMap<>();
+        referenceRecordData.put("okay", "google");
+        referenceRecordData.put("hey", "siri");
+
+        // prepare reference record
+        Record aComment = new Record("Comment", referenceRecordData);
+
+        // prepare record data
         Map<String, Object> data = new HashMap<>();
         data.put("hello", "world");
         data.put("foobar", 3);
         data.put("abc", 12.345);
         data.put("publish_date", new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate());
+        data.put("comment", new Reference(aComment));
         data.put("attachment", new Asset(
                 "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
                 "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt"
         ));
 
+        // prepare record
         Record aNote = new Record("Note", data);
         aNote.ownerId = "user123";
         aNote.creatorId = "user123";
@@ -109,10 +120,11 @@ public class RecordSerializerUnitTest {
         aNote.access = new AccessControl()
                 .addEntry(new AccessControl.Entry(AccessControl.Level.READ_WRITE));
 
+        // assert serialized JSON Object
         JSONObject jsonObject = RecordSerializer.serialize(aNote);
 
         assertNotNull(jsonObject);
-        assertEquals(0, jsonObject.getString("_id").indexOf("Note/"));
+        assertEquals("Note/" + aNote.getId(), jsonObject.getString("_id"));
         assertEquals("user123", jsonObject.getString("_ownerID"));
         assertEquals("user123", jsonObject.getString("_created_by"));
         assertEquals("user456", jsonObject.getString("_updated_by"));
@@ -126,6 +138,10 @@ public class RecordSerializerUnitTest {
         JSONObject publishDateObject = jsonObject.getJSONObject("publish_date");
         assertEquals("date", publishDateObject.getString("$type"));
         assertEquals("2016-06-15T07:55:34.342Z", publishDateObject.getString("$date"));
+
+        JSONObject commentObject = jsonObject.getJSONObject("comment");
+        assertEquals("Comment/" + aComment.getId(), commentObject.getString("$id"));
+        assertEquals("ref", commentObject.getString("$type"));
 
         JSONObject attachmentObject = jsonObject.getJSONObject("attachment");
         assertEquals("asset", attachmentObject.getString("$type"));
@@ -195,6 +211,10 @@ public class RecordSerializerUnitTest {
 
     @Test
     public void testRecordDeserializationNormalFlow() throws Exception {
+        // prepare reference record data
+        String referenceRecordId = "7a7873dc-e14b-4b8f-9c51-948da68e924e";
+
+        // prepare record data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
         jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
@@ -210,16 +230,20 @@ public class RecordSerializerUnitTest {
         JSONObject publishDateObject = new JSONObject();
         publishDateObject.put("$type", "date");
         publishDateObject.put("$date", "2016-06-15T07:55:34.342Z");
-
         jsonObject.put("publish_date", publishDateObject);
 
         JSONObject attachmentObject = new JSONObject();
         attachmentObject.put("$type", "asset");
         attachmentObject.put("$name", "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt");
         attachmentObject.put("$url", "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt");
-
         jsonObject.put("attachment", attachmentObject);
 
+        JSONObject commentReferenceObject = new JSONObject();
+        commentReferenceObject.put("$type", "ref");
+        commentReferenceObject.put("$id", "Comment/" + referenceRecordId);
+        jsonObject.put("comment", commentReferenceObject);
+
+        // assert deserialized record
         Record record = RecordSerializer.deserialize(jsonObject);
 
         assertEquals("Note", record.getType());
@@ -248,12 +272,18 @@ public class RecordSerializerUnitTest {
                 record.get("publish_date")
         );
 
+        // assert asset field
         Asset attachment = (Asset) record.get("attachment");
         assertEquals("928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt", attachment.getName());
         assertEquals(
                 "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
                 attachment.getUrl()
         );
+
+        // assert reference field
+        Reference commentRef = (Reference) record.get("comment");
+        assertEquals("Comment", commentRef.getType());
+        assertEquals(referenceRecordId, commentRef.getId());
     }
 
     @Test(expected = InvalidParameterException.class)
