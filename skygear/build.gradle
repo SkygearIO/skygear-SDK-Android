@@ -8,6 +8,17 @@ def skygearFullVersion = "git describe --always --tags".execute().text.trim()
 group = 'io.skygear'
 version = skygearVersion
 
+def bintrayUser = System.getenv('BINTRAY_USER')
+def bintrayApiKey = System.getenv('BINTRAY_API_KEY')
+
+if (project.rootProject.file('local.properties').exists()) {
+    Properties localProperties = new Properties()
+    localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+    bintrayUser = localProperties.getProperty('bintrayUser', bintrayUser)
+    bintrayApiKey = localProperties.getProperty('bintrayApiKey', bintrayApiKey)
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
@@ -69,17 +80,6 @@ generateJavadocsJar.dependsOn generateJavadocs
 artifacts {
     archives generateJavadocsJar
     archives generateSourcesJar
-}
-
-def bintrayUser = System.getenv('BINTRAY_USER')
-def bintrayApiKey = System.getenv('BINTRAY_API_KEY')
-
-if (project.rootProject.file('local.properties').exists()) {
-    Properties localProperties = new Properties()
-    localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-    bintrayUser = localProperties.getProperty('bintrayUser', bintrayUser)
-    bintrayApiKey = localProperties.getProperty('bintrayApiKey', bintrayApiKey)
 }
 
 bintray {
