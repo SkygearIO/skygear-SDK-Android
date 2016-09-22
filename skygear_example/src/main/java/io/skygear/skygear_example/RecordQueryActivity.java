@@ -30,11 +30,13 @@ public class RecordQueryActivity extends AppCompatActivity {
     private EditText[] recordKeyFields;
     private EditText[] recordValueFields;
     private Spinner[] operatorSpinners;
+    private EditText transientIncludeEditText;
+
+    private TextView display;
+    private Button deleteButton;
 
     private Container skygear;
     private Record[] records;
-    private TextView display;
-    private Button deleteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,8 @@ public class RecordQueryActivity extends AppCompatActivity {
                 (Spinner) findViewById(R.id.operator1),
                 (Spinner) findViewById(R.id.operator2)
         };
+
+        this.transientIncludeEditText = (EditText) findViewById(R.id.transient_include_edit_text);
 
         this.deleteButton = (Button) findViewById(R.id.delete_button);
         this.display = (TextView) findViewById(R.id.record_display);
@@ -125,6 +129,11 @@ public class RecordQueryActivity extends AppCompatActivity {
             if (keyString.length() > 0) {
                 this.appendQueryPredicate(query, operatorIndex, keyString, valueString);
             }
+        }
+
+        String transientIncludeKey = this.transientIncludeEditText.getText().toString().trim();
+        if (transientIncludeKey.length() > 0) {
+            query.transientInclude(transientIncludeKey);
         }
 
         final AlertDialog successDialog = new AlertDialog.Builder(this)
