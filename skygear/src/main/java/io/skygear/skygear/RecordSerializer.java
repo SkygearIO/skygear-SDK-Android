@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,7 +31,8 @@ public class RecordSerializer {
             "_ownerID",
             "_created_by",
             "_updated_by",
-            "_access"
+            "_access",
+            "_transient"
     );
 
     private static Set<? extends Class> CompatibleValueClasses = new HashSet<>(Arrays.asList(
@@ -115,7 +117,7 @@ public class RecordSerializer {
      */
     static JSONObject serialize(Record record) {
         try {
-            HashMap<String, Object> recordData = (HashMap<String, Object>) record.data.clone();
+            HashMap<String, Object> recordData = new HashMap<>(record.data);
 
             for (String perKey : recordData.keySet()) {
                 Object perValue = recordData.get(perKey);
@@ -138,6 +140,18 @@ public class RecordSerializer {
             jsonObject.put("_ownerID", record.ownerId);
 
             jsonObject.put("_access", AccessControlSerializer.serialize(record.getAccess()));
+
+            // handle _transient
+            Map<String, Record> transientMap = record.getTransient();
+            if (transientMap.size() > 0) {
+                JSONObject transientObject = new JSONObject();
+                for (String perKey : transientMap.keySet()) {
+                    Record perRecord = transientMap.get(perKey);
+                    transientObject.put(perKey, RecordSerializer.serialize(perRecord));
+                }
+
+                jsonObject.put("_transient", transientObject);
+            }
 
             return jsonObject;
         } catch (JSONException e) {
@@ -180,14 +194,33 @@ public class RecordSerializer {
             record.updatedAt = updatedAtDatetime.toDate();
         }
 
-        // handler _created_by, _updated_by, _ownerID
+        // handle _created_by, _updated_by, _ownerID
         record.creatorId = jsonObject.optString("_created_by");
         record.updaterId = jsonObject.optString("_updated_by");
         record.ownerId = jsonObject.optString("_ownerID");
 
+        // handle _access
         JSONArray accessJsonArray = null;
         if (!jsonObject.isNull("_access")) {
             accessJsonArray = jsonObject.getJSONArray("_access");
+        }
+
+        // handle _transient
+        if (!jsonObject.isNull("_transient")) {
+            JSONObject transientObject = jsonObject.getJSONObject("_transient");
+            Iterator<String> transientKeys = transientObject.keys();
+
+            while(transientKeys.hasNext()) {
+                String perKey = transientKeys.next();
+
+                // server will return { "some-key": null } when "some-key" is not a relation
+                if (!transientObject.isNull(perKey)) {
+                    JSONObject perValue = transientObject.getJSONObject(perKey);
+                    Record perRecord = RecordSerializer.deserialize(perValue);
+
+                    record.transientMap.put(perKey, perRecord);
+                }
+            }
         }
 
         record.access = AccessControlSerializer.deserialize(accessJsonArray);

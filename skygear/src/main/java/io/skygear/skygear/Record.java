@@ -25,7 +25,9 @@ public class Record {
     String updaterId;
     String ownerId;
 
-    HashMap<String, Object> data;
+    Map<String, Record> transientMap;
+
+    Map<String, Object> data;
 
     /**
      * Instantiates a new Skygear Record.
@@ -59,6 +61,8 @@ public class Record {
         this.updatedAt = null;
 
         this.access = AccessControl.defaultAccessControl();
+
+        this.transientMap = new HashMap<>();
 
         this.data = new HashMap<>();
 
@@ -114,9 +118,8 @@ public class Record {
      *
      * @return the set of attributes
      */
-    @SuppressWarnings("unchecked")
     public HashMap<String, Object> getData() {
-        return (HashMap<String, Object>) this.data.clone();
+        return new HashMap<>(this.data);
     }
 
     /**
@@ -180,6 +183,15 @@ public class Record {
      */
     public String getOwnerId() {
         return ownerId;
+    }
+
+    /**
+     * Gets the transient.
+     *
+     * @return the transient map
+     */
+    public Map<String, Record> getTransient() {
+        return new HashMap<>(this.transientMap);
     }
 
     /**
