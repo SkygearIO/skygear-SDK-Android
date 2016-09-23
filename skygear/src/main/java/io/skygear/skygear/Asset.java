@@ -1,5 +1,8 @@
 package io.skygear.skygear;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * The Skygear Asset Model.
  */
@@ -119,5 +122,25 @@ public class Asset {
      */
     public byte[] getData() {
         return data;
+    }
+
+    /**
+     * Serializes the asset.
+     *
+     * @return the JSON object
+     */
+    public JSONObject toJson() {
+        return AssetSerializer.serialize(this);
+    }
+
+    /**
+     * Deserializes the asset.
+     *
+     * @param jsonObject the JSON object
+     * @return the asset
+     * @throws JSONException the json exception
+     */
+    public static Asset fromJson(JSONObject jsonObject) throws JSONException {
+        return AssetSerializer.deserialize(jsonObject);
     }
 }

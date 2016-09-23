@@ -1,6 +1,7 @@
 package io.skygear.skygear;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -35,6 +36,11 @@ public class RecordQueryRequest extends Request {
         JSONArray predicateJson = this.query.getPredicateJson();
         if (predicateJson.length() > 0) {
             this.data.put("predicate", predicateJson);
+        }
+
+        JSONObject transientPredicateJson = this.query.getTransientPredicateJson();
+        if (transientPredicateJson.length() > 0) {
+            this.data.put("include", transientPredicateJson);
         }
     }
 }

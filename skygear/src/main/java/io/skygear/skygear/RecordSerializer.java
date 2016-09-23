@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,10 +31,12 @@ public class RecordSerializer {
             "_ownerID",
             "_created_by",
             "_updated_by",
-            "_access"
+            "_access",
+            "_transient"
     );
 
     private static Set<? extends Class> CompatibleValueClasses = new HashSet<>(Arrays.asList(
+            /* Primitive types */
             Boolean.class,
             Byte.class,
             Character.class,
@@ -43,10 +46,15 @@ public class RecordSerializer {
             Long.class,
             Short.class,
             String.class,
+
+            /* JSON types */
             JSONObject.class,
             JSONArray.class,
+
+            /* Other types */
             Date.class,
-            Asset.class
+            Asset.class,
+            Reference.class
     ));
 
     /**
@@ -109,7 +117,7 @@ public class RecordSerializer {
      */
     static JSONObject serialize(Record record) {
         try {
-            HashMap<String, Object> recordData = (HashMap<String, Object>) record.data.clone();
+            HashMap<String, Object> recordData = new HashMap<>(record.data);
 
             for (String perKey : recordData.keySet()) {
                 Object perValue = recordData.get(perKey);
@@ -118,6 +126,8 @@ public class RecordSerializer {
                     recordData.put(perKey, DateSerializer.serialize((Date) perValue));
                 } else if (perValue instanceof Asset) {
                     recordData.put(perKey, AssetSerializer.serialize((Asset) perValue));
+                } else if (perValue instanceof Reference) {
+                    recordData.put(perKey, ReferenceSerializer.serialize((Reference) perValue));
                 }
             }
 
@@ -130,6 +140,18 @@ public class RecordSerializer {
             jsonObject.put("_ownerID", record.ownerId);
 
             jsonObject.put("_access", AccessControlSerializer.serialize(record.getAccess()));
+
+            // handle _transient
+            Map<String, Record> transientMap = record.getTransient();
+            if (transientMap.size() > 0) {
+                JSONObject transientObject = new JSONObject();
+                for (String perKey : transientMap.keySet()) {
+                    Record perRecord = transientMap.get(perKey);
+                    transientObject.put(perKey, RecordSerializer.serialize(perRecord));
+                }
+
+                jsonObject.put("_transient", transientObject);
+            }
 
             return jsonObject;
         } catch (JSONException e) {
@@ -172,14 +194,33 @@ public class RecordSerializer {
             record.updatedAt = updatedAtDatetime.toDate();
         }
 
-        // handler _created_by, _updated_by, _ownerID
+        // handle _created_by, _updated_by, _ownerID
         record.creatorId = jsonObject.optString("_created_by");
         record.updaterId = jsonObject.optString("_updated_by");
         record.ownerId = jsonObject.optString("_ownerID");
 
+        // handle _access
         JSONArray accessJsonArray = null;
         if (!jsonObject.isNull("_access")) {
             accessJsonArray = jsonObject.getJSONArray("_access");
+        }
+
+        // handle _transient
+        if (!jsonObject.isNull("_transient")) {
+            JSONObject transientObject = jsonObject.getJSONObject("_transient");
+            Iterator<String> transientKeys = transientObject.keys();
+
+            while(transientKeys.hasNext()) {
+                String perKey = transientKeys.next();
+
+                // server will return { "some-key": null } when "some-key" is not a relation
+                if (!transientObject.isNull(perKey)) {
+                    JSONObject perValue = transientObject.getJSONObject(perKey);
+                    Record perRecord = RecordSerializer.deserialize(perValue);
+
+                    record.transientMap.put(perKey, perRecord);
+                }
+            }
         }
 
         record.access = AccessControlSerializer.deserialize(accessJsonArray);
@@ -194,6 +235,8 @@ public class RecordSerializer {
                     record.set(nextKey, DateSerializer.deserialize((JSONObject) nextValue));
                 } else if (AssetSerializer.isAssetFormat(nextValue)) {
                     record.set(nextKey, AssetSerializer.deserialize((JSONObject) nextValue));
+                } else if (ReferenceSerializer.isReferenceFormat(nextValue)) {
+                    record.set(nextKey, ReferenceSerializer.deserialize((JSONObject) nextValue));
                 } else {
                     record.set(nextKey, nextValue);
                 }
@@ -201,135 +244,5 @@ public class RecordSerializer {
         }
 
         return record;
-    }
-
-    /**
-     * The Skygear Date Serializer.
-     *
-     * This class converts between date object and JSON object in Skygear defined format.
-     */
-    static class DateSerializer {
-        /**
-         * Serialize a date object.
-         *
-         * @param date the date object
-         * @return the json object
-         */
-        static JSONObject serialize(Date date) {
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("$type", "date");
-                jsonObject.put("$date", RecordSerializer.dateTimeFormatter.print(new DateTime(date)));
-
-                return jsonObject;
-            } catch (JSONException e) {
-                return null;
-            }
-        }
-
-        /**
-         * Deserialize json object.
-         *
-         * @param dateJsonObject the date json object
-         * @return the date object
-         * @throws JSONException the json exception
-         */
-        static Date deserialize(JSONObject dateJsonObject) throws JSONException {
-            String typeValue = dateJsonObject.getString("$type");
-            if (typeValue.equals("date")) {
-                String dateString = dateJsonObject.getString("$date");
-
-                return RecordSerializer.dateTimeFormatter.parseDateTime(dateString).toDate();
-            }
-
-            throw new JSONException("Invalid $type value: " + typeValue);
-        }
-
-        /**
-         * Determines whether an object is a JSON object in Skygear defined date format.
-         *
-         * @param object the object
-         * @return the indicating boolean
-         */
-        static boolean isDateFormat(Object object) {
-            try {
-                JSONObject jsonObject = (JSONObject) object;
-
-                return jsonObject.getString("$type").equals("date") &&
-                        !jsonObject.isNull("$date");
-            } catch (ClassCastException e) {
-                return false;
-            } catch (JSONException e) {
-                return false;
-            }
-        }
-    }
-
-    /**
-     * The Skygear Asset Serializer.
-     *
-     * This class converts between asset object and JSON object in Skygear defined format.
-     */
-    static class AssetSerializer {
-
-        /**
-         * Serialize an asset
-         *
-         * @param asset the asset
-         * @return the json object
-         */
-        static JSONObject serialize(Asset asset) {
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("$type", "asset");
-                jsonObject.put("$name", asset.getName());
-
-                if (asset.getUrl() != null) {
-                    jsonObject.put("$url", asset.getUrl());
-                }
-
-                return jsonObject;
-            } catch (JSONException e) {
-                return null;
-            }
-        }
-
-        /**
-         * Deserialize an asset from json object.
-         *
-         * @param assetJSONObject the asset json object
-         * @return the asset
-         * @throws JSONException the json exception
-         */
-        static Asset deserialize(JSONObject assetJSONObject) throws JSONException {
-            String typeValue = assetJSONObject.getString("$type");
-            if (typeValue.equals("asset")) {
-                String assetName = assetJSONObject.getString("$name");
-                String assetUrl = assetJSONObject.getString("$url");
-
-                return new Asset(assetName, assetUrl);
-            }
-
-            throw new JSONException("Invalid $type value: " + typeValue);
-        }
-
-        /**
-         * Determines whether an object is a JSON object in Skygear defined asset format.
-         *
-         * @param object the object
-         * @return the indicating boolean
-         */
-        static boolean isAssetFormat(Object object) {
-            try {
-                JSONObject jsonObject = (JSONObject) object;
-                return jsonObject.getString("$type").equals("asset") &&
-                        !jsonObject.isNull("$name") &&
-                        !jsonObject.isNull("$url");
-            } catch (ClassCastException e) {
-                return false;
-            } catch (JSONException e) {
-                return false;
-            }
-        }
     }
 }
