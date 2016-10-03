@@ -1,5 +1,7 @@
 package io.skygear.skygear;
 
+import android.location.Location;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -395,6 +397,82 @@ public class Query {
                     String.format("Cannot build query predicate for parameter: %s, %s", key, needle.toString())
             );
         }
+        return this;
+    }
+
+    /**
+     * Set distance less than predicate.
+     *
+     * <p> This method returns the query itself, for chaining different predicate methods </p>
+     *
+     * @param key      the key
+     * @param loc      the loc
+     * @param distance the distance
+     * @return the query
+     */
+    public Query distanceLessThan(String key, Location loc, double distance) {
+        try {
+            JSONArray distancePredicate = QueryPredicate.functionPredicate(
+                    "distance",
+                    new Object[]{
+                            QueryPredicate.keypathRepresentation(key),
+                            LocationSerializer.serialize(loc)
+                    }
+            );
+            this.predicates.add(QueryPredicate.basicPredicate(
+                    distancePredicate,
+                    "lt",
+                    distance
+            ));
+        } catch (JSONException e) {
+            throw new InvalidParameterException(
+                    String.format(
+                            "Cannot build query predicate for parameter: %s, %s, %s",
+                            key,
+                            Double.toString(distance),
+                            loc.toString()
+                    )
+            );
+        }
+
+        return this;
+    }
+
+    /**
+     * Set distance greater than predicate.
+     *
+     * <p> This method returns the query itself, for chaining different predicate methods </p>
+     *
+     * @param key      the key
+     * @param loc      the loc
+     * @param distance the distance
+     * @return the query
+     */
+    public Query distanceGreaterThan(String key, Location loc, double distance) {
+        try {
+            JSONArray distancePredicate = QueryPredicate.functionPredicate(
+                    "distance",
+                    new Object[]{
+                            QueryPredicate.keypathRepresentation(key),
+                            LocationSerializer.serialize(loc)
+                    }
+            );
+            this.predicates.add(QueryPredicate.basicPredicate(
+                    distancePredicate,
+                    "gt",
+                    distance
+            ));
+        } catch (JSONException e) {
+            throw new InvalidParameterException(
+                    String.format(
+                            "Cannot build query predicate for parameter: %s, %s, %s",
+                            key,
+                            Double.toString(distance),
+                            loc.toString()
+                    )
+            );
+        }
+
         return this;
     }
 

@@ -1,5 +1,6 @@
 package io.skygear.skygear;
 
+import android.location.Location;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.json.JSONArray;
@@ -183,6 +184,60 @@ public class QueryUnitTest {
         assertEquals("rating", predicateKeypath.getString("$val"));
 
         assertEquals(3, predicate.getInt(2));
+    }
+
+    @Test
+    public void testDistanceLessThanQuery() throws Exception {
+        Location location = new Location("skygear");
+        location.setLatitude(22.3360901);
+        location.setLongitude(114.1476178);
+
+        Query noteQuery = new Query("Note")
+                .distanceLessThan("loc", location, 500);
+        JSONArray predicateJson = noteQuery.getPredicateJson();
+        assertEquals("lt", predicateJson.getString(0));
+
+        JSONArray functionPredicate = predicateJson.getJSONArray(1);
+        assertEquals("func", functionPredicate.getString(0));
+        assertEquals("distance", functionPredicate.getString(1));
+
+        JSONObject keypathPredicate = functionPredicate.getJSONObject(2);
+        assertEquals("keypath", keypathPredicate.getString("$type"));
+        assertEquals("loc", keypathPredicate.getString("$val"));
+
+        JSONObject locationObject = functionPredicate.getJSONObject(3);
+        assertEquals("geo", locationObject.getString("$type"));
+        assertEquals(22.3360901, locationObject.getDouble("$lat"));
+        assertEquals(114.1476178, locationObject.getDouble("$lng"));
+
+        assertEquals(500.0, predicateJson.getDouble(2));
+    }
+
+    @Test
+    public void testDistanceGreaterThanQuery() throws Exception {
+        Location location = new Location("skygear");
+        location.setLatitude(22.3360901);
+        location.setLongitude(114.1476178);
+
+        Query noteQuery = new Query("Note")
+                .distanceGreaterThan("loc", location, 500);
+        JSONArray predicateJson = noteQuery.getPredicateJson();
+        assertEquals("gt", predicateJson.getString(0));
+
+        JSONArray functionPredicate = predicateJson.getJSONArray(1);
+        assertEquals("func", functionPredicate.getString(0));
+        assertEquals("distance", functionPredicate.getString(1));
+
+        JSONObject keypathPredicate = functionPredicate.getJSONObject(2);
+        assertEquals("keypath", keypathPredicate.getString("$type"));
+        assertEquals("loc", keypathPredicate.getString("$val"));
+
+        JSONObject locationObject = functionPredicate.getJSONObject(3);
+        assertEquals("geo", locationObject.getString("$type"));
+        assertEquals(22.3360901, locationObject.getDouble("$lat"));
+        assertEquals(114.1476178, locationObject.getDouble("$lng"));
+
+        assertEquals(500.0, predicateJson.getDouble(2));
     }
 
     @Test

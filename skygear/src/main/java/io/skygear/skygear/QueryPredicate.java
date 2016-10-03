@@ -41,6 +41,28 @@ class QueryPredicate {
     }
 
     /**
+     * Create a function typed predicate.
+     *
+     * @param functionName the function name
+     * @param args         the function argument
+     * @return the predicate
+     */
+    static JSONArray functionPredicate(String functionName, Object[] args) {
+        JSONArray predicate = new JSONArray();
+        predicate.put("func");
+        predicate.put(functionName);
+
+        if (args != null) {
+            for (int idx = 0; idx < args.length; idx++) {
+                Object perArg = args[idx];
+                predicate.put(perArg);
+            }
+        }
+
+        return predicate;
+    }
+
+    /**
      * Get an inverted predicate.
      *
      * @param anotherJSON the original predicate
