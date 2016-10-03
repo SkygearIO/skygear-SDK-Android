@@ -1,5 +1,6 @@
 package io.skygear.skygear;
 
+import android.location.Location;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.joda.time.DateTime;
@@ -98,6 +99,11 @@ public class RecordSerializerUnitTest {
         // prepare reference record
         Record aComment = new Record("Comment", referenceRecordData);
 
+        // prepare location object
+        Location location = new Location("skygear");
+        location.setLatitude(22.3360901);
+        location.setLongitude(114.1476178);
+
         // prepare record data
         Map<String, Object> data = new HashMap<>();
         data.put("hello", "world");
@@ -105,6 +111,7 @@ public class RecordSerializerUnitTest {
         data.put("abc", 12.345);
         data.put("publish_date", new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate());
         data.put("comment", new Reference(aComment));
+        data.put("loc", location);
         data.put("attachment", new Asset(
                 "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
                 "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt"
@@ -143,6 +150,11 @@ public class RecordSerializerUnitTest {
         JSONObject commentObject = jsonObject.getJSONObject("comment");
         assertEquals("Comment/" + aComment.getId(), commentObject.getString("$id"));
         assertEquals("ref", commentObject.getString("$type"));
+
+        JSONObject locationObject = jsonObject.getJSONObject("loc");
+        assertEquals("geo", locationObject.getString("$type"));
+        assertEquals(22.3360901, locationObject.getDouble("$lat"));
+        assertEquals(114.1476178, locationObject.getDouble("$lng"));
 
         JSONObject attachmentObject = jsonObject.getJSONObject("attachment");
         assertEquals("asset", attachmentObject.getString("$type"));
@@ -262,6 +274,12 @@ public class RecordSerializerUnitTest {
         commentReferenceObject.put("$id", "Comment/" + referenceRecordId);
         jsonObject.put("comment", commentReferenceObject);
 
+        JSONObject locationObject = new JSONObject();
+        locationObject.put("$type", "geo");
+        locationObject.put("$lat", 22.3360901);
+        locationObject.put("$lng", 114.1476178);
+        jsonObject.put("loc", locationObject);
+
         // assert deserialized record
         Record record = RecordSerializer.deserialize(jsonObject);
 
@@ -303,6 +321,11 @@ public class RecordSerializerUnitTest {
         Reference commentRef = (Reference) record.get("comment");
         assertEquals("Comment", commentRef.getType());
         assertEquals(referenceRecordId, commentRef.getId());
+
+        // assert location field
+        Location loc = (Location) record.get("loc");
+        assertEquals(22.3360901, loc.getLatitude());
+        assertEquals(114.1476178, loc.getLongitude());
 
         // assert transient
         Map<String, Record> transientMap = record.getTransient();

@@ -1,5 +1,6 @@
 package io.skygear.skygear;
 
+import android.location.Location;
 import android.util.Log;
 
 import org.joda.time.DateTime;
@@ -54,6 +55,7 @@ public class RecordSerializer {
             /* Other types */
             Date.class,
             Asset.class,
+            Location.class,
             Reference.class
     ));
 
@@ -126,6 +128,8 @@ public class RecordSerializer {
                     recordData.put(perKey, DateSerializer.serialize((Date) perValue));
                 } else if (perValue instanceof Asset) {
                     recordData.put(perKey, AssetSerializer.serialize((Asset) perValue));
+                } else if (perValue instanceof Location) {
+                    recordData.put(perKey, LocationSerializer.serialize((Location) perValue));
                 } else if (perValue instanceof Reference) {
                     recordData.put(perKey, ReferenceSerializer.serialize((Reference) perValue));
                 }
@@ -235,6 +239,8 @@ public class RecordSerializer {
                     record.set(nextKey, DateSerializer.deserialize((JSONObject) nextValue));
                 } else if (AssetSerializer.isAssetFormat(nextValue)) {
                     record.set(nextKey, AssetSerializer.deserialize((JSONObject) nextValue));
+                } else if (LocationSerializer.isLocationFormat(nextValue)) {
+                    record.set(nextKey, LocationSerializer.deserialize((JSONObject) nextValue));
                 } else if (ReferenceSerializer.isReferenceFormat(nextValue)) {
                     record.set(nextKey, ReferenceSerializer.deserialize((JSONObject) nextValue));
                 } else {
