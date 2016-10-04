@@ -146,12 +146,16 @@ public class RecordSerializer {
             jsonObject.put("_access", AccessControlSerializer.serialize(record.getAccess()));
 
             // handle _transient
-            Map<String, Record> transientMap = record.getTransient();
+            Map<String, Object> transientMap = record.getTransient();
             if (transientMap.size() > 0) {
                 JSONObject transientObject = new JSONObject();
                 for (String perKey : transientMap.keySet()) {
-                    Record perRecord = transientMap.get(perKey);
-                    transientObject.put(perKey, RecordSerializer.serialize(perRecord));
+                    Object perValue = transientMap.get(perKey);
+                    if (perValue instanceof Record) {
+                        transientObject.put(perKey, RecordSerializer.serialize((Record) perValue));
+                    } else {
+                        transientObject.put(perKey, perValue);
+                    }
                 }
 
                 jsonObject.put("_transient", transientObject);
@@ -219,10 +223,15 @@ public class RecordSerializer {
 
                 // server will return { "some-key": null } when "some-key" is not a relation
                 if (!transientObject.isNull(perKey)) {
-                    JSONObject perValue = transientObject.getJSONObject(perKey);
-                    Record perRecord = RecordSerializer.deserialize(perValue);
-
-                    record.transientMap.put(perKey, perRecord);
+                    Object perValue = transientObject.get(perKey);
+                    if (perValue instanceof JSONObject) {
+                        record.transientMap.put(
+                                perKey,
+                                RecordSerializer.deserialize((JSONObject) perValue)
+                        );
+                    } else {
+                        record.transientMap.put(perKey, perValue);
+                    }
                 }
             }
         }

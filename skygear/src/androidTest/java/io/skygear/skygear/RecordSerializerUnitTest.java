@@ -43,6 +43,7 @@ public class RecordSerializerUnitTest {
         assertFalse(RecordSerializer.isValidKey("_created_by"));
         assertFalse(RecordSerializer.isValidKey("_updated_by"));
         assertFalse(RecordSerializer.isValidKey("_access"));
+        assertFalse(RecordSerializer.isValidKey("_transient"));
 
         assertTrue(RecordSerializer.isValidKey("hello"));
     }
@@ -127,6 +128,7 @@ public class RecordSerializerUnitTest {
         aNote.access = new AccessControl()
                 .addEntry(new AccessControl.Entry(AccessControl.Level.READ_WRITE));
         aNote.transientMap.put("comment", aComment);
+        aNote.transientMap.put("distance", 49871.1551252);
 
         // assert serialized JSON Object
         JSONObject jsonObject = RecordSerializer.serialize(aNote);
@@ -176,8 +178,10 @@ public class RecordSerializerUnitTest {
 
         // assert serialized transient JSON Object
         JSONObject transientObject = jsonObject.getJSONObject("_transient");
-        JSONObject commentTransient = transientObject.getJSONObject("comment");
 
+        assertEquals(49871.1551252, transientObject.getDouble("distance"));
+
+        JSONObject commentTransient = transientObject.getJSONObject("comment");
         assertEquals("Comment/" + aComment.getId(), commentTransient.getString("_id"));
         assertEquals("google", commentTransient.getString("okay"));
         assertEquals("siri", commentTransient.getString("hey"));
@@ -252,6 +256,7 @@ public class RecordSerializerUnitTest {
         JSONObject transientObject = new JSONObject();
         transientObject.put("comment", referenceRecordData);
         transientObject.put("null-key", JSONObject.NULL);
+        transientObject.put("distance", 9187.127231);
         jsonObject.put("_transient", transientObject);
 
         jsonObject.put("hello", "world");
@@ -328,10 +333,12 @@ public class RecordSerializerUnitTest {
         assertEquals(114.1476178, loc.getLongitude());
 
         // assert transient
-        Map<String, Record> transientMap = record.getTransient();
-        assertEquals(1, transientMap.size());
+        Map<String, Object> transientMap = record.getTransient();
+        assertEquals(2, transientMap.size());
 
-        Record commentTransient = transientMap.get("comment");
+        assertEquals(9187.127231, transientMap.get("distance"));
+
+        Record commentTransient = (Record) transientMap.get("comment");
         assertEquals("Comment", commentTransient.getType());
         assertEquals(referenceRecordId, commentTransient.getId());
         assertEquals("google", commentTransient.get("okay"));

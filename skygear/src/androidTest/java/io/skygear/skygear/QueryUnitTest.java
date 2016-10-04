@@ -453,6 +453,31 @@ public class QueryUnitTest {
     }
 
     @Test
+    public void testDistanceTransient() throws Exception {
+        Location location = new Location("skygear");
+        location.setLatitude(22.3360901);
+        location.setLongitude(114.1476178);
+
+        Query noteQuery = new Query("Note")
+                .transientIncludeDistance("location", "distance", location);
+
+        JSONObject transientPredicateJson = noteQuery.getTransientPredicateJson();
+        JSONArray locationTransient = transientPredicateJson.getJSONArray("distance");
+
+        assertEquals("func", locationTransient.getString(0));
+        assertEquals("distance", locationTransient.getString(1));
+
+        JSONObject keypathRepresentation = locationTransient.getJSONObject(2);
+        assertEquals("keypath", keypathRepresentation.getString("$type"));
+        assertEquals("location", keypathRepresentation.getString("$val"));
+
+        JSONObject locationObject = locationTransient.getJSONObject(3);
+        assertEquals("geo", locationObject.getString("$type"));
+        assertEquals(22.3360901, locationObject.getDouble("$lat"));
+        assertEquals(114.1476178, locationObject.getDouble("$lng"));
+    }
+
+    @Test
     public void testMultiplePredicates() throws Exception {
         Query noteQuery = new Query("Note")
                 .caseInsensitiveLike("title", "Hello")
