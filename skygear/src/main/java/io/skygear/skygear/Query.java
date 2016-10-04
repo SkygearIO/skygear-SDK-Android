@@ -406,7 +406,7 @@ public class Query {
      * <p> This method returns the query itself, for chaining different predicate methods </p>
      *
      * @param key      the key
-     * @param loc      the loc
+     * @param loc      the location for distance calculation
      * @param distance the distance
      * @return the query
      */
@@ -444,7 +444,7 @@ public class Query {
      * <p> This method returns the query itself, for chaining different predicate methods </p>
      *
      * @param key      the key
-     * @param loc      the loc
+     * @param loc      the location for distance calculation
      * @param distance the distance
      * @return the query
      */
@@ -531,6 +531,62 @@ public class Query {
         } catch (JSONException e) {
             throw new InvalidParameterException(
                     String.format("Cannot build sort predicate for key: %s", key)
+            );
+        }
+
+        return this;
+    }
+
+    /**
+     * Add distance sorting ascending key
+     *
+     * <p> This method returns the query itself, for chaining different predicate methods </p>
+     *
+     * @param key the key
+     * @param loc the location for distance calculation
+     * @return the query
+     */
+    public Query addAscendingByDistance(String key, Location loc) {
+        try {
+            JSONArray sortPredicate = new JSONArray();
+            sortPredicate.put(QueryPredicate.functionPredicate("distance", new JSONObject[]{
+                    QueryPredicate.keypathRepresentation(key),
+                    LocationSerializer.serialize(loc)
+            }));
+            sortPredicate.put("asc");
+
+            this.sortPredicate.put(sortPredicate);
+        } catch (JSONException e) {
+            throw new InvalidParameterException(
+                    String.format("Cannot build sort predicate for: %s, %s", key, loc.toString())
+            );
+        }
+
+        return this;
+    }
+
+    /**
+     * Add distance sorting descending key
+     *
+     * <p> This method returns the query itself, for chaining different predicate methods </p>
+     *
+     * @param key the key
+     * @param loc the location for distance calculation
+     * @return the query
+     */
+    public Query addDescendingByDistance(String key, Location loc) {
+        try {
+            JSONArray sortPredicate = new JSONArray();
+            sortPredicate.put(QueryPredicate.functionPredicate("distance", new JSONObject[]{
+                    QueryPredicate.keypathRepresentation(key),
+                    LocationSerializer.serialize(loc)
+            }));
+            sortPredicate.put("desc");
+
+            this.sortPredicate.put(sortPredicate);
+        } catch (JSONException e) {
+            throw new InvalidParameterException(
+                    String.format("Cannot build sort predicate for: %s, %s", key, loc.toString())
             );
         }
 
