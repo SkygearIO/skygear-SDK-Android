@@ -626,6 +626,50 @@ public class Query {
     }
 
     /**
+     * Transient include distance from a specific location.
+     *
+     * @param key the key
+     * @param loc the location for distance calculation
+     * @return the query
+     */
+    public Query transientIncludeDistance(String key, Location loc) {
+        return this.transientIncludeDistance(key, key, loc);
+    }
+
+    /**
+     * Transient include distance from a specific location.
+     *
+     * @param key        the key
+     * @param mappingKey the mapping key
+     * @param loc        the location for distance calculation
+     * @return the query
+     */
+    public Query transientIncludeDistance(String key, String mappingKey, Location loc) {
+        try {
+            this.transientPredicate.put(
+                    mappingKey,
+                    QueryPredicate.functionPredicate(
+                            "distance",
+                            new JSONObject[]{
+                                    QueryPredicate.keypathRepresentation(key),
+                                    LocationSerializer.serialize(loc)
+                            }
+                    )
+            );
+        } catch (JSONException e) {
+            throw new InvalidParameterException(
+                    String.format(
+                            "Cannot build location transient predicate for key: %s => %s",
+                            mappingKey,
+                            key
+                    )
+            );
+        }
+
+        return this;
+    }
+
+    /**
      * Or query.
      *
      * @param queries the queries

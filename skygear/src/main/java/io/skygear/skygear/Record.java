@@ -25,7 +25,7 @@ public class Record {
     String updaterId;
     String ownerId;
 
-    Map<String, Record> transientMap;
+    Map<String, Object> transientMap;
 
     Map<String, Object> data;
 
@@ -190,7 +190,7 @@ public class Record {
      *
      * @return the transient map
      */
-    public Map<String, Record> getTransient() {
+    public Map<String, Object> getTransient() {
         return new HashMap<>(this.transientMap);
     }
 
