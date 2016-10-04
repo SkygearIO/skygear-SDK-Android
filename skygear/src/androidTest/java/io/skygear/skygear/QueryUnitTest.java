@@ -379,6 +379,64 @@ public class QueryUnitTest {
     }
 
     @Test
+    public void testDistanceAscendingSorting() throws Exception {
+        Location location = new Location("skygear");
+        location.setLatitude(22.3360901);
+        location.setLongitude(114.1476178);
+
+        Query noteQuery = new Query("Note")
+                .addAscendingByDistance("loc", location);
+
+        JSONArray sortPredicate = noteQuery.getSortPredicateJson();
+        assertEquals(1, sortPredicate.length());
+
+        JSONArray distanceSortPredicate = sortPredicate.getJSONArray(0);
+        JSONArray distanceFunctionPredicate = distanceSortPredicate.getJSONArray(0);
+        assertEquals("func", distanceFunctionPredicate.get(0));
+        assertEquals("distance", distanceFunctionPredicate.get(1));
+
+        JSONObject keypathRepresentation = distanceFunctionPredicate.getJSONObject(2);
+        assertEquals("keypath", keypathRepresentation.getString("$type"));
+        assertEquals("loc", keypathRepresentation.getString("$val"));
+
+        JSONObject locationJson = distanceFunctionPredicate.getJSONObject(3);
+        assertEquals("geo", locationJson.getString("$type"));
+        assertEquals(22.3360901, locationJson.getDouble("$lat"));
+        assertEquals(114.1476178, locationJson.getDouble("$lng"));
+
+        assertEquals("asc", distanceSortPredicate.getString(1));
+    }
+
+    @Test
+    public void testDistanceDescendingSorting() throws Exception {
+        Location location = new Location("skygear");
+        location.setLatitude(22.3360901);
+        location.setLongitude(114.1476178);
+
+        Query noteQuery = new Query("Note")
+                .addDescendingByDistance("loc", location);
+
+        JSONArray sortPredicate = noteQuery.getSortPredicateJson();
+        assertEquals(1, sortPredicate.length());
+
+        JSONArray distanceSortPredicate = sortPredicate.getJSONArray(0);
+        JSONArray distanceFunctionPredicate = distanceSortPredicate.getJSONArray(0);
+        assertEquals("func", distanceFunctionPredicate.get(0));
+        assertEquals("distance", distanceFunctionPredicate.get(1));
+
+        JSONObject keypathRepresentation = distanceFunctionPredicate.getJSONObject(2);
+        assertEquals("keypath", keypathRepresentation.getString("$type"));
+        assertEquals("loc", keypathRepresentation.getString("$val"));
+
+        JSONObject locationJson = distanceFunctionPredicate.getJSONObject(3);
+        assertEquals("geo", locationJson.getString("$type"));
+        assertEquals(22.3360901, locationJson.getDouble("$lat"));
+        assertEquals(114.1476178, locationJson.getDouble("$lng"));
+
+        assertEquals("desc", distanceSortPredicate.getString(1));
+    }
+
+    @Test
     public void testTransient() throws Exception {
         Query noteQuery = new Query("Note")
                 .transientInclude("comment")
