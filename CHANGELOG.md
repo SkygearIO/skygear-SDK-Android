@@ -1,3 +1,13 @@
+## 0.17.1 (2016-10-04)
+
+### Features
+
+- Support distance related sorting predicates (#56)
+- Support geo location (#56)
+- Support transient and record reference (#49)
+- Support asset (#43)
+
+
 ## 0.17.0 (2016-09-15)
 
 ### Features
