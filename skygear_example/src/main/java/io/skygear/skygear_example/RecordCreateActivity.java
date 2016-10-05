@@ -1,15 +1,21 @@
 package io.skygear.skygear_example;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,7 +24,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONException;
 
@@ -34,8 +46,15 @@ import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordDeleteResponseHandler;
 import io.skygear.skygear.RecordSaveResponseHandler;
 
-public class RecordCreateActivity extends AppCompatActivity {
+public class RecordCreateActivity
+        extends AppCompatActivity
+        implements
+            GoogleApiClient.ConnectionCallbacks,
+            GoogleApiClient.OnConnectionFailedListener
+{
+    private static final String TAG = RecordCreateActivity.class.getSimpleName();
     private static final int PICK_IMAGE_REQ = 12345;
+    private static final int LOCATION_PERMISSION_REQ_CODE = 12346;
 
     private EditText[] recordKeyFields;
     private EditText[] recordValueFields;
@@ -44,12 +63,18 @@ public class RecordCreateActivity extends AppCompatActivity {
     private ImageView recordAssetImageView;
     private Button recordAssetButton;
 
+    private EditText recordLocationKeyField;
+    private Switch recordLocationSwitch;
+
     private TextView display;
     private Button deleteButton;
 
     private Container skygear;
     private Record record;
     private Asset recordAsset;
+
+    private GoogleApiClient googleApiClient;
+    private Location currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +97,94 @@ public class RecordCreateActivity extends AppCompatActivity {
         this.recordAssetImageView = (ImageView) findViewById(R.id.record_asset_image_view);
         this.recordAssetButton = (Button) findViewById(R.id.record_asset_button);
 
+        this.recordLocationKeyField = (EditText) findViewById(R.id.record_location_key);
+        this.recordLocationSwitch = (Switch) findViewById(R.id.record_location_switch);
+
         this.deleteButton = (Button) findViewById(R.id.delete_button);
         this.display = (TextView) findViewById(R.id.record_display);
 
         this.updateRecordDisplay();
         this.updateAssetViews();
+
+        if (this.googleApiClient == null) {
+            this.googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.i(TAG, "onConnected: Google API Client Connected");
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
+                    LOCATION_PERMISSION_REQ_CODE
+            );
+        } else {
+            Log.i(TAG, "checkSelfPermission: Okay to get the location");
+            this.getCurrentGeoLocation();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "onConnectionSuspended: Google API Client Connection Suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i(TAG, "onConnectionFailed: Google API Client Connection Failed");
+    }
+
+    @Override
+    protected void onStart() {
+        this.googleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        this.googleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQ_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "onRequestPermissionsResult: Got the location permission");
+                    this.getCurrentGeoLocation();
+                } else {
+                    Log.i(TAG, "onRequestPermissionsResult: Fail to get location permission");
+                    Toast.makeText(this, "Fail to get location permission", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void getCurrentGeoLocation() {
+        Location location = LocationServices.FusedLocationApi.getLastLocation(this.googleApiClient);
+        if (location != null) {
+            Log.i(TAG, String.format(
+                    "getCurrentGeoLocation: Success - (%f, %f)",
+                    location.getLatitude(),
+                    location.getLongitude()
+            ));
+            this.currentLocation = location;
+            this.recordLocationSwitch.setEnabled(true);
+            Toast.makeText(this, "Successfully get current location", Toast.LENGTH_LONG).show();
+        } else {
+            Log.i(TAG, "getCurrentGeoLocation: Fail to get current geo location");
+            Toast.makeText(this, "Fail to get current geo location", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void updateRecordDisplay() {
@@ -155,6 +263,11 @@ public class RecordCreateActivity extends AppCompatActivity {
         String recordAssetKey = this.recordAssetKeyField.getText().toString().trim();
         if (recordAssetKey.length() > 0 && this.recordAsset != null) {
             newRecord.set(recordAssetKey, this.recordAsset);
+        }
+
+        String recordLocationKey = this.recordLocationKeyField.getText().toString().trim();
+        if (recordLocationKey.length() > 0 && this.recordLocationSwitch.isChecked()) {
+            newRecord.set(recordLocationKey, this.currentLocation);
         }
 
         final AlertDialog successDialog = new AlertDialog.Builder(this)
@@ -269,20 +382,18 @@ public class RecordCreateActivity extends AppCompatActivity {
             case PICK_IMAGE_REQ:
                 if (resultCode == RESULT_OK) {
                     this.handleImagePick(data.getData());
-
-
                 }
         }
     }
 
     private void handleImagePick(Uri uri) {
-        Log.i("RecordCreateActivity", "handleImagePick: Got URI: " + uri);
+        Log.i(TAG, "handleImagePick: Got URI: " + uri);
         ContentResolver contentResolver = getContentResolver();
 
         try {
             final InputStream inputStream = contentResolver.openInputStream(uri);
             final String mimeType = contentResolver.getType(uri);
-            Log.i("RecordCreateActivity", "handleImagePick: Got MIME-Type: " + mimeType);
+            Log.i(TAG, "handleImagePick: Got MIME-Type: " + mimeType);
 
             final ProgressDialog loading = new ProgressDialog(this);
             loading.setTitle("Loading");
@@ -293,14 +404,14 @@ public class RecordCreateActivity extends AppCompatActivity {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.i("RecordCreateActivity", "handleImagePick: Start decoding the image");
+                    Log.i(TAG, "handleImagePick: Start decoding the image");
 
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
 
                     final byte[] bytes = byteArrayOutputStream.toByteArray();
-                    Log.i("RecordCreateActivity", "handleImagePick: Finish decoding, size: " + bytes.length);
+                    Log.i(TAG, "handleImagePick: Finish decoding, size: " + bytes.length);
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -328,7 +439,7 @@ public class RecordCreateActivity extends AppCompatActivity {
         this.skygear.uploadAsset(asset, new AssetPostRequest.ResponseHandler() {
             @Override
             public void onPostSuccess(Asset asset, String response) {
-                Log.i("RecordCreateActivity", "handleImageUpload: successfully uploaded to " + asset.getUrl());
+                Log.i(TAG, "handleImageUpload: successfully uploaded to " + asset.getUrl());
                 RecordCreateActivity.this.recordAsset = asset;
                 RecordCreateActivity.this.updateAssetViews();
                 loading.dismiss();
@@ -336,10 +447,9 @@ public class RecordCreateActivity extends AppCompatActivity {
 
             @Override
             public void onPostFail(Asset asset, String reason) {
-                Log.i("RecordCreateActivity", "handleImageUpload: fail - " + reason);
+                Log.i(TAG, "handleImageUpload: fail - " + reason);
                 loading.dismiss();
             }
         });
     }
-
 }
