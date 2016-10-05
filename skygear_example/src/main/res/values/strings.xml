@@ -47,4 +47,5 @@
     <string name="set_image">Set Image</string>
     <string name="remove_image">Remove Image</string>
     <string name="transient_include">Transient Include</string>
+    <string name="set_current_location">Set to current location</string>
 </resources>
