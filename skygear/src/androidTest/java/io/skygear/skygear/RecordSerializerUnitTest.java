@@ -235,6 +235,20 @@ public class RecordSerializerUnitTest {
     }
 
     @Test
+    /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/61 */
+    public void testRecordSerializeNull() throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        data.put("null-value-key", JSONObject.NULL);
+
+        Record aNote = new Record("Note", data);
+        JSONObject jsonObject = RecordSerializer.serialize(aNote);
+
+        assertNotNull(jsonObject);
+        assertTrue(jsonObject.has("null-value-key"));
+        assertTrue(jsonObject.isNull("null-value-key"));
+    }
+
+    @Test
     public void testRecordDeserializationNormalFlow() throws Exception {
         // prepare reference record data
         String referenceRecordId = "7a7873dc-e14b-4b8f-9c51-948da68e924e";
@@ -419,5 +433,16 @@ public class RecordSerializerUnitTest {
         jsonObject.put("foo", "bar");
 
         RecordSerializer.deserialize(jsonObject);
+    }
+
+    @Test
+    /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/61 */
+    public void testRecordDeserializeNull() throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("null-value-key", JSONObject.NULL);
+
+        Record aNote = RecordSerializer.deserialize(jsonObject);
+        assertEquals(JSONObject.NULL, aNote.get("null-value-key"));
     }
 }
