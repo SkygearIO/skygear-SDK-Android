@@ -1,5 +1,8 @@
 package io.skygear.skygear;
 
+import android.util.Log;
+
+import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
@@ -8,6 +11,15 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * The WebSocket Client Implementation.
@@ -29,6 +41,21 @@ class WebSocketClientImpl
     WebSocketClientImpl(URI serverURI, EventHandler eventHandler) {
         super(serverURI, new Draft_17());
         this.eventHandler = new WeakReference<>(eventHandler);
+
+        if (serverURI.getScheme().equalsIgnoreCase("wss")) {
+            try {
+                TrustManager[] trustManagers = new TrustManager[1];
+                trustManagers[0] = new DummyX509TrustManager();
+
+                SSLContext ctx = SSLContext.getInstance("TLS");
+                ctx.init(null, trustManagers, new SecureRandom());
+
+                this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(ctx));
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                Log.w(TAG, "WebSocketClientImpl: Fail to create SSL Context", e);
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -151,6 +178,26 @@ class WebSocketClientImpl
          */
         public Exception(String detailMessage) {
             super(detailMessage);
+        }
+    }
+
+    /**
+     * The Dummy Implementation of x509 Trust Manager.
+     */
+    private static class DummyX509TrustManager implements X509TrustManager {
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
         }
     }
 }
