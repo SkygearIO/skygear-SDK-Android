@@ -95,6 +95,10 @@ public class RecordSerializer {
             return false;
         }
 
+        if (value == JSONObject.NULL) {
+            return true;
+        }
+
         Class<?> valueClass = value.getClass();
 
         if (valueClass.isArray()) {
