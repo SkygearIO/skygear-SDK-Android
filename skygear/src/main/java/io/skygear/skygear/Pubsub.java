@@ -204,7 +204,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
 
     private void reconnect() {
         long retryLimit = this.getRetryLimit();
-        if (retryLimit != RETRY_LIMIT_INFINITE && this.retryCount < retryLimit) {
+        if (retryLimit != RETRY_LIMIT_INFINITE && this.retryCount > retryLimit) {
             Log.i(TAG, String.format("Pubsub reconnection count > %d. Give up.", retryLimit));
             return;
         }
