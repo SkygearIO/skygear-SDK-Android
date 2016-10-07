@@ -1,5 +1,8 @@
 package io.skygear.skygear;
 
+import android.util.Log;
+
+import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
@@ -8,6 +11,16 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 
 /**
  * The WebSocket Client Implementation.
@@ -29,6 +42,32 @@ class WebSocketClientImpl
     WebSocketClientImpl(URI serverURI, EventHandler eventHandler) {
         super(serverURI, new Draft_17());
         this.eventHandler = new WeakReference<>(eventHandler);
+
+        String scheme = serverURI.getScheme();
+        if (scheme != null && scheme.equalsIgnoreCase("wss")) {
+            KeyManager[] keyManagers;
+            try {
+                KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                KeyManagerFactory keyManagerFactory
+                        = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                keyManagerFactory.init(keyStore, null);
+                keyManagers = keyManagerFactory.getKeyManagers();
+            } catch (KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException e) {
+                Log.w(TAG, "WebSocketClientImpl: Fail to create SSL Key Managers", e);
+                throw new RuntimeException(e);
+            }
+
+            SSLContext ctx;
+            try {
+                ctx = SSLContext.getInstance("TLS");
+                ctx.init(keyManagers, null, new SecureRandom());
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                Log.w(TAG, "WebSocketClientImpl: Fail to create SSL Context", e);
+                throw new RuntimeException(e);
+            }
+
+            this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(ctx));
+        }
     }
 
     /**
