@@ -1,3 +1,15 @@
+## 0.17.2 (2016-10-12)
+
+### Features
+
+- Allow setting `JSONObject.NULL` to record field (#61)
+- Support transient include distance predicate (#56)
+
+### Bug fixes
+
+- Fix wss connection fail issue (#62)
+
+
 ## 0.17.1 (2016-10-04)
 
 ### Features
