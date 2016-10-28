@@ -1,3 +1,7 @@
+## 0.18.0 (2016-10-26)
+
+No change since last release
+
 ## 0.17.2 (2016-10-12)
 
 ### Features
@@ -8,7 +12,6 @@
 ### Bug fixes
 
 - Fix wss connection fail issue (#62)
-
 
 ## 0.17.1 (2016-10-04)
 
