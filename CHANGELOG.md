@@ -1,3 +1,7 @@
+## 0.19.0 (2016-11-10)
+
+No change since last release
+
 ## 0.18.0 (2016-10-26)
 
 No change since last release
