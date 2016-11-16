@@ -345,9 +345,9 @@ public final class Container implements AuthResolver {
             }
 
             @Override
-            public void onPreparePostFail(String reason) {
+            public void onPreparePostFail(Error error) {
                 if (responseHandler != null) {
-                    responseHandler.onPostFail(asset, reason);
+                    responseHandler.onPostFail(asset, error);
                 }
             }
         };

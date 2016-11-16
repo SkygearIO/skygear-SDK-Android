@@ -14,9 +14,9 @@ public abstract class LogoutResponseHandler implements ResponseHandler {
     /**
      * On logout fail.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onLogoutFail(String reason);
+    public abstract void onLogoutFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
@@ -25,6 +25,6 @@ public abstract class LogoutResponseHandler implements ResponseHandler {
 
     @Override
     public void onFail(Error error) {
-        this.onLogoutFail(error.getMessage());
+        this.onLogoutFail(error);
     }
 }

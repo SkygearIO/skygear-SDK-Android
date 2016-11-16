@@ -33,7 +33,7 @@ public class UserQueryResponseHandlerUnitTest {
             }
 
             @Override
-            public void onQueryFail(String reason) {
+            public void onQueryFail(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -81,8 +81,8 @@ public class UserQueryResponseHandlerUnitTest {
             }
 
             @Override
-            public void onQueryFail(String reason) {
-                assertEquals("Test Error", reason);
+            public void onQueryFail(Error error) {
+                assertEquals("Test Error", error.getMessage());
                 checkpoints[0] = true;
             }
         };

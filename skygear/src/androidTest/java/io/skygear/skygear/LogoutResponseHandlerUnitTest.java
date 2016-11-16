@@ -22,7 +22,7 @@ public class LogoutResponseHandlerUnitTest {
             }
 
             @Override
-            public void onLogoutFail(String reason) {
+            public void onLogoutFail(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -41,8 +41,8 @@ public class LogoutResponseHandlerUnitTest {
             }
 
             @Override
-            public void onLogoutFail(String reason) {
-                assertEquals("Test Error", reason);
+            public void onLogoutFail(Error error) {
+                assertEquals("Test Error", error.getMessage());
             }
         };
 

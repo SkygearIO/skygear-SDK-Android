@@ -137,7 +137,7 @@ public class AssetPostRequestUnitTest {
             }
 
             @Override
-            public void onPostFail(Asset asset, String reason) {
+            public void onPostFail(Asset asset, Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -163,14 +163,14 @@ public class AssetPostRequestUnitTest {
             }
 
             @Override
-            public void onPostFail(Asset asset, String reason) {
+            public void onPostFail(Asset asset, Error error) {
                 assertEquals(assetToUpload.getName(), asset.getName());
                 assertEquals(assetToUpload.getUrl(), asset.getUrl());
                 assertEquals(assetToUpload.getMimeType(), asset.getMimeType());
                 assertEquals(assetToUpload.getSize(), asset.getSize());
                 assertEquals(assetToUpload.data, asset.data);
 
-                assertEquals("Test Error", reason);
+                assertEquals("Test Error", error.getMessage());
 
                 checkpoints[0] = true;
             }

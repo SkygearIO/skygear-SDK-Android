@@ -17,21 +17,21 @@ public abstract class AuthResponseHandler implements ResponseHandler {
     /**
      * Auth fail callback
      *
-     * @param reason access reason
+     * @param error the error
      */
-    public abstract void onAuthFail(String reason);
+    public abstract void onAuthFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
         try {
             this.onAuthSuccess(UserSerializer.deserialize(result));
         } catch (JSONException e) {
-            this.onAuthFail("Malformed server response");
+            this.onAuthFail(new Error("Malformed server response"));
         }
     }
 
     @Override
     public void onFail(Error error) {
-        this.onAuthFail(error.getMessage());
+        this.onAuthFail(error);
     }
 }

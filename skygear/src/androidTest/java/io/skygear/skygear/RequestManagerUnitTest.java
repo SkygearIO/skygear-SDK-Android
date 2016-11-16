@@ -470,7 +470,7 @@ public class RequestManagerUnitTest {
             }
 
             @Override
-            public void onPostFail(Asset asset, String reason) {
+            public void onPostFail(Asset asset, Error error) {
                 fail("Should not get fail callback");
             }
         };

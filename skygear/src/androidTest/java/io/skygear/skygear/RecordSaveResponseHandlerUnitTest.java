@@ -99,12 +99,12 @@ public class RecordSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, String> reasons) {
+            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
                 fail("Should not get partial success callback");
             }
 
             @Override
-            public void onSaveFail(String reason) {
+            public void onSaveFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -150,9 +150,9 @@ public class RecordSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, String> reasons) {
+            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
                 assertEquals(1, successRecords.size());
-                assertEquals(1, reasons.size());
+                assertEquals(1, errors.size());
 
                 Record record1 = successRecords.get("48092492-0791-4120-B314-022202AD3970");
                 assertEquals("Note", record1.getType());
@@ -172,14 +172,16 @@ public class RecordSaveResponseHandlerUnitTest {
                 assertEquals(3, record1.get("foobar"));
                 assertEquals(12.345, record1.get("abc"));
 
-                String reason2 = reasons.get("48092492-0791-4120-B314-022202AD3971");
+                Error.Code code2 = errors.get("48092492-0791-4120-B314-022202AD3971").getCode();
+                String reason2 = errors.get("48092492-0791-4120-B314-022202AD3971").getMessage();
+                assertEquals(Error.Code.UNEXPECTED_ERROR, code2);
                 assertEquals("pq: duplicate key value violates unique constraint \"note__id_key\"", reason2);
 
                 checkpoints[0] = true;
             }
 
             @Override
-            public void onSaveFail(String reason) {
+            public void onSaveFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -219,13 +221,14 @@ public class RecordSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, String> reasons) {
+            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
                 fail("Should not get partial success callback");
             }
 
             @Override
-            public void onSaveFail(String reason) {
-                assertEquals("pq: duplicate key value violates unique constraint \"note__id_key\"", reason);
+            public void onSaveFail(Error error) {
+                assertEquals(Error.Code.UNEXPECTED_ERROR, error.getCode());
+                assertEquals("pq: duplicate key value violates unique constraint \"note__id_key\"", error.getMessage());
                 checkpoints[0] = true;
             }
         };
@@ -244,13 +247,13 @@ public class RecordSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, String> reasons) {
+            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
                 fail("Should not get partial success callback");
             }
 
             @Override
-            public void onSaveFail(String reason) {
-                assertEquals("Unknown server error", reason);
+            public void onSaveFail(Error error) {
+                assertEquals("Unknown server error", error.getMessage());
                 checkpoints[0] = true;
             }
         };

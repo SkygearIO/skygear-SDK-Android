@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import io.skygear.skygear.Container;
+import io.skygear.skygear.Error;
 import io.skygear.skygear.User;
 import io.skygear.skygear.UserQueryResponseHandler;
 
@@ -89,9 +90,9 @@ public class UserQueryActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onQueryFail(String reason) {
+            public void onQueryFail(Error error) {
                 loading.dismiss();
-                failDialog.setMessage("Fail with reason: \n" + reason);
+                failDialog.setMessage("Fail with reason: \n" + error.getMessage());
                 failDialog.show();
 
                 UserQueryActivity.this.display("");

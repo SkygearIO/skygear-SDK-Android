@@ -16,9 +16,9 @@ public abstract class LambdaResponseHandler implements ResponseHandler {
     /**
      * The fail callback.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onLambdaFail(String reason);
+    public abstract void onLambdaFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
@@ -27,6 +27,6 @@ public abstract class LambdaResponseHandler implements ResponseHandler {
 
     @Override
     public void onFail(Error error) {
-        this.onLambdaFail(error.getMessage());
+        this.onLambdaFail(error);
     }
 }

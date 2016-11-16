@@ -18,6 +18,7 @@ import org.json.JSONException;
 import java.util.Map;
 
 import io.skygear.skygear.Container;
+import io.skygear.skygear.Error;
 import io.skygear.skygear.Query;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordDeleteResponseHandler;
@@ -159,9 +160,9 @@ public class RecordQueryActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onQueryError(String reason) {
+            public void onQueryError(Error error) {
                 failDialog.setMessage(
-                        String.format("Fail with reason:\n%s", reason)
+                        String.format("Fail with reason:\n%s", error.getMessage())
                 );
 
                 failDialog.show();
@@ -221,18 +222,18 @@ public class RecordQueryActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, String> reasons) {
+            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
                 RecordQueryActivity.this.records = null;
                 partiallySuccessDialog.setMessage(
-                        String.format("%d successes\n%d fails", ids.length, reasons.size())
+                        String.format("%d successes\n%d fails", ids.length, errors.size())
                 );
                 partiallySuccessDialog.show();
             }
 
             @Override
-            public void onDeleteFail(String reason) {
+            public void onDeleteFail(Error error) {
                 failDialog.setMessage(
-                        String.format("Fail with reason:\n%s", reason)
+                        String.format("Fail with reason:\n%s", error.getMessage())
                 );
                 failDialog.show();
             }

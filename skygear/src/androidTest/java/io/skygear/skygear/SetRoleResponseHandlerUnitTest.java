@@ -32,7 +32,7 @@ public class SetRoleResponseHandlerUnitTest {
             }
 
             @Override
-            public void onSetFail(String reason) {
+            public void onSetFail(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -53,8 +53,8 @@ public class SetRoleResponseHandlerUnitTest {
             }
 
             @Override
-            public void onSetFail(String reason) {
-                assertEquals("Test Error", reason);
+            public void onSetFail(Error error) {
+                assertEquals("Test Error", error.getMessage());
                 checkpoints[0] = true;
             }
         };

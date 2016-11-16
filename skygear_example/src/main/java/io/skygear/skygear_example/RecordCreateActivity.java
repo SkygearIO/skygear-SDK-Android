@@ -42,6 +42,7 @@ import java.util.Map;
 import io.skygear.skygear.Asset;
 import io.skygear.skygear.AssetPostRequest;
 import io.skygear.skygear.Container;
+import io.skygear.skygear.Error;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordDeleteResponseHandler;
 import io.skygear.skygear.RecordSaveResponseHandler;
@@ -290,14 +291,14 @@ public class RecordCreateActivity
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, String> reasons) {
+            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
                 failDialog.setMessage("Unexpected Error");
                 failDialog.show();
             }
 
             @Override
-            public void onSaveFail(String reason) {
-                failDialog.setMessage(String.format("Fail with reason:\n%s", reason));
+            public void onSaveFail(Error error) {
+                failDialog.setMessage(String.format("Fail with reason:\n%s", error.getMessage()));
                 failDialog.show();
             }
         });
@@ -348,15 +349,15 @@ public class RecordCreateActivity
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, String> reasons) {
+            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
                 failDialog.setMessage("Unexpected Error");
                 failDialog.show();
             }
 
             @Override
-            public void onDeleteFail(String reason) {
+            public void onDeleteFail(Error error) {
                 failDialog.setMessage(
-                        String.format("Fail with reason:\n%s", reason)
+                        String.format("Fail with reason:\n%s", error.getMessage())
                 );
                 failDialog.show();
             }
@@ -446,8 +447,8 @@ public class RecordCreateActivity
             }
 
             @Override
-            public void onPostFail(Asset asset, String reason) {
-                Log.i(TAG, "handleImageUpload: fail - " + reason);
+            public void onPostFail(Asset asset, Error error) {
+                Log.i(TAG, "handleImageUpload: fail - " + error.getMessage());
                 loading.dismiss();
             }
         });

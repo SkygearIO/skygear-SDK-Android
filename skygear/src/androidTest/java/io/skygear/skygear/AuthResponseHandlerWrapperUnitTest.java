@@ -25,7 +25,7 @@ public class AuthResponseHandlerWrapperUnitTest {
             }
 
             @Override
-            public void onAuthFail(String reason) {
+            public void onAuthFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -54,9 +54,9 @@ public class AuthResponseHandlerWrapperUnitTest {
             }
 
             @Override
-            public void onAuthFail(String reason) {
+            public void onAuthFail(Error error) {
                 checkpoints[0] = true;
-                assertEquals("Test Error", reason);
+                assertEquals("Test Error", error.getMessage());
             }
         };
 

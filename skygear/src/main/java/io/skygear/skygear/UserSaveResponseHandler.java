@@ -17,21 +17,21 @@ public abstract class UserSaveResponseHandler implements ResponseHandler {
     /**
      * Save fail callback.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onSaveFail(String reason);
+    public abstract void onSaveFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
         try {
             this.onSaveSuccess(UserSerializer.deserialize(result));
         } catch (JSONException e) {
-            this.onSaveFail("Malformed server response");
+            this.onSaveFail(new Error("Malformed server response"));
         }
     }
 
     @Override
     public void onFail(Error error) {
-        this.onSaveFail(error.getMessage());
+        this.onSaveFail(error);
     }
 }

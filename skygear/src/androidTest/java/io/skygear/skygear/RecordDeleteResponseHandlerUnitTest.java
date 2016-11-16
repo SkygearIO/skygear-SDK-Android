@@ -43,12 +43,12 @@ public class RecordDeleteResponseHandlerUnitTest {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, String> reasons) {
+            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
                 fail("Should not get partial success callback");
             }
 
             @Override
-            public void onDeleteFail(String reason) {
+            public void onDeleteFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -85,18 +85,19 @@ public class RecordDeleteResponseHandlerUnitTest {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, String> reasons) {
+            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
                 assertEquals(1, ids.length);
-                assertEquals(1, reasons.size());
+                assertEquals(1, errors.size());
 
                 assertEquals("48092492-0791-4120-B314-022202AD3970", ids[0]);
-                assertEquals("record not found", reasons.get("48092492-0791-4120-B314-022202AD3971"));
+                assertEquals(Error.Code.RESOURCE_NOT_FOUND, errors.get("48092492-0791-4120-B314-022202AD3971").getCode());
+                assertEquals("record not found", errors.get("48092492-0791-4120-B314-022202AD3971").getMessage());
 
                 checkpoints[0] = true;
             }
 
             @Override
-            public void onDeleteFail(String reason) {
+            public void onDeleteFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -136,13 +137,14 @@ public class RecordDeleteResponseHandlerUnitTest {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, String> reasons) {
+            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
                 fail("Should not get partial success callback");
             }
 
             @Override
-            public void onDeleteFail(String reason) {
-                assertEquals("no permission to delete", reason);
+            public void onDeleteFail(Error error) {
+                assertEquals(Error.Code.PERMISSION_DENIED, error.getCode());
+                assertEquals("no permission to delete", error.getMessage());
                 checkpoints[0] = true;
             }
         };
@@ -161,13 +163,13 @@ public class RecordDeleteResponseHandlerUnitTest {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, String> reasons) {
+            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
                 fail("Should not get partial success callback");
             }
 
             @Override
-            public void onDeleteFail(String reason) {
-                assertEquals("Unknown server error", reason);
+            public void onDeleteFail(Error error) {
+                assertEquals("Unknown server error", error.getMessage());
                 checkpoints[0] = true;
             }
         };

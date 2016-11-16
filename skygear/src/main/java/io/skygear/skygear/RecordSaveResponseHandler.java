@@ -23,23 +23,23 @@ public abstract class RecordSaveResponseHandler implements ResponseHandler {
      * partially save success callback.
      *
      * @param successRecords the successfully saved record map (recordId to record)
-     * @param reasons        the fail reason map (recordId to reason String)
+     * @param errors         the errors (recordId to error)
      */
-    public abstract void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, String> reasons);
+    public abstract void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors);
 
     /**
      * Save fail callback.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onSaveFail(String reason);
+    public abstract void onSaveFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
         try {
             JSONArray results = result.getJSONArray("result");
             Map<String, Record> recordMap = new TreeMap<>();
-            Map<String, String> errorMap = new TreeMap<>();
+            Map<String, Error> errorMap = new TreeMap<>();
 
             for (int idx = 0; idx < results.length(); idx++) {
                 JSONObject perResult = results.getJSONObject(idx);
@@ -50,15 +50,20 @@ public abstract class RecordSaveResponseHandler implements ResponseHandler {
                     case "record":
                         recordMap.put(perResultId, Record.fromJson(perResult));
                         break;
-                    case "error":
-                        errorMap.put(perResultId, perResult.getString("message"));
+                    case "error":{
+                        int errorCodeValue = perResult.optInt("code", 0);
+                        String errorMessage = perResult.getString("message");
+                        errorMap.put(perResultId, new Error(errorCodeValue, errorMessage));
                         break;
-                    default:
-                        this.onSaveFail(String.format(
+                    }
+                    default: {
+                        String errorMessage = String.format(
                                 "Malformed server response - Unknown result type \"%s\"",
                                 perResultType
-                        ));
+                        );
+                        this.onSaveFail(new Error(errorMessage));
                         return;
+                    }
                 }
             }
 
@@ -76,12 +81,12 @@ public abstract class RecordSaveResponseHandler implements ResponseHandler {
                 this.onPartiallySaveSuccess(recordMap, errorMap);
             }
         } catch (JSONException e) {
-            this.onSaveFail("Malformed server response");
+            this.onSaveFail(new Error("Malformed server response"));
         }
     }
 
     @Override
     public void onFail(Error error) {
-        this.onSaveFail(error.getMessage());
+        this.onSaveFail(error);
     }
 }
