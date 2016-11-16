@@ -29,7 +29,7 @@ public class LambdaResponseHandlerUnitTest {
             }
 
             @Override
-            public void onLambdaFail(String reason) {
+            public void onLambdaFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -48,13 +48,13 @@ public class LambdaResponseHandlerUnitTest {
             }
 
             @Override
-            public void onLambdaFail(String reason) {
-                assertEquals("Test Error", reason);
+            public void onLambdaFail(Error error) {
+                assertEquals("Test Error", error.getMessage());
                 checkpoints[0] = true;
             }
         };
 
-        handler.onFail(new Request.Error("Test Error"));
+        handler.onFail(new Error("Test Error"));
         assertTrue(checkpoints[0]);
     }
 }

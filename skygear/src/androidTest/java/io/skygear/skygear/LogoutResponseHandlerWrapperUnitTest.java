@@ -23,7 +23,7 @@ public class LogoutResponseHandlerWrapperUnitTest {
             }
 
             @Override
-            public void onLogoutFail(String reason) {
+            public void onLogoutFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -48,9 +48,9 @@ public class LogoutResponseHandlerWrapperUnitTest {
             }
 
             @Override
-            public void onLogoutFail(String reason) {
+            public void onLogoutFail(Error error) {
                 checkpoints[0] = true;
-                assertEquals("Test Error", reason);
+                assertEquals("Test Error", error.getMessage());
             }
         };
 
@@ -59,7 +59,7 @@ public class LogoutResponseHandlerWrapperUnitTest {
                 logoutResponseHandler
         );
 
-        wrapper.onFail(new Request.Error("Test Error"));
+        wrapper.onFail(new Error("Test Error"));
 
         assertTrue(checkpoints[0]);
     }

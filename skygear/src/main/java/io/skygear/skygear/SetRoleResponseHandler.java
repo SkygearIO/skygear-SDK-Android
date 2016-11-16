@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Role Setup Response Handler.
  */
-public abstract class SetRoleResponseHandler implements Request.ResponseHandler {
+public abstract class SetRoleResponseHandler implements ResponseHandler {
     /**
      * Setup success callback.
      *
@@ -18,9 +18,9 @@ public abstract class SetRoleResponseHandler implements Request.ResponseHandler 
     /**
      * Setup fail callback.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onSetFail(String reason);
+    public abstract void onSetFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
@@ -36,12 +36,12 @@ public abstract class SetRoleResponseHandler implements Request.ResponseHandler 
 
             this.onSetSuccess(roles);
         } catch (JSONException e) {
-            this.onSetFail("Malformed server response");
+            this.onSetFail(new Error("Malformed server response"));
         }
     }
 
     @Override
-    public void onFail(Request.Error error) {
-        this.onSetFail(error.getMessage());
+    public void onFail(Error error) {
+        this.onSetFail(error);
     }
 }

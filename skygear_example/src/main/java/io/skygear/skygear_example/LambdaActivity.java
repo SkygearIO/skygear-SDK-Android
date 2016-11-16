@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.skygear.skygear.Container;
+import io.skygear.skygear.Error;
 import io.skygear.skygear.LambdaResponseHandler;
 
 public class LambdaActivity extends AppCompatActivity {
@@ -107,8 +108,8 @@ public class LambdaActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onLambdaFail(String reason) {
-                LambdaActivity.this.display("Error: " + reason + "\n");
+            public void onLambdaFail(Error error) {
+                LambdaActivity.this.display("Error: " + error.getMessage() + "\n");
             }
         });
     }

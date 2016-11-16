@@ -79,7 +79,7 @@ public class AssetPreparePostResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPreparePostFail(String reason) {
+            public void onPreparePostFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -129,7 +129,7 @@ public class AssetPreparePostResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPreparePostFail(String reason) {
+            public void onPreparePostFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -148,12 +148,12 @@ public class AssetPreparePostResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPreparePostFail(String reason) {
-                assertEquals("Test Error", reason);
+            public void onPreparePostFail(Error error) {
+                assertEquals("Test Error", error.getMessage());
                 checkpoints[0] = true;
             }
         };
-        handler.onFail(new Request.Error("Test Error"));
+        handler.onFail(new Error("Test Error"));
         assertTrue(checkpoints[0]);
     }
 }

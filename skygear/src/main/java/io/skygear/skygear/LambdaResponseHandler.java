@@ -5,7 +5,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Lambda Response Handler.
  */
-public abstract class LambdaResponseHandler implements Request.ResponseHandler {
+public abstract class LambdaResponseHandler implements ResponseHandler {
     /**
      * The success callback.
      *
@@ -16,9 +16,9 @@ public abstract class LambdaResponseHandler implements Request.ResponseHandler {
     /**
      * The fail callback.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onLambdaFail(String reason);
+    public abstract void onLambdaFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
@@ -26,7 +26,7 @@ public abstract class LambdaResponseHandler implements Request.ResponseHandler {
     }
 
     @Override
-    public void onFail(Request.Error error) {
-        this.onLambdaFail(error.getMessage());
+    public void onFail(Error error) {
+        this.onLambdaFail(error);
     }
 }

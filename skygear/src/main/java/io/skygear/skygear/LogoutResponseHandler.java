@@ -5,7 +5,7 @@ import org.json.JSONObject;
 /**
  * The type Logout response handler.
  */
-public abstract class LogoutResponseHandler implements Request.ResponseHandler {
+public abstract class LogoutResponseHandler implements ResponseHandler {
     /**
      * On logout success.
      */
@@ -14,9 +14,9 @@ public abstract class LogoutResponseHandler implements Request.ResponseHandler {
     /**
      * On logout fail.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onLogoutFail(String reason);
+    public abstract void onLogoutFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
@@ -24,7 +24,7 @@ public abstract class LogoutResponseHandler implements Request.ResponseHandler {
     }
 
     @Override
-    public void onFail(Request.Error error) {
-        this.onLogoutFail(error.getMessage());
+    public void onFail(Error error) {
+        this.onLogoutFail(error);
     }
 }

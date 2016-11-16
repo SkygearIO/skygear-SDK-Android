@@ -10,13 +10,12 @@ import java.util.Map;
 /**
  * The Skygear Asset Prepare Post Response Handler.
  */
-public abstract class AssetPreparePostResponseHandler implements Request.ResponseHandler {
+public abstract class AssetPreparePostResponseHandler implements ResponseHandler {
 
     private final Asset asset;
 
     /**
      * Instantiates a new Asset Prepare Post Response Handler.
-     *
      * <p>
      *     The asset to be uploaded should be passed in since
      *     the name and url will be updated according to the
@@ -41,9 +40,9 @@ public abstract class AssetPreparePostResponseHandler implements Request.Respons
     /**
      * Prepare post fail callback.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onPreparePostFail(String reason);
+    public abstract void onPreparePostFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
@@ -78,12 +77,12 @@ public abstract class AssetPreparePostResponseHandler implements Request.Respons
 
             this.onPreparePostSuccess(postRequest);
         } catch (JSONException e) {
-            this.onPreparePostFail("Malformed server response");
+            this.onPreparePostFail(new Error("Malformed server response"));
         }
     }
 
     @Override
-    public void onFail(Request.Error error) {
-        this.onPreparePostFail(error.getMessage());
+    public void onFail(Error error) {
+        this.onPreparePostFail(error);
     }
 }

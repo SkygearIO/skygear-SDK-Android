@@ -12,6 +12,7 @@ import android.widget.TextView;
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Configuration;
 import io.skygear.skygear.Container;
+import io.skygear.skygear.Error;
 import io.skygear.skygear.LogoutResponseHandler;
 import io.skygear.skygear.Role;
 import io.skygear.skygear.User;
@@ -113,10 +114,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onLogoutFail(String reason) {
+            public void onLogoutFail(Error error) {
                 loading.dismiss();
 
-                failDialog.setMessage("Fail with reason: \n" + reason);
+                failDialog.setMessage("Fail with reason: \n" + error.getMessage());
                 failDialog.show();
             }
         });
@@ -177,10 +178,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onAuthFail(String reason) {
+            public void onAuthFail(Error error) {
                 loading.dismiss();
 
-                failDialog.setMessage("Fail with reason:\n" + reason);
+                failDialog.setMessage("Fail with reason:\n" + error.getMessage());
                 failDialog.show();
             }
         });

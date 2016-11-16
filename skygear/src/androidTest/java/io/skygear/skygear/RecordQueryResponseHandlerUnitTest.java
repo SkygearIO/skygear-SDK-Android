@@ -97,7 +97,7 @@ public class RecordQueryResponseHandlerUnitTest {
             }
 
             @Override
-            public void onQueryError(String reason) {
+            public void onQueryError(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -116,13 +116,13 @@ public class RecordQueryResponseHandlerUnitTest {
             }
 
             @Override
-            public void onQueryError(String reason) {
-                assertEquals("Test error", reason);
+            public void onQueryError(Error error) {
+                assertEquals("Test error", error.getMessage());
                 checkpoints[0] = true;
             }
         };
 
-        handler.onFail(new Request.Error("Test error"));
+        handler.onFail(new Error("Test error"));
         assertTrue(checkpoints[0]);
     }
 }

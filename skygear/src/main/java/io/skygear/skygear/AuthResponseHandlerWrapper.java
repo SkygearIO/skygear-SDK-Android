@@ -9,7 +9,7 @@ import org.json.JSONObject;
  * This wrapper wraps original auth response handler and auth resolver
  * so that the resolver will be called before original handler is called.
  */
-class AuthResponseHandlerWrapper implements Request.ResponseHandler {
+class AuthResponseHandlerWrapper implements ResponseHandler {
     private final AuthResolver authResolver;
     private final AuthResponseHandler originalHandler;
 
@@ -36,12 +36,12 @@ class AuthResponseHandlerWrapper implements Request.ResponseHandler {
                 this.originalHandler.onSuccess(result);
             }
         } catch (JSONException e) {
-            this.onFail(new Request.Error("Malformed server response"));
+            this.onFail(new Error("Malformed server response"));
         }
     }
 
     @Override
-    public void onFail(Request.Error error) {
+    public void onFail(Error error) {
         if (this.originalHandler != null) {
             this.originalHandler.onFail(error);
         }

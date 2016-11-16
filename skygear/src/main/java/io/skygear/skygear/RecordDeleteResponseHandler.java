@@ -12,7 +12,7 @@ import java.util.TreeMap;
 /**
  * The Record Delete Response Handler.
  */
-public abstract class RecordDeleteResponseHandler implements Request.ResponseHandler {
+public abstract class RecordDeleteResponseHandler implements ResponseHandler {
 
     /**
      * Delete success callback.
@@ -24,24 +24,24 @@ public abstract class RecordDeleteResponseHandler implements Request.ResponseHan
     /**
      * Partially delete success callback.
      *
-     * @param ids     the deleted record ids
-     * @param reasons the fail reason map (recordId to reason String)
+     * @param ids    the deleted record ids
+     * @param errors the errors (recordId to error)
      */
-    public abstract void onDeletePartialSuccess(String[] ids, Map<String, String> reasons);
+    public abstract void onDeletePartialSuccess(String[] ids, Map<String, Error> errors);
 
     /**
      * Delete fail callback.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onDeleteFail(String reason);
+    public abstract void onDeleteFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
         try {
             JSONArray results = result.getJSONArray("result");
             List<String> successList = new LinkedList<>();
-            Map<String, String> errorMap = new TreeMap<>();
+            Map<String, Error> errorMap = new TreeMap<>();
 
             for (int idx = 0; idx < results.length(); idx++) {
                 JSONObject perResult = results.getJSONObject(idx);
@@ -52,15 +52,20 @@ public abstract class RecordDeleteResponseHandler implements Request.ResponseHan
                     case "record":
                         successList.add(perResultId);
                         break;
-                    case "error":
-                        errorMap.put(perResultId, perResult.getString("message"));
+                    case "error": {
+                        int errorCodeValue = perResult.optInt("code", 0);
+                        String errorMessage = perResult.getString("message");
+                        errorMap.put(perResultId, new Error(errorCodeValue, errorMessage));
                         break;
-                    default:
-                        this.onDeleteFail(String.format(
+                    }
+                    default: {
+                        String errorMessage = String.format(
                                 "Malformed server response - Unknown result type \"%s\"",
                                 perResultType
-                        ));
+                        );
+                        this.onDeleteFail(new Error(errorMessage));
                         return;
+                    }
                 }
             }
 
@@ -75,12 +80,12 @@ public abstract class RecordDeleteResponseHandler implements Request.ResponseHan
                 this.onDeletePartialSuccess(successList.toArray(new String[]{}), errorMap);
             }
         } catch (JSONException e) {
-            this.onDeleteFail("Malformed server response");
+            this.onDeleteFail(new Error("Malformed server response"));
         }
     }
 
     @Override
-    public void onFail(Request.Error error) {
-        this.onDeleteFail(error.getMessage());
+    public void onFail(Error error) {
+        this.onDeleteFail(error);
     }
 }

@@ -30,7 +30,7 @@ public class AuthResponseHandlerUnitTest {
             }
 
             @Override
-            public void onAuthFail(String reason) {
+            public void onAuthFail(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -61,13 +61,13 @@ public class AuthResponseHandlerUnitTest {
             }
 
             @Override
-            public void onAuthFail(String reason) {
-                assertEquals("Test error", reason);
+            public void onAuthFail(Error error) {
+                assertEquals("Test error", error.getMessage());
                 checkpoints[0] = true;
             }
         };
 
-        authResponseHandler.onFail(new Request.Error("Test error"));
+        authResponseHandler.onFail(new Error("Test error"));
         assertTrue(checkpoints[0]);
     }
 }

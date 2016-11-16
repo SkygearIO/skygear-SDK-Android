@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * The Skygear User Query Response Handler.
  */
-public abstract class UserQueryResponseHandler implements Request.ResponseHandler {
+public abstract class UserQueryResponseHandler implements ResponseHandler {
     /**
      * Query success callback.
      *
@@ -18,9 +18,9 @@ public abstract class UserQueryResponseHandler implements Request.ResponseHandle
     /**
      * Query fail callback.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onQueryFail(String reason);
+    public abstract void onQueryFail(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
@@ -38,12 +38,12 @@ public abstract class UserQueryResponseHandler implements Request.ResponseHandle
 
             this.onQuerySuccess(users);
         } catch (JSONException e) {
-            this.onQueryFail("Malformed server response");
+            this.onQueryFail(new Error("Malformed server response"));
         }
     }
 
     @Override
-    public void onFail(Request.Error error) {
-        this.onQueryFail(error.getMessage());
+    public void onFail(Error error) {
+        this.onQueryFail(error);
     }
 }

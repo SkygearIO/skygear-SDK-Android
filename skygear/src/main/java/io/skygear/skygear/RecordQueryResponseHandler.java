@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Record Query Response Handler.
  */
-public abstract class RecordQueryResponseHandler implements Request.ResponseHandler {
+public abstract class RecordQueryResponseHandler implements ResponseHandler {
     /**
      * Query success callback.
      *
@@ -18,9 +18,9 @@ public abstract class RecordQueryResponseHandler implements Request.ResponseHand
     /**
      * Query error callback.
      *
-     * @param reason the reason
+     * @param error the error
      */
-    public abstract void onQueryError(String reason);
+    public abstract void onQueryError(Error error);
 
     @Override
     public void onSuccess(JSONObject result) {
@@ -35,12 +35,12 @@ public abstract class RecordQueryResponseHandler implements Request.ResponseHand
 
             this.onQuerySuccess(records);
         } catch (JSONException e) {
-            this.onQueryError("Malformed server response");
+            this.onQueryError(new Error("Malformed server response"));
         }
     }
 
     @Override
-    public void onFail(Request.Error error) {
-        this.onQueryError(error.getMessage());
+    public void onFail(Error error) {
+        this.onQueryError(error);
     }
 }

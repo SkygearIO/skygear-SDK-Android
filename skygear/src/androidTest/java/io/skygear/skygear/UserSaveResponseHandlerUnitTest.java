@@ -30,7 +30,7 @@ public class UserSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onSaveFail(String reason) {
+            public void onSaveFail(Error error) {
                 fail("Should not get fail callback");
             }
         };
@@ -55,13 +55,13 @@ public class UserSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onSaveFail(String reason) {
-                assertEquals("Test Error", reason);
+            public void onSaveFail(Error error) {
+                assertEquals("Test Error", error.getMessage());
                 checkpoints[0] = true;
             }
         };
 
-        handler.onFail(new Request.Error("Test Error"));
+        handler.onFail(new Error("Test Error"));
         assertTrue(checkpoints[0]);
     }
 }
