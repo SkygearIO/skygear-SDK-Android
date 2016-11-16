@@ -67,7 +67,7 @@ public class AuthResponseHandlerUnitTest {
             }
         };
 
-        authResponseHandler.onFail(new Request.Error("Test error"));
+        authResponseHandler.onFail(new Error("Test error"));
         assertTrue(checkpoints[0]);
     }
 }

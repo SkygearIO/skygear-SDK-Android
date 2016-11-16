@@ -127,7 +127,7 @@ public class RequestManagerUnitTest {
         data.put("hello", "world");
         data.put("foo", "bar");
 
-        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+        ResponseHandler responseHandler = new ResponseHandler() {
             @Override
             public void onSuccess(JSONObject result) {
                 checkpoints[0] = true;
@@ -135,7 +135,7 @@ public class RequestManagerUnitTest {
             }
 
             @Override
-            public void onFail(Request.Error error) {
+            public void onFail(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -181,7 +181,7 @@ public class RequestManagerUnitTest {
                 httpStack
         );
 
-        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+        ResponseHandler responseHandler = new ResponseHandler() {
             @Override
             public void onSuccess(JSONObject result) {
                 checkpoints[0] = true;
@@ -189,7 +189,7 @@ public class RequestManagerUnitTest {
             }
 
             @Override
-            public void onFail(Request.Error error) {
+            public void onFail(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -238,7 +238,7 @@ public class RequestManagerUnitTest {
                 httpStack
         );
 
-        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+        ResponseHandler responseHandler = new ResponseHandler() {
             @Override
             public void onSuccess(JSONObject result) {
                 try {
@@ -252,7 +252,7 @@ public class RequestManagerUnitTest {
             }
 
             @Override
-            public void onFail(Request.Error error) {
+            public void onFail(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -308,14 +308,14 @@ public class RequestManagerUnitTest {
                 httpStack
         );
 
-        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+        ResponseHandler responseHandler = new ResponseHandler() {
             @Override
             public void onSuccess(JSONObject result) {
                 fail("Should not get success callback");
             }
 
             @Override
-            public void onFail(Request.Error error) {
+            public void onFail(Error error) {
                 assertEquals("write is not allowed", error.getMessage());
                 checkpoints[0] = true;
                 latch.countDown();
@@ -343,7 +343,7 @@ public class RequestManagerUnitTest {
         final CountDownLatch latch = new CountDownLatch(2);
         final boolean[] checkpoints = {false, false};
 
-        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+        ResponseHandler responseHandler = new ResponseHandler() {
             @Override
             public void onSuccess(JSONObject result) {
                 checkpoints[1] = true;
@@ -351,7 +351,7 @@ public class RequestManagerUnitTest {
             }
 
             @Override
-            public void onFail(Request.Error error) {
+            public void onFail(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -390,14 +390,14 @@ public class RequestManagerUnitTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final boolean[] checkpoints = { false };
 
-        Request.ResponseHandler responseHandler = new Request.ResponseHandler() {
+        ResponseHandler responseHandler = new ResponseHandler() {
             @Override
             public void onSuccess(JSONObject result) {
                 fail("Should not get success callback");
             }
 
             @Override
-            public void onFail(Request.Error error) {
+            public void onFail(Error error) {
                 assertEquals("Test validation exception", error.getMessage());
 
                 checkpoints[0] = true;

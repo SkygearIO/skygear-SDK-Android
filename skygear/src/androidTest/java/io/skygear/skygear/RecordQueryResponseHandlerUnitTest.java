@@ -122,7 +122,7 @@ public class RecordQueryResponseHandlerUnitTest {
             }
         };
 
-        handler.onFail(new Request.Error("Test error"));
+        handler.onFail(new Error("Test error"));
         assertTrue(checkpoints[0]);
     }
 }

@@ -153,7 +153,7 @@ public class AssetPreparePostResponseHandlerUnitTest {
                 checkpoints[0] = true;
             }
         };
-        handler.onFail(new Request.Error("Test Error"));
+        handler.onFail(new Error("Test Error"));
         assertTrue(checkpoints[0]);
     }
 }

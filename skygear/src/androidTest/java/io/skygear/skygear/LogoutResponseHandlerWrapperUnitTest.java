@@ -59,7 +59,7 @@ public class LogoutResponseHandlerWrapperUnitTest {
                 logoutResponseHandler
         );
 
-        wrapper.onFail(new Request.Error("Test Error"));
+        wrapper.onFail(new Error("Test Error"));
 
         assertTrue(checkpoints[0]);
     }

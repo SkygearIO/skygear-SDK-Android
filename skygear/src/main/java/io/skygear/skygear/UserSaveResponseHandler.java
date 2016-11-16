@@ -6,7 +6,7 @@ import org.json.JSONObject;
 /**
  * The Skygear User Save Response Handler.
  */
-public abstract class UserSaveResponseHandler implements Request.ResponseHandler {
+public abstract class UserSaveResponseHandler implements ResponseHandler {
     /**
      * Save success callback.
      *
@@ -31,7 +31,7 @@ public abstract class UserSaveResponseHandler implements Request.ResponseHandler
     }
 
     @Override
-    public void onFail(Request.Error error) {
+    public void onFail(Error error) {
         this.onSaveFail(error.getMessage());
     }
 }

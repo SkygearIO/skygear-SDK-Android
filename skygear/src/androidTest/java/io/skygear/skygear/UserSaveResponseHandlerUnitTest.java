@@ -61,7 +61,7 @@ public class UserSaveResponseHandlerUnitTest {
             }
         };
 
-        handler.onFail(new Request.Error("Test Error"));
+        handler.onFail(new Error("Test Error"));
         assertTrue(checkpoints[0]);
     }
 }

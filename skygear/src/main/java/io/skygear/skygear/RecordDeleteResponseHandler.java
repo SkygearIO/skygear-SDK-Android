@@ -12,7 +12,7 @@ import java.util.TreeMap;
 /**
  * The Record Delete Response Handler.
  */
-public abstract class RecordDeleteResponseHandler implements Request.ResponseHandler {
+public abstract class RecordDeleteResponseHandler implements ResponseHandler {
 
     /**
      * Delete success callback.
@@ -80,7 +80,7 @@ public abstract class RecordDeleteResponseHandler implements Request.ResponseHan
     }
 
     @Override
-    public void onFail(Request.Error error) {
+    public void onFail(Error error) {
         this.onDeleteFail(error.getMessage());
     }
 }

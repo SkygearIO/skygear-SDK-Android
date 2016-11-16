@@ -46,6 +46,6 @@ public class LogoutResponseHandlerUnitTest {
             }
         };
 
-        logoutResponseHandler.onFail(new Request.Error("Test Error"));
+        logoutResponseHandler.onFail(new Error("Test Error"));
     }
 }

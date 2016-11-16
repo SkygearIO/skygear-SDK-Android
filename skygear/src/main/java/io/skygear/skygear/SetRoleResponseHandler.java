@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Role Setup Response Handler.
  */
-public abstract class SetRoleResponseHandler implements Request.ResponseHandler {
+public abstract class SetRoleResponseHandler implements ResponseHandler {
     /**
      * Setup success callback.
      *
@@ -41,7 +41,7 @@ public abstract class SetRoleResponseHandler implements Request.ResponseHandler 
     }
 
     @Override
-    public void onFail(Request.Error error) {
+    public void onFail(Error error) {
         this.onSetFail(error.getMessage());
     }
 }

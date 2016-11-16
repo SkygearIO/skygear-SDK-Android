@@ -10,7 +10,7 @@ import java.util.TreeMap;
 /**
  * The Record Save Response Handler.
  */
-public abstract class RecordSaveResponseHandler implements Request.ResponseHandler {
+public abstract class RecordSaveResponseHandler implements ResponseHandler {
 
     /**
      * Save success callback.
@@ -81,7 +81,7 @@ public abstract class RecordSaveResponseHandler implements Request.ResponseHandl
     }
 
     @Override
-    public void onFail(Request.Error error) {
+    public void onFail(Error error) {
         this.onSaveFail(error.getMessage());
     }
 }

@@ -172,7 +172,7 @@ public class RecordDeleteResponseHandlerUnitTest {
             }
         };
 
-        handler.onFail(new Request.Error("Unknown server error"));
+        handler.onFail(new Error("Unknown server error"));
         assertTrue(checkpoints[0]);
     }
 }

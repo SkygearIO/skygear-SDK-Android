@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * The Skygear Asset Prepare Post Response Handler.
  */
-public abstract class AssetPreparePostResponseHandler implements Request.ResponseHandler {
+public abstract class AssetPreparePostResponseHandler implements ResponseHandler {
 
     private final Asset asset;
 
@@ -83,7 +83,7 @@ public abstract class AssetPreparePostResponseHandler implements Request.Respons
     }
 
     @Override
-    public void onFail(Request.Error error) {
+    public void onFail(Error error) {
         this.onPreparePostFail(error.getMessage());
     }
 }

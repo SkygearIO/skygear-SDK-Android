@@ -8,7 +8,7 @@ import org.json.JSONObject;
  * This wrapper wraps original logout response handler and auth resolver
  * so that the resolver will be called before original handler is called.
  */
-class LogoutResponseHandlerWrapper implements Request.ResponseHandler {
+class LogoutResponseHandlerWrapper implements ResponseHandler {
     private final AuthResolver resolver;
     private final LogoutResponseHandler originalHandler;
 
@@ -35,7 +35,7 @@ class LogoutResponseHandlerWrapper implements Request.ResponseHandler {
     }
 
     @Override
-    public void onFail(Request.Error error) {
+    public void onFail(Error error) {
         if (this.originalHandler != null) {
             this.originalHandler.onFail(error);
         }

@@ -6,7 +6,7 @@ import org.json.JSONObject;
 /**
  * The Auth response handler.
  */
-public abstract class AuthResponseHandler implements Request.ResponseHandler {
+public abstract class AuthResponseHandler implements ResponseHandler {
     /**
      * Auth success callback
      *
@@ -31,7 +31,7 @@ public abstract class AuthResponseHandler implements Request.ResponseHandler {
     }
 
     @Override
-    public void onFail(Request.Error error) {
+    public void onFail(Error error) {
         this.onAuthFail(error.getMessage());
     }
 }

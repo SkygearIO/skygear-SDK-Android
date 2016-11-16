@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Record Query Response Handler.
  */
-public abstract class RecordQueryResponseHandler implements Request.ResponseHandler {
+public abstract class RecordQueryResponseHandler implements ResponseHandler {
     /**
      * Query success callback.
      *
@@ -40,7 +40,7 @@ public abstract class RecordQueryResponseHandler implements Request.ResponseHand
     }
 
     @Override
-    public void onFail(Request.Error error) {
+    public void onFail(Error error) {
         this.onQueryError(error.getMessage());
     }
 }

@@ -17,7 +17,7 @@ import static junit.framework.Assert.assertNull;
 @RunWith(AndroidJUnit4.class)
 public class RequestUnitTest {
     static Map<String, Object> sampleData;
-    static Request.ResponseHandler sampleHandler;
+    static ResponseHandler sampleHandler;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -25,14 +25,14 @@ public class RequestUnitTest {
         RequestUnitTest.sampleData.put("hello", "world");
         RequestUnitTest.sampleData.put("foo", "bar");
 
-        RequestUnitTest.sampleHandler = new Request.ResponseHandler() {
+        RequestUnitTest.sampleHandler = new ResponseHandler() {
             @Override
             public void onSuccess(JSONObject result) {
                 // Do nothing
             }
 
             @Override
-            public void onFail(Request.Error error) {
+            public void onFail(Error error) {
                 // Do nothing
             }
         };

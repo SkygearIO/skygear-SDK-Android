@@ -110,40 +110,8 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
                 errorString = error.getMessage();
             }
 
-            this.responseHandler.onFail(new Request.Error(errorString));
+            this.responseHandler.onFail(new Error(errorString));
         }
     }
 
-    /**
-     * The interface Response handler for Skygear Request.
-     */
-    public interface ResponseHandler {
-        /**
-         * The success callback.
-         *
-         * @param result the result
-         */
-        void onSuccess(JSONObject result);
-
-        /**
-         * The error callback.
-         *
-         * @param error the error
-         */
-        void onFail(Error error);
-    }
-
-    /**
-     * The Error on error callback of Response handler.
-     */
-    public static class Error extends Exception {
-        /**
-         * Instantiates a new Error.
-         *
-         * @param detailMessage the detail message
-         */
-        public Error(String detailMessage) {
-            super(detailMessage);
-        }
-    }
 }
