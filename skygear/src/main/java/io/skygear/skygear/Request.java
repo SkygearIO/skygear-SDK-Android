@@ -97,20 +97,23 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
     @Override
     public void onErrorResponse(VolleyError error) {
         if (this.responseHandler != null) {
-            String errorString;
+            Error requestError;
             if (error.networkResponse != null && error.networkResponse.data != null) {
                 String networkErrorString = new String(error.networkResponse.data);
                 try {
-                    JSONObject errorObject = new JSONObject(networkErrorString);
-                    errorString = errorObject.getJSONObject("error").getString("message");
+                    JSONObject errorObject = new JSONObject(networkErrorString).getJSONObject("error");
+                    String errorString = errorObject.getString("message");
+                    int errorCodeValue = errorObject.getInt("code");
+
+                    requestError = new Error(errorCodeValue, errorString);
                 } catch (JSONException e) {
-                    errorString = networkErrorString;
+                    requestError = new Error(networkErrorString);
                 }
             } else {
-                errorString = error.getMessage();
+                requestError = new Error(error.getMessage());
             }
 
-            this.responseHandler.onFail(new Error(errorString));
+            this.responseHandler.onFail(requestError);
         }
     }
 
