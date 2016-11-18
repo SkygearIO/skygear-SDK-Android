@@ -193,4 +193,104 @@ public class PersistentStoreUnitTest {
         );
         assertEquals("[]", pref.getString(PersistentStore.DEFAULT_ACCESS_CONTROL_KEY, "[]"));
     }
+
+    @Test
+    public void testPersistentStoreRestoreDeviceId() throws Exception {
+        SharedPreferences pref = instrumentationContext.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(PersistentStore.DEVICE_ID_KEY, "testing-device-id");
+        editor.commit();
+
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        assertEquals("testing-device-id", persistentStore.deviceId);
+    }
+
+    @Test
+    public void testPersistentStoreRestoreDeviceIdFromEmptyState() throws Exception {
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        assertNull(persistentStore.deviceId);
+    }
+
+    @Test
+    public void testPersistentStoreSaveDeviceId() throws Exception {
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        persistentStore.deviceId = "testing-device-id";
+        persistentStore.save();
+
+        SharedPreferences pref = instrumentationContext.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        assertEquals("testing-device-id", pref.getString(PersistentStore.DEVICE_ID_KEY, null));
+    }
+
+    @Test
+    public void testPersistentStoreSaveNullDeviceId() throws Exception {
+        SharedPreferences pref = instrumentationContext.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(PersistentStore.DEVICE_ID_KEY, "testing-device-id");
+        editor.commit();
+
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        persistentStore.deviceId = null;
+        persistentStore.save();
+
+        assertNull(pref.getString(PersistentStore.DEVICE_ID_KEY, null));
+    }
+
+    @Test
+    public void testPersistentStoreRestoreDeviceToken() throws Exception {
+        SharedPreferences pref = instrumentationContext.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(PersistentStore.DEVICE_TOKEN_KEY, "testing-device-token");
+        editor.commit();
+
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        assertEquals("testing-device-token", persistentStore.deviceToken);
+    }
+
+    @Test
+    public void testPersistentStoreRestoreDeviceTokenFromEmptyState() throws Exception {
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        assertNull(persistentStore.deviceToken);
+    }
+
+    @Test
+    public void testPersistentStoreSaveDeviceToken() throws Exception {
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        persistentStore.deviceToken = "testing-device-token";
+        persistentStore.save();
+
+        SharedPreferences pref = instrumentationContext.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        assertEquals("testing-device-token", pref.getString(PersistentStore.DEVICE_TOKEN_KEY, null));
+    }
+
+    @Test
+    public void testPersistentStoreSaveNullDeviceToken() throws Exception {
+        SharedPreferences pref = instrumentationContext.getSharedPreferences(
+                PersistentStore.SKYGEAR_PREF_SPACE,
+                Context.MODE_PRIVATE
+        );
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(PersistentStore.DEVICE_TOKEN_KEY, "testing-device-token");
+        editor.commit();
+
+        PersistentStore persistentStore = new PersistentStore(instrumentationContext);
+        persistentStore.deviceToken = null;
+        persistentStore.save();
+
+        assertNull(pref.getString(PersistentStore.DEVICE_TOKEN_KEY, null));
+    }
 }
