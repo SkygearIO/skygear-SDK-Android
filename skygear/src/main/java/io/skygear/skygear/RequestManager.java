@@ -28,6 +28,7 @@ import java.util.Set;
 public class RequestManager {
     /** The default request timeout in milliseconds */
     public static final int DEFAULT_TIMEOUT = DefaultRetryPolicy.DEFAULT_TIMEOUT_MS;
+    private static final String TAG = "Skygear SDK";
 
     /**
      * The Request Queue.
@@ -168,7 +169,7 @@ public class RequestManager {
             tempFileStream.write(request.getAsset().data);
             tempFileStream.close();
         } catch (IOException e) {
-            Log.e("Skygear RequestManager", "Fail to create temporary file", e);
+            Log.e(TAG, "Fail to create temporary file", e);
             request.onValidationError(e);
             return;
         }
@@ -178,7 +179,7 @@ public class RequestManager {
         try {
             uri = new URI(request.getAction());
         } catch (URISyntaxException e) {
-            Log.e("Skygear RequestManager", "Got malformed URL", e);
+            Log.e(TAG, "Got malformed URL", e);
             request.onValidationError(e);
             return;
         }
