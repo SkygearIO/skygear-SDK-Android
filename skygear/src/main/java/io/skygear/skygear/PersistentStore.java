@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 /**
  * The Skygear persistent store.
  *
@@ -15,6 +16,11 @@ import org.json.JSONObject;
  */
 class PersistentStore {
     static final String SKYGEAR_PREF_SPACE = "SkygearSharedPreferences";
+
+    static final String CURRENT_USER_KEY = "current_user";
+    static final String DEFAULT_ACCESS_CONTROL_KEY = "default_access_control";
+    static final String DEVICE_ID_KEY = "device_id";
+    static final String DEVICE_TOKEN_KEY = "device_token";
 
     private final Context context;
     /**
@@ -26,6 +32,16 @@ class PersistentStore {
      * The Default Access Control.
      */
     AccessControl defaultAccessControl;
+
+    /**
+     * The Device ID.
+     */
+    String deviceId;
+
+    /**
+     * The Device Token.
+     */
+    String deviceToken;
 
     /**
      * Instantiates a new Persistent store.
@@ -43,22 +59,30 @@ class PersistentStore {
      * Restore saved properties
      */
     void restore() {
-        this.restoreAuthUser();
-        this.restoreDefaultAccessControl();
+        SharedPreferences pref = this.context.getSharedPreferences(SKYGEAR_PREF_SPACE, Context.MODE_PRIVATE);
+
+        this.restoreAuthUser(pref);
+        this.restoreDefaultAccessControl(pref);
+        this.restoreDeviceId(pref);
+        this.restoreDeviceToken(pref);
     }
 
     /**
      * Save properties to persistent store.
      */
     void save() {
-        this.saveAuthUser();
-        this.saveDefaultAccessControl();
+        SharedPreferences pref = this.context.getSharedPreferences(SKYGEAR_PREF_SPACE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = pref.edit();
+
+        this.saveAuthUser(prefEditor);
+        this.saveDefaultAccessControl(prefEditor);
+        this.saveDeviceId(prefEditor);
+        this.saveDeviceToken(prefEditor);
+
+        prefEditor.apply();
     }
 
-
-    static final String CURRENT_USER_KEY = "current_user";
-    private void restoreAuthUser() {
-        SharedPreferences pref = context.getSharedPreferences(SKYGEAR_PREF_SPACE, Context.MODE_PRIVATE);
+    private void restoreAuthUser(SharedPreferences pref) {
         String currentUserString = pref.getString(CURRENT_USER_KEY, "{}");
 
         try {
@@ -71,24 +95,17 @@ class PersistentStore {
         }
     }
 
-    private void saveAuthUser() {
-        SharedPreferences pref = context.getSharedPreferences(SKYGEAR_PREF_SPACE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor authUserEditor = pref.edit();
-
+    private void saveAuthUser(SharedPreferences.Editor prefEditor) {
         if (this.currentUser != null) {
-            authUserEditor.putString(CURRENT_USER_KEY,
+            prefEditor.putString(CURRENT_USER_KEY,
                     UserSerializer.serialize(this.currentUser).toString()
             );
         } else {
-            authUserEditor.remove(CURRENT_USER_KEY);
+            prefEditor.remove(CURRENT_USER_KEY);
         }
-
-        authUserEditor.apply();
     }
 
-    static final String DEFAULT_ACCESS_CONTROL_KEY = "default_access_control";
-    private void restoreDefaultAccessControl() {
-        SharedPreferences pref = context.getSharedPreferences(SKYGEAR_PREF_SPACE, Context.MODE_PRIVATE);
+    private void restoreDefaultAccessControl(SharedPreferences pref) {
         String defaultAccessControlString = pref.getString(
                 DEFAULT_ACCESS_CONTROL_KEY,
                 "[{\"public\": true, \"level\": \"read\"}]"
@@ -104,19 +121,38 @@ class PersistentStore {
         }
     }
 
-    private void saveDefaultAccessControl() {
-        SharedPreferences pref = context.getSharedPreferences(SKYGEAR_PREF_SPACE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor defaultAccessControlEditor = pref.edit();
-
+    private void saveDefaultAccessControl(SharedPreferences.Editor prefEditor) {
         if (this.defaultAccessControl != null) {
-            defaultAccessControlEditor.putString(
+            prefEditor.putString(
                     DEFAULT_ACCESS_CONTROL_KEY,
                     AccessControlSerializer.serialize(this.defaultAccessControl).toString()
             );
         } else {
-            defaultAccessControlEditor.remove(DEFAULT_ACCESS_CONTROL_KEY);
+            prefEditor.remove(DEFAULT_ACCESS_CONTROL_KEY);
         }
+    }
 
-        defaultAccessControlEditor.apply();
+    private void restoreDeviceId(SharedPreferences pref) {
+        this.deviceId = pref.getString(DEVICE_ID_KEY, null);
+    }
+
+    private void saveDeviceId(SharedPreferences.Editor prefEditor) {
+        if (this.deviceId == null) {
+            prefEditor.remove(DEVICE_ID_KEY);
+        } else {
+            prefEditor.putString(DEVICE_ID_KEY, this.deviceId);
+        }
+    }
+
+    private void restoreDeviceToken(SharedPreferences pref) {
+        this.deviceToken = pref.getString(DEVICE_TOKEN_KEY, null);
+    }
+
+    private void saveDeviceToken(SharedPreferences.Editor prefEditor) {
+        if (this.deviceToken == null) {
+            prefEditor.remove(DEVICE_TOKEN_KEY);
+        } else {
+            prefEditor.putString(DEVICE_TOKEN_KEY, this.deviceToken);
+        }
     }
 }
