@@ -20,13 +20,24 @@ public final class Configuration {
     final String apiKey;
 
     /**
+     * GCM Sender ID
+     */
+    final String gcmSenderId;
+
+    /**
      * Boolean indicating whether Pubsub Handler Execution is in Background.
      */
     final boolean pubsubHandlerExecutionInBackground;
 
-    private Configuration(String endpoint, String apiKey, boolean pubsubHandlerExecutionInBackground) {
+    private Configuration(
+            String endpoint,
+            String apiKey,
+            String gcmSenderId,
+            boolean pubsubHandlerExecutionInBackground
+    ) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
+        this.gcmSenderId = gcmSenderId;
         this.pubsubHandlerExecutionInBackground = pubsubHandlerExecutionInBackground;
     }
 
@@ -36,7 +47,7 @@ public final class Configuration {
      * @return the endpoint
      */
     public String getEndpoint() {
-        return new String(endpoint);
+        return endpoint;
     }
 
     /**
@@ -45,7 +56,16 @@ public final class Configuration {
      * @return the api key
      */
     public String getApiKey() {
-        return new String(apiKey);
+        return apiKey;
+    }
+
+    /**
+     * Gets GCM Sender ID.
+     *
+     * @return the sender id
+     */
+    public String getGcmSenderId() {
+        return gcmSenderId;
     }
 
     /**
@@ -63,11 +83,10 @@ public final class Configuration {
      * @return a default configuration
      */
     static Configuration defaultConfiguration() {
-        return new Configuration(
-                DEFAULT_BASE_URL,
-                DEFAULT_API_KEY,
-                false
-        );
+        return new Builder()
+                .endPoint(DEFAULT_BASE_URL)
+                .apiKey(DEFAULT_API_KEY)
+                .build();
     }
 
     /**
@@ -76,6 +95,7 @@ public final class Configuration {
     public static final class Builder {
         private String endpoint;
         private String apiKey;
+        private String gcmSenderId;
         private boolean pubsubHandlerExecutionInBackground;
 
         /**
@@ -100,6 +120,23 @@ public final class Configuration {
             return this;
         }
 
+        /**
+         * Sets the GCM Sender ID.
+         *
+         * @param senderId the sender id
+         * @return the builder
+         */
+        public Builder gcmSenderId(String senderId) {
+            this.gcmSenderId = senderId;
+            return this;
+        }
+
+        /**
+         * Sets whether Pubsub Handlers Execution Should be in Background.
+         *
+         * @param isInBackground the boolean indicating whether the execution is in background
+         * @return the builder
+         */
         public Builder pubsubHandlerExecutionInBackground(boolean isInBackground) {
             this.pubsubHandlerExecutionInBackground = isInBackground;
             return this;
@@ -122,6 +159,7 @@ public final class Configuration {
             return new Configuration(
                     this.endpoint,
                     this.apiKey,
+                    this.gcmSenderId,
                     this.pubsubHandlerExecutionInBackground
             );
         }
