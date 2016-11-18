@@ -31,7 +31,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
      */
     public static final long MIN_RETRY_WAIT = 100;
 
-    private static final String TAG = Pubsub.class.getSimpleName();
+    private static final String TAG = "Skygear SDK";
     private static final long DEFAULT_RETRY_LIMIT = RETRY_LIMIT_INFINITE;
     private static final long DEFAULT_RETRY_WAIT = 3000;
 

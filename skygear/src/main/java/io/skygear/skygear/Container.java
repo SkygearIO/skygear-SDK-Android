@@ -1,6 +1,7 @@
 package io.skygear.skygear;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.security.InvalidParameterException;
 
@@ -8,6 +9,7 @@ import java.security.InvalidParameterException;
  * Container for Skygear.
  */
 public final class Container implements AuthResolver {
+    private static final String TAG = "Skygear SDK";
     private static Container sharedInstance;
 
     private final PersistentStore persistentStore;
@@ -249,12 +251,45 @@ public final class Container implements AuthResolver {
         this.requestManager.sendRequest(req);
     }
 
+    public void registerDeviceToken(String token) {
+        this.persistentStore.deviceToken = token;
+        this.persistentStore.save();
+
+        if (this.getCurrentUser() != null) {
+            RegisterDeviceRequest request = new RegisterDeviceRequest(
+                    this.persistentStore.deviceId,
+                    this.persistentStore.deviceToken
+            );
+
+            request.responseHandler = new RegisterDeviceResponseHandler() {
+                @Override
+                public void onRegisterSuccess(String deviceId) {
+                    Container.this.persistentStore.deviceId = deviceId;
+                    Container.this.persistentStore.save();
+
+                    Log.i(TAG, "Successfully register device with ID = " + deviceId);
+                }
+
+                @Override
+                public void onRegisterError(Error error) {
+                    Log.w(TAG, String.format(
+                            "Fail to register device token: %s",
+                            error.getMessage()
+                    ));
+                }
+            };
+
+            this.requestManager.sendRequest(request);
+        }
+    }
+
     @Override
     public void resolveAuthUser(User user) {
         this.persistentStore.currentUser = user;
         this.persistentStore.save();
 
         this.requestManager.accessToken = user != null ? user.accessToken : null;
+        this.registerDeviceToken(this.persistentStore.deviceToken);
     }
 
     /**

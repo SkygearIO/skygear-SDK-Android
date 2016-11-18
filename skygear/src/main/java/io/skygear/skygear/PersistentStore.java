@@ -15,6 +15,8 @@ import org.json.JSONObject;
  * This class manages persistent data of Skygear.
  */
 class PersistentStore {
+    private static final String TAG = "Skygear SDK";
+
     static final String SKYGEAR_PREF_SPACE = "SkygearSharedPreferences";
 
     static final String CURRENT_USER_KEY = "current_user";
@@ -90,7 +92,7 @@ class PersistentStore {
                     new JSONObject(currentUserString)
             );
         } catch (JSONException e) {
-            Log.w("Skygear SDK", "Fail to decode saved current user object");
+            Log.w(TAG, "Fail to decode saved current user object");
             this.currentUser = null;
         }
     }
@@ -116,7 +118,7 @@ class PersistentStore {
             this.defaultAccessControl
                     = AccessControlSerializer.deserialize(defaultAccessControlObject);
         } catch (JSONException e) {
-            Log.w("Skygear SDK", "Fail to decode saved default access control");
+            Log.w(TAG, "Fail to decode saved default access control");
             this.defaultAccessControl = null;
         }
     }

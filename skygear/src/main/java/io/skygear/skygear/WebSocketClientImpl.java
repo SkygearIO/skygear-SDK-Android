@@ -29,7 +29,7 @@ class WebSocketClientImpl
         extends org.java_websocket.client.WebSocketClient
         implements WebSocketClient
 {
-    static private final String TAG = WebSocketClientImpl.class.getSimpleName();
+    static private final String TAG = "Skygear SDK";
 
     final WeakReference<EventHandler> eventHandler;
 
