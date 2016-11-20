@@ -48,4 +48,6 @@
     <string name="remove_image">Remove Image</string>
     <string name="transient_include">Transient Include</string>
     <string name="set_current_location">Set to current location</string>
+    <string name="gcm_sender_id_title">GCM Sender ID (Optional)</string>
+    <string name="gcm_sender_id">GCM Sender ID</string>
 </resources>
