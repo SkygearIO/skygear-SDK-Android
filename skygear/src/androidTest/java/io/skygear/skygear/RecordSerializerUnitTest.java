@@ -112,6 +112,7 @@ public class RecordSerializerUnitTest {
         data.put("abc", 12.345);
         data.put("publish_date", new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate());
         data.put("comment", new Reference(aComment));
+        data.put("money", new UnknownValue("money"));
         data.put("loc", location);
         data.put("attachment", new Asset(
                 "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
@@ -293,6 +294,11 @@ public class RecordSerializerUnitTest {
         commentReferenceObject.put("$id", "Comment/" + referenceRecordId);
         jsonObject.put("comment", commentReferenceObject);
 
+        JSONObject unknownValueObject = new JSONObject();
+        unknownValueObject.put("$type", "unknown");
+        unknownValueObject.put("$underlying_type", "money");
+        jsonObject.put("money", unknownValueObject);
+
         JSONObject locationObject = new JSONObject();
         locationObject.put("$type", "geo");
         locationObject.put("$lat", 22.3360901);
@@ -340,6 +346,10 @@ public class RecordSerializerUnitTest {
         Reference commentRef = (Reference) record.get("comment");
         assertEquals("Comment", commentRef.getType());
         assertEquals(referenceRecordId, commentRef.getId());
+
+        // assert unknown value field
+        UnknownValue moneyValue = (UnknownValue) record.get("money");
+        assertEquals("money", moneyValue.getUnderlyingType());
 
         // assert location field
         Location loc = (Location) record.get("loc");

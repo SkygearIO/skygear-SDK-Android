@@ -57,7 +57,8 @@ public class RecordSerializer {
             Date.class,
             Asset.class,
             Location.class,
-            Reference.class
+            Reference.class,
+            UnknownValue.class
     ));
 
     /**
@@ -137,6 +138,8 @@ public class RecordSerializer {
                     recordData.put(perKey, LocationSerializer.serialize((Location) perValue));
                 } else if (perValue instanceof Reference) {
                     recordData.put(perKey, ReferenceSerializer.serialize((Reference) perValue));
+                } else if (perValue instanceof UnknownValue) {
+                    recordData.put(perKey, UnknownValueSerializer.serialize((UnknownValue) perValue));
                 }
             }
 
@@ -257,6 +260,8 @@ public class RecordSerializer {
                     record.set(nextKey, LocationSerializer.deserialize((JSONObject) nextValue));
                 } else if (ReferenceSerializer.isReferenceFormat(nextValue)) {
                     record.set(nextKey, ReferenceSerializer.deserialize((JSONObject) nextValue));
+                } else if (UnknownValueSerializer.isUnknownValueFormat(nextValue)) {
+                    record.set(nextKey, UnknownValueSerializer.deserialize((JSONObject) nextValue));
                 } else {
                     record.set(nextKey, nextValue);
                 }
