@@ -15,6 +15,8 @@ import io.skygear.skygear.AccessControl.Entry;
  * The Skygear Access Control Serializer.
  */
 public class AccessControlSerializer {
+    private static final String TAG = "Skygear SDK";
+
     /**
      * Serializes a Skygear Access Control
      *
@@ -119,7 +121,7 @@ public class AccessControlSerializer {
                         return jsonObject;
                     }
                 } catch (JSONException e) {
-                    Log.w("Skygear SDK", "Fail to serialize AccessControl Entry", e);
+                    Log.w(TAG, "Fail to serialize AccessControl Entry", e);
                 }
             }
 

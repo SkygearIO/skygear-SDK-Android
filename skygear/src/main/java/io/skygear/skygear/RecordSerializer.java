@@ -24,6 +24,7 @@ import java.util.Set;
  * The Skygear Record Serializer.
  */
 public class RecordSerializer {
+    private static final String TAG = "Skygear SDK";
     private static List<String> ReservedKeys = Arrays.asList(
             "_id",
             "_type",
@@ -167,7 +168,7 @@ public class RecordSerializer {
 
             return jsonObject;
         } catch (JSONException e) {
-            Log.w("Skygear SDK", "Fail to serialize record object", e);
+            Log.w(TAG, "Fail to serialize record object", e);
         }
 
         return null;

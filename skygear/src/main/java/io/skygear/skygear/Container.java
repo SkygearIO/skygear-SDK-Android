@@ -1,6 +1,7 @@
 package io.skygear.skygear;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.security.InvalidParameterException;
 
@@ -8,6 +9,7 @@ import java.security.InvalidParameterException;
  * Container for Skygear.
  */
 public final class Container implements AuthResolver {
+    private static final String TAG = "Skygear SDK";
     private static Container sharedInstance;
 
     private final PersistentStore persistentStore;
@@ -73,6 +75,65 @@ public final class Container implements AuthResolver {
     }
 
     /**
+     * Gets context.
+     *
+     * @return the application context
+     */
+    public Context getContext() {
+        return this.context;
+    }
+
+    /**
+     * Gets config.
+     *
+     * @return the config
+     */
+    public Configuration getConfig() {
+        return config;
+    }
+
+    /**
+     * Gets GCM Sender ID.
+     *
+     * @return the sender id
+     */
+    public String getGcmSenderId() {
+        return this.getConfig().getGcmSenderId();
+    }
+
+    /**
+     * Gets pubsub.
+     *
+     * @return the pubsub
+     */
+    public Pubsub getPubsub() {
+        return pubsub;
+    }
+
+    /**
+     * Gets the public database.
+     *
+     * @return the public database
+     */
+    public Database getPublicDatabase() {
+        return publicDatabase;
+    }
+
+    /**
+     * Gets the private database.
+     *
+     * @return the private database
+     * @throws AuthenticationException the authentication exception
+     */
+    public Database getPrivateDatabase() throws AuthenticationException {
+        if (this.getCurrentUser() == null) {
+            throw new AuthenticationException("Private database is only available for logged-in user");
+        }
+
+        return privateDatabase;
+    }
+
+    /**
      * Sets request timeout (in milliseconds).
      *
      * @param timeout the timeout
@@ -88,6 +149,24 @@ public final class Container implements AuthResolver {
      */
     public int getRequestTimeout() {
         return this.requestManager.requestTimeout;
+    }
+
+    /**
+     * Send a request.
+     *
+     * @param request the request
+     */
+    public void sendRequest(Request request) {
+        this.requestManager.sendRequest(request);
+    }
+
+    /**
+     * Gets current user.
+     *
+     * @return the current user
+     */
+    public User getCurrentUser() {
+        return this.persistentStore.currentUser;
     }
 
     /**
@@ -172,44 +251,45 @@ public final class Container implements AuthResolver {
         this.requestManager.sendRequest(req);
     }
 
+    public void registerDeviceToken(String token) {
+        this.persistentStore.deviceToken = token;
+        this.persistentStore.save();
+
+        if (this.getCurrentUser() != null) {
+            RegisterDeviceRequest request = new RegisterDeviceRequest(
+                    this.persistentStore.deviceId,
+                    this.persistentStore.deviceToken
+            );
+
+            request.responseHandler = new RegisterDeviceResponseHandler() {
+                @Override
+                public void onRegisterSuccess(String deviceId) {
+                    Container.this.persistentStore.deviceId = deviceId;
+                    Container.this.persistentStore.save();
+
+                    Log.i(TAG, "Successfully register device with ID = " + deviceId);
+                }
+
+                @Override
+                public void onRegisterError(Error error) {
+                    Log.w(TAG, String.format(
+                            "Fail to register device token: %s",
+                            error.getMessage()
+                    ));
+                }
+            };
+
+            this.requestManager.sendRequest(request);
+        }
+    }
+
     @Override
     public void resolveAuthUser(User user) {
         this.persistentStore.currentUser = user;
         this.persistentStore.save();
 
         this.requestManager.accessToken = user != null ? user.accessToken : null;
-    }
-
-    /**
-     * Gets pubsub.
-     *
-     * @return the pubsub
-     */
-    public Pubsub getPubsub() {
-        return pubsub;
-    }
-
-    /**
-     * Gets the public database.
-     *
-     * @return the public database
-     */
-    public Database getPublicDatabase() {
-        return publicDatabase;
-    }
-
-    /**
-     * Gets the private database.
-     *
-     * @return the private database
-     * @throws AuthenticationException the authentication exception
-     */
-    public Database getPrivateDatabase() throws AuthenticationException {
-        if (this.getCurrentUser() == null) {
-            throw new AuthenticationException("Private database is only available for logged-in user");
-        }
-
-        return privateDatabase;
+        this.registerDeviceToken(this.persistentStore.deviceToken);
     }
 
     /**
@@ -316,15 +396,6 @@ public final class Container implements AuthResolver {
     }
 
     /**
-     * Send a request.
-     *
-     * @param request the request
-     */
-    public void sendRequest(Request request) {
-        this.requestManager.sendRequest(request);
-    }
-
-    /**
      * Upload asset.
      *
      * @param asset           the asset
@@ -377,32 +448,5 @@ public final class Container implements AuthResolver {
         request.responseHandler = handler;
 
         this.requestManager.sendRequest(request);
-    }
-
-    /**
-     * Gets config.
-     *
-     * @return the config
-     */
-    public Configuration getConfig() {
-        return config;
-    }
-
-    /**
-     * Gets context.
-     *
-     * @return the application context
-     */
-    public Context getContext() {
-        return this.context;
-    }
-
-    /**
-     * Gets current user.
-     *
-     * @return the current user
-     */
-    public User getCurrentUser() {
-        return this.persistentStore.currentUser;
     }
 }
