@@ -1,7 +1,9 @@
 package io.skygear.skygear;
 
+import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,6 +43,34 @@ public class RecordUnitTest {
         assertEquals("world", aNote.get("hello"));
         assertEquals(3, aNote.get("foobar"));
         assertEquals(12.345, aNote.get("abc"));
+    }
+
+    @Test
+    public void testRecordParcelable() throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        data.put("hello", "world");
+        data.put("foobar", 3);
+        data.put("abc", 12.345);
+
+        Record aNote = new Record("Note", data);
+
+        Parcel parcel = Parcel.obtain();
+        aNote.writeToParcel(parcel, 0);
+
+        parcel.setDataPosition(0);
+        String parcelledString = parcel.readString();
+        JSONObject parcelledJSONObject = new JSONObject(parcelledString);
+        assertEquals("world", parcelledJSONObject.getString("hello"));
+        assertEquals(3, parcelledJSONObject.getInt("foobar"));
+        assertEquals(12.345, parcelledJSONObject.getDouble("abc"));
+
+        parcel.setDataPosition(0);
+        Record anotherNote = Record.CREATOR.createFromParcel(parcel);
+        assertEquals("world", anotherNote.get("hello"));
+        assertEquals(3, anotherNote.get("foobar"));
+        assertEquals(12.345, anotherNote.get("abc"));
+
+        parcel.recycle();
     }
 
     @Test(expected = InvalidParameterException.class)

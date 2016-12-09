@@ -1,5 +1,9 @@
 package io.skygear.skygear;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,7 +16,9 @@ import java.util.UUID;
 /**
  * The Skygear Record.
  */
-public class Record {
+public class Record implements Parcelable {
+    private static final String TAG = "Skygear SDK";
+
     String id;
     String type;
 
@@ -415,4 +421,34 @@ public class Record {
     public static Record fromJson(JSONObject jsonObject) throws JSONException {
         return RecordSerializer.deserialize(jsonObject);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.toJson().toString());
+    }
+
+    public static final Creator<Record> CREATOR = new Creator<Record>() {
+        @Override
+        public Record createFromParcel(Parcel in) {
+            String jsonString = in.readString();
+
+            try {
+                return Record.fromJson(new JSONObject(jsonString));
+            } catch (JSONException e) {
+                Log.e(TAG, "Fail to create record from Parcel", e);
+            }
+
+            return null;
+        }
+
+        @Override
+        public Record[] newArray(int size) {
+            return new Record[size];
+        }
+    };
 }
