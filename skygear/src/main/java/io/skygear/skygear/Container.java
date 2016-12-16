@@ -251,6 +251,11 @@ public final class Container implements AuthResolver {
         this.requestManager.sendRequest(req);
     }
 
+    /**
+     * Register device token.
+     *
+     * @param token the token
+     */
     public void registerDeviceToken(String token) {
         this.persistentStore.deviceToken = token;
         this.persistentStore.save();
@@ -274,6 +279,32 @@ public final class Container implements AuthResolver {
                 public void onRegisterError(Error error) {
                     Log.w(TAG, String.format(
                             "Fail to register device token: %s",
+                            error.getMessage()
+                    ));
+                }
+            };
+
+            this.requestManager.sendRequest(request);
+        }
+    }
+
+    /**
+     * Unregister device token.
+     */
+    public void unregisterDeviceToken() {
+        String deviceId = this.persistentStore.deviceId;
+        if (this.getCurrentUser() != null && deviceId != null) {
+            UnregisterDeviceRequest request = new UnregisterDeviceRequest(deviceId);
+            request.responseHandler = new UnregisterDeviceResponseHandler() {
+                @Override
+                public void onUnregisterSuccess(String deviceId) {
+                    Log.i(TAG, "Successfully register device with ID = " + deviceId);
+                }
+
+                @Override
+                public void onUnregisterError(Error error) {
+                    Log.w(TAG, String.format(
+                            "Fail to unregister device token: %s",
                             error.getMessage()
                     ));
                 }
