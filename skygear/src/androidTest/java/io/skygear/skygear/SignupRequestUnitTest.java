@@ -9,6 +9,7 @@ import java.security.InvalidParameterException;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class SignupRequestUnitTest {
@@ -30,6 +31,18 @@ public class SignupRequestUnitTest {
         assertEquals("auth:signup", req.action);
         assertEquals("user123@skygear.dev", data.get("email"));
         assertEquals("123456", data.get("password"));
+    }
+
+    @Test
+    public void testSignupAnonymouslyFlow() throws Exception {
+        SignupRequest req = new SignupRequest();
+        assertTrue(req.anonymous);
+    }
+
+    @Test
+    public void testSignupAnonymouslyCanPassValidation() throws Exception {
+        SignupRequest req = new SignupRequest();
+        req.validate();
     }
 
     @Test(expected = InvalidParameterException.class)

@@ -8,8 +8,10 @@ import java.util.Map;
  * The Sign up request.
  */
 public class SignupRequest extends Request {
+    final boolean anonymous;
+
     /**
-     * Instantiates a new Sign up request.
+     * Instantiates a new sign up request.
      *
      * @param username the username
      * @param email    the email
@@ -18,6 +20,7 @@ public class SignupRequest extends Request {
     public SignupRequest(String username, String email, String password) {
         super("auth:signup");
 
+        this.anonymous = false;
         this.data = new HashMap<>();
 
         this.data.put("username", username);
@@ -25,8 +28,22 @@ public class SignupRequest extends Request {
         this.data.put("password", password);
     }
 
+    /**
+     * Instantiates a new anonymous user sign up request.
+     */
+    public SignupRequest() {
+        super("auth:signup");
+
+        this.anonymous = true;
+        this.data = new HashMap<>();
+    }
+
     @Override
     protected void validate() throws Exception {
+        if (this.anonymous) {
+            return;
+        }
+
         String username = (String) this.data.get("username");
         String email = (String) this.data.get("email");
         String password = (String) this.data.get("password");
