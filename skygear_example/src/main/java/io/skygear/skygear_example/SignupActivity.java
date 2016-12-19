@@ -82,4 +82,49 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void doSignupAnonymously(View v) {
+        final ProgressDialog loading = new ProgressDialog(this);
+        loading.setTitle("Loading");
+        loading.setMessage("Signing up...");
+        loading.show();
+
+        final AlertDialog successDialog = new AlertDialog.Builder(this)
+                .setTitle("Signup success")
+                .setMessage("")
+                .setPositiveButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SignupActivity.this.finish();
+                    }
+                })
+                .create();
+
+        final AlertDialog failDialog = new AlertDialog.Builder(this)
+                .setTitle("Signup failed")
+                .setMessage("")
+                .setNeutralButton("Dismiss", null)
+                .create();
+
+        this.skygear.signupAnonymously(new AuthResponseHandler() {
+            @Override
+            public void onAuthSuccess(User user) {
+                loading.dismiss();
+                successDialog.setMessage("Success with token:\n" + user.getAccessToken());
+                successDialog.show();
+
+                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.getAccessToken());
+            }
+
+            @Override
+            public void onAuthFail(String reason) {
+                loading.dismiss();
+
+                failDialog.setMessage("Fail with reason: \n" + reason);
+                failDialog.show();
+
+                Log.i(LOG_TAG, "onAuthFail: Fail with reason: " + reason);
+            }
+        });
+    }
 }

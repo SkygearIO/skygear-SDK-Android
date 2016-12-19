@@ -15,6 +15,27 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:gravity="center">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="doSignupAnonymously"
+            android:text="@string/signup_anonymously" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:textAlignment="center"
+        android:text="@string/or" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:padding="5dp">
 
         <TextView
@@ -65,7 +86,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="doSignup"
-            android:text="@string/signup" />
+            android:text="@string/signup_with_email" />
 
     </LinearLayout>
 
