@@ -1,3 +1,20 @@
+## 0.20.0 (2016-12-20)
+
+### Features
+
+- Support signup anonymously (#83)
+- Support unregister device (SkygearIO/skygear-server#245, SkygearIO/skygear-server#249)
+- Implement Parcelable on Record class
+- Implement UnknownValue class (skygeario/skygear-server#231)
+- Support Push Notification (#67)
+
+### Incompatible changes
+
+- Add error code to request error (#75)
+
+    It makes a breaking change to all `*ResponseHandler` changing the
+    interface of fail callbacks
+
 ## 0.19.0 (2016-11-10)
 
 No change since last release
