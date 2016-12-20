@@ -117,13 +117,13 @@ public class SignupActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onAuthFail(String reason) {
+            public void onAuthFail(Error error) {
                 loading.dismiss();
 
-                failDialog.setMessage("Fail with reason: \n" + reason);
+                failDialog.setMessage("Fail with reason: \n" + error.getMessage());
                 failDialog.show();
 
-                Log.i(LOG_TAG, "onAuthFail: Fail with reason: " + reason);
+                Log.i(LOG_TAG, "onAuthFail: Fail with reason: " + error.getMessage());
             }
         });
     }
