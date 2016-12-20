@@ -198,6 +198,18 @@ public final class Container implements AuthResolver {
     }
 
     /**
+     * Sign up anonymously.
+     *
+     * @param handler the handler
+     */
+    public void signupAnonymously(AuthResponseHandler handler) {
+        Request req = new SignupRequest();
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.requestManager.sendRequest(req);
+    }
+
+    /**
      * Login with username.
      *
      * @param username the username
