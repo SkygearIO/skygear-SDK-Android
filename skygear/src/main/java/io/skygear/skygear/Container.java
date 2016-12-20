@@ -231,10 +231,27 @@ public final class Container implements AuthResolver {
      * @param handler the response handler
      */
     public void logout(LogoutResponseHandler handler) {
-        Request req = new LogoutRequest();
-        req.responseHandler = new LogoutResponseHandlerWrapper(this, handler);
+        final Request logoutRequest = new LogoutRequest();
+        logoutRequest.responseHandler = new LogoutResponseHandlerWrapper(this, handler);
 
-        this.requestManager.sendRequest(req);
+        String deviceId = this.persistentStore.deviceId;
+        if (this.getCurrentUser() != null && deviceId != null) {
+            // Try to unregister the device token before login out
+            this.unregisterDeviceToken(new UnregisterDeviceResponseHandler() {
+                @Override
+                public void onUnregisterSuccess(String deviceId) {
+                    Container.this.requestManager.sendRequest(logoutRequest);
+                }
+
+                @Override
+                public void onUnregisterError(Error error) {
+                    Log.w(TAG, "Fail to unregister device", error);
+                    Container.this.requestManager.sendRequest(logoutRequest);
+                }
+            });
+        } else {
+            this.requestManager.sendRequest(logoutRequest);
+        }
     }
 
     /**
@@ -251,6 +268,11 @@ public final class Container implements AuthResolver {
         this.requestManager.sendRequest(req);
     }
 
+    /**
+     * Register device token.
+     *
+     * @param token the token
+     */
     public void registerDeviceToken(String token) {
         this.persistentStore.deviceToken = token;
         this.persistentStore.save();
@@ -278,6 +300,41 @@ public final class Container implements AuthResolver {
                     ));
                 }
             };
+
+            this.requestManager.sendRequest(request);
+        }
+    }
+
+    /**
+     * Unregister device token.
+     */
+    public void unregisterDeviceToken() {
+        this.unregisterDeviceToken(new UnregisterDeviceResponseHandler() {
+            @Override
+            public void onUnregisterSuccess(String deviceId) {
+                Log.i(TAG, "Successfully register device with ID = " + deviceId);
+            }
+
+            @Override
+            public void onUnregisterError(Error error) {
+                Log.w(TAG, String.format(
+                        "Fail to unregister device token: %s",
+                        error.getMessage()
+                ));
+            }
+        });
+    }
+
+    /**
+     * Unregister device token.
+     *
+     * @param handler the response handler
+     */
+    public void unregisterDeviceToken(UnregisterDeviceResponseHandler handler) {
+        String deviceId = this.persistentStore.deviceId;
+        if (this.getCurrentUser() != null && deviceId != null) {
+            UnregisterDeviceRequest request = new UnregisterDeviceRequest(deviceId);
+            request.responseHandler = handler;
 
             this.requestManager.sendRequest(request);
         }
