@@ -25,7 +25,11 @@ public class RegisterDeviceRequestUnitTest {
 
     @Test
     public void testRegisterDeviceRequestCreateFlow2() throws Exception {
-        RegisterDeviceRequest request = new RegisterDeviceRequest("testing-device", "testing-token");
+        RegisterDeviceRequest request = new RegisterDeviceRequest(
+                "testing-device",
+                "testing-token",
+                "com.example.package"
+        );
 
         assertEquals("device:register", request.action);
 
@@ -33,5 +37,6 @@ public class RegisterDeviceRequestUnitTest {
         assertEquals("android", data.get("type"));
         assertEquals("testing-device", data.get("id"));
         assertEquals("testing-token", data.get("device_token"));
+        assertEquals("com.example.package", data.get("topic"));
     }
 }

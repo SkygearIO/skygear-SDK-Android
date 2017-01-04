@@ -292,7 +292,8 @@ public final class Container implements AuthResolver {
         if (this.getCurrentUser() != null) {
             RegisterDeviceRequest request = new RegisterDeviceRequest(
                     this.persistentStore.deviceId,
-                    this.persistentStore.deviceToken
+                    this.persistentStore.deviceToken,
+                    this.getContext().getPackageName()
             );
 
             request.responseHandler = new RegisterDeviceResponseHandler() {
