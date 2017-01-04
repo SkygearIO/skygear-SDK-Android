@@ -14,7 +14,6 @@ import io.skygear.skygear.Configuration;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
 import io.skygear.skygear.LogoutResponseHandler;
-import io.skygear.skygear.RegisterDeviceRequest;
 import io.skygear.skygear.Role;
 import io.skygear.skygear.User;
 import io.skygear.skygear.gcm.RegistrationIntentService;
