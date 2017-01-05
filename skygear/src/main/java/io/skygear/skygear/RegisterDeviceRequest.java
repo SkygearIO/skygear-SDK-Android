@@ -44,9 +44,9 @@ public class RegisterDeviceRequest extends Request {
      *
      * @param deviceId    the device id
      * @param deviceToken the device token
-     * @param packageName the package name
+     * @param topic       the topic, should equal to the package name of the application
      */
-    public RegisterDeviceRequest(String deviceId, String deviceToken, String packageName) {
+    public RegisterDeviceRequest(String deviceId, String deviceToken, String topic) {
         this();
 
         if (deviceId != null) {
@@ -57,8 +57,8 @@ public class RegisterDeviceRequest extends Request {
             this.data.put("device_token", deviceToken);
         }
 
-        if (packageName != null) {
-            this.data.put("topic", packageName);
+        if (topic != null) {
+            this.data.put("topic", topic);
         }
     }
 }
