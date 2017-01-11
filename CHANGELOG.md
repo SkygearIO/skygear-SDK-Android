@@ -1,3 +1,13 @@
+## 0.21.0 (2017-01-11)
+
+### Features
+
+- Provide package name when register device (SkygearIO/skygear-server#239)
+
+    Send package name as `topic` parameter when registering device, it will
+    help cloud code to send push notification to segment of device.
+
+
 ## 0.20.0 (2016-12-20)
 
 ### Features
