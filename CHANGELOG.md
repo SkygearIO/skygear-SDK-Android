@@ -1,3 +1,7 @@
+## 0.22.0 (2017-02-10)
+
+No changes since last release.
+
 ## 0.21.0 (2017-01-11)
 
 ### Features
