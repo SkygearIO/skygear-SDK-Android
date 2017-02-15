@@ -58,7 +58,6 @@ public class RecordCreateActivity
     private static final int LOCATION_PERMISSION_REQ_CODE = 12346;
 
     private static final int GALLERY_PERMISSIONS_REQUEST = 0;
-//    private static final int GALLERY_IMAGE_REQUEST = 1;
 
     private EditText[] recordKeyFields;
     private EditText[] recordValueFields;
@@ -227,7 +226,6 @@ public class RecordCreateActivity
             this.recordAssetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    RecordCreateActivity.this.doPickImage(v);
                     RecordCreateActivity.this.startGalleryChooser();
                 }
             });
@@ -389,13 +387,6 @@ public class RecordCreateActivity
     public void doRemoveImage(View view) {
         this.recordAsset = null;
         this.updateAssetViews();
-    }
-
-    @Deprecated
-    public void doPickImage(View view) {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE_REQ);
     }
 
     @Override
