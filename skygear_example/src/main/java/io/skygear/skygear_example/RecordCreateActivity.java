@@ -170,6 +170,13 @@ public class RecordCreateActivity
                     Toast.makeText(this, "Fail to get location permission", Toast.LENGTH_LONG).show();
                 }
                 break;
+
+            case GALLERY_PERMISSIONS_REQUEST:
+                if (PermissionUtils.permissionGranted(requestCode, GALLERY_PERMISSIONS_REQUEST, grantResults)) {
+                    startGalleryChooser();
+                }
+                break;
+
         }
     }
 
@@ -377,6 +384,7 @@ public class RecordCreateActivity
                     PICK_IMAGE_REQ);
         }
     }
+
 
     public void doRemoveImage(View view) {
         this.recordAsset = null;
