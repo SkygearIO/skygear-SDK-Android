@@ -2,7 +2,7 @@ package io.skygear.skygear;
 
 import android.support.test.runner.AndroidJUnit4;
 
-import com.android.volley.error.VolleyError;
+import com.android.volley.VolleyError;
 
 import org.junit.After;
 import org.junit.Before;

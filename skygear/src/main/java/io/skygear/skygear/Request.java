@@ -1,6 +1,6 @@
 package io.skygear.skygear;
 
-import com.android.volley.error.VolleyError;
+import com.android.volley.VolleyError;
 import com.android.volley.Response;
 
 import org.json.JSONException;

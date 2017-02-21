@@ -1,7 +1,7 @@
 package io.skygear.skygear;
 
 import com.android.volley.Request;
-import com.android.volley.error.AuthFailureError;
+import com.android.volley.AuthFailureError;
 import com.android.volley.toolbox.HttpStack;
 
 import org.apache.http.HttpResponse;
