@@ -20,6 +20,9 @@ public class Query {
     private final JSONArray sortPredicate;
     private final JSONObject transientPredicate;
 
+    private int limit;
+    private int offset;
+
     private boolean negation;
 
     /**
@@ -34,6 +37,9 @@ public class Query {
         this.predicates = new LinkedList<>();
         this.sortPredicate = new JSONArray();
         this.transientPredicate = new JSONObject();
+
+        this.limit = 0;
+        this.offset = 0;
     }
 
     /**
@@ -757,5 +763,41 @@ public class Query {
      */
     public JSONObject getTransientPredicateJson() {
         return this.transientPredicate;
+    }
+
+    /**
+     * Gets the limit.
+     *
+     * @return the limit
+     */
+    public int getLimit() {
+        return limit;
+    }
+
+    /**
+     * Sets the limit.
+     *
+     * @param limit the limit
+     */
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    /**
+     * Gets the offset.
+     *
+     * @return the offset
+     */
+    public int getOffset() {
+        return offset;
+    }
+
+    /**
+     * Sets the offset.
+     *
+     * @param offset the offset
+     */
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 }
