@@ -42,5 +42,8 @@ public class RecordQueryRequest extends Request {
         if (transientPredicateJson.length() > 0) {
             this.data.put("include", transientPredicateJson);
         }
+
+        this.data.put("limit",  this.query.getLimit());
+        this.data.put("offset", this.query.getOffset());
     }
 }

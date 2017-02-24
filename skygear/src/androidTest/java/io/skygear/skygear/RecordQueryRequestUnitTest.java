@@ -65,4 +65,38 @@ public class RecordQueryRequestUnitTest {
 
         assertEquals("desc", sortPredicate1.getString(1));
     }
+
+    @Test
+    public void testRecordQueryLimit() throws Exception {
+        Query query = new Query("Note");
+        query.setLimit(20);
+
+        RecordQueryRequest request = new RecordQueryRequest(query, instrumentationPublicDatabase);
+        assertEquals(20, request.data.get("limit"));
+    }
+
+    @Test
+    public void testRecordQueryDefaultLimit() throws Exception {
+        Query query = new Query("Note");
+
+        RecordQueryRequest request = new RecordQueryRequest(query, instrumentationPublicDatabase);
+        assertEquals(50, request.data.get("limit"));
+    }
+
+    @Test
+    public void testRecordQueryOffset() throws Exception {
+        Query query = new Query("Note");
+        query.setOffset(25);
+
+        RecordQueryRequest request = new RecordQueryRequest(query, instrumentationPublicDatabase);
+        assertEquals(25, request.data.get("offset"));
+    }
+
+    @Test
+    public void testRecordQueryDefaultOffset() throws Exception {
+        Query query = new Query("Note");
+
+        RecordQueryRequest request = new RecordQueryRequest(query, instrumentationPublicDatabase);
+        assertEquals(0, request.data.get("offset"));
+    }
 }

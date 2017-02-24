@@ -550,4 +550,20 @@ public class QueryUnitTest {
 
         assertEquals("Hello", predicate.getString(2));
     }
+
+    @Test
+    public void testQueryLimit() throws Exception {
+        Query query = new Query("Note");
+        query.setLimit(10);
+
+        assertEquals(10, query.getLimit());
+    }
+
+    @Test
+    public void testQueryOffset() throws Exception {
+        Query query = new Query("Note");
+        query.setOffset(20);
+
+        assertEquals(20, query.getOffset());
+    }
 }
