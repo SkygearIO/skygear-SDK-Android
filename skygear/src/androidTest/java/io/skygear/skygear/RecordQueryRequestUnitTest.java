@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 
 @RunWith(AndroidJUnit4.class)
 public class RecordQueryRequestUnitTest {
@@ -77,11 +76,11 @@ public class RecordQueryRequestUnitTest {
     }
 
     @Test
-    public void testRecordQueryNoLimit() throws Exception {
+    public void testRecordQueryDefaultLimit() throws Exception {
         Query query = new Query("Note");
 
         RecordQueryRequest request = new RecordQueryRequest(query, instrumentationPublicDatabase);
-        assertNull(request.data.get("limit"));
+        assertEquals(50, request.data.get("limit"));
     }
 
     @Test
@@ -94,10 +93,10 @@ public class RecordQueryRequestUnitTest {
     }
 
     @Test
-    public void testRecordQueryNoOffset() throws Exception {
+    public void testRecordQueryDefaultOffset() throws Exception {
         Query query = new Query("Note");
 
         RecordQueryRequest request = new RecordQueryRequest(query, instrumentationPublicDatabase);
-        assertNull(request.data.get("offset"));
+        assertEquals(0, request.data.get("offset"));
     }
 }

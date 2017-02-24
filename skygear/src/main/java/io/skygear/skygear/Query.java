@@ -15,6 +15,8 @@ import java.util.List;
  * The Skygear Record Query.
  */
 public class Query {
+    public static final int DEFAULT_LIMIT = 50;
+
     private final String type;
     private final List<JSONArray> predicates;
     private final JSONArray sortPredicate;
@@ -38,7 +40,7 @@ public class Query {
         this.sortPredicate = new JSONArray();
         this.transientPredicate = new JSONObject();
 
-        this.limit = 0;
+        this.limit = Query.DEFAULT_LIMIT;
         this.offset = 0;
     }
 
