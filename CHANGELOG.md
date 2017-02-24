@@ -1,3 +1,9 @@
+## 0.22.1 (2017-02-24)
+
+### Features
+
+- Support limit and offset for record query (#98)
+
 ## 0.22.0 (2017-02-10)
 
 No changes since last release.
