@@ -81,7 +81,7 @@ public class LambdaActivity extends AppCompatActivity {
             argList.toArray(argv);
         }
 
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         buff.append("Calling ").append(functionName).append("(");
 
         for (int idx = 0; idx < argc; idx++) {
