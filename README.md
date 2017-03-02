@@ -12,7 +12,7 @@ To get started, you need to have the
 [Skygear Server](https://github.com/skygearIO/skygear-server) running and
 Android SDK installed into your app. You can see detailed procedure at the
 getting started guide at
-[https://docs.skygear.io/android/guide](https://docs.skygear.io/android/guide).
+[https://docs.skygear.io/android/guide](https://docs.skygear.io/guides/quickstart/android/).
 
 You can sign up the Skygear Hosting at the Skygear Developer Portal at
 [https://portal.skygear.io](https://portal.skygear.io)
@@ -22,7 +22,7 @@ to your Android devices to try it out.
 
 ## Documentation
 The full documentation for Skygear is available on our docs site. The
-[Android SDK get started guide](https://docs.skygear.io/android/guide) is a
+[Android SDK get started guide](https://docs.skygear.io/guides/quickstart/android/) is a
 good place to get started.
 
 
