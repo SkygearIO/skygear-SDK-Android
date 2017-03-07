@@ -54,5 +54,23 @@ public class DateSerializerUnitTest {
                 dateWithoutMS
         );
     }
-    
+
+    @Test
+    public void testStringFromDate() throws Exception {
+        Date dateWithMS = new DateTime(2017, 3, 8, 20, 10, 5, 123, DateTimeZone.UTC).toDate();
+        String dateStringWithMS = "2017-03-08T20:10:05.123Z";
+
+        assertEquals(
+                dateStringWithMS,
+                DateSerializer.stringFromDate(dateWithMS)
+        );
+
+        Date dateWithZeroMS = new DateTime(2017, 3, 8, 20, 10, 5, 0, DateTimeZone.UTC).toDate();
+        String dateStringWithZeroZeroZeroMS = "2017-03-08T20:10:05.000Z";
+
+        assertEquals(
+                dateStringWithZeroZeroZeroMS,
+                DateSerializer.stringFromDate(dateWithZeroMS)
+        );
+    }
 }
