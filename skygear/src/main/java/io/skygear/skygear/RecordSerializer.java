@@ -62,11 +62,6 @@ public class RecordSerializer {
     ));
 
     /**
-     * The Datetime Formatter for Skygear in ISO Format.
-     */
-    static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime().withZoneUTC();
-
-    /**
      * Check if a record type is valid
      *
      * @param type the record type
@@ -145,8 +140,8 @@ public class RecordSerializer {
 
             JSONObject jsonObject = new JSONObject(recordData);
             jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
-            jsonObject.put("_created_at", RecordSerializer.dateTimeFormatter.print(new DateTime(record.createdAt)));
-            jsonObject.put("_updated_at", RecordSerializer.dateTimeFormatter.print(new DateTime(record.updatedAt)));
+            jsonObject.put("_created_at", DateSerializer.stringFromDate(record.createdAt));
+            jsonObject.put("_updated_at", DateSerializer.stringFromDate(record.updatedAt));
             jsonObject.put("_created_by", record.creatorId);
             jsonObject.put("_updated_by", record.updaterId);
             jsonObject.put("_ownerID", record.ownerId);
@@ -199,15 +194,13 @@ public class RecordSerializer {
         // handle _create_at
         if (jsonObject.has("_created_at")) {
             String createdAtString = jsonObject.getString("_created_at");
-            DateTime createdAtDatetime = RecordSerializer.dateTimeFormatter.parseDateTime(createdAtString);
-            record.createdAt = createdAtDatetime.toDate();
+            record.createdAt = DateSerializer.dateFromString(createdAtString);
         }
 
         // handle _updated_at
         if (jsonObject.has("_updated_at")) {
             String updatedAtString = jsonObject.getString("_updated_at");
-            DateTime updatedAtDatetime = RecordSerializer.dateTimeFormatter.parseDateTime(updatedAtString);
-            record.updatedAt = updatedAtDatetime.toDate();
+            record.updatedAt = DateSerializer.dateFromString(updatedAtString);
         }
 
         // handle _created_by, _updated_by, _ownerID
