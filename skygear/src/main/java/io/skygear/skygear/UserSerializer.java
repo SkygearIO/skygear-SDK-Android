@@ -35,14 +35,14 @@ public class UserSerializer {
             if (user.lastLoginTime != null) {
                 userObject.put(
                         "last_login_at",
-                        RecordSerializer.dateTimeFormatter.print(new DateTime(user.lastLoginTime))
+                        DateSerializer.stringFromDate(user.lastLoginTime)
                 );
             }
 
             if (user.lastSeenTime != null) {
                 userObject.put(
                         "last_seen_at",
-                        RecordSerializer.dateTimeFormatter.print(new DateTime(user.lastSeenTime))
+                        DateSerializer.stringFromDate(user.lastSeenTime)
                 );
             }
 
@@ -86,14 +86,12 @@ public class UserSerializer {
 
         if (userObject.has("last_login_at")) {
             String lastLoginAt = userObject.getString("last_login_at");
-            DateTime lastLoginAtDateTime = RecordSerializer.dateTimeFormatter.parseDateTime(lastLoginAt);
-            theUser.lastLoginTime = lastLoginAtDateTime.toDate();
+            theUser.lastLoginTime = DateSerializer.dateFromString(lastLoginAt);
         }
 
         if (userObject.has("last_seen_at")) {
             String lastSeenAt = userObject.getString("last_seen_at");
-            DateTime lastSeenAtDatetime = RecordSerializer.dateTimeFormatter.parseDateTime(lastSeenAt);
-            theUser.lastSeenTime = lastSeenAtDatetime.toDate();
+            theUser.lastSeenTime = DateSerializer.dateFromString(lastSeenAt);
         }
 
         JSONArray userRoleArray = userObject.optJSONArray("roles");
