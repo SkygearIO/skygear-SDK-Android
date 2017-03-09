@@ -1,7 +1,7 @@
 package io.skygear.skygear;
 
 import com.android.volley.Response;
-import com.android.volley.error.VolleyError;
+import com.android.volley.VolleyError;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
