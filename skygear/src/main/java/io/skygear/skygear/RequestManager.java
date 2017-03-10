@@ -10,7 +10,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.androidfung.volley.request.SimpleMultiPartRequest;
+import com.androidfung.volley.toolbox.SimpleMultiPartRequest;
 
 import org.json.JSONObject;
 
