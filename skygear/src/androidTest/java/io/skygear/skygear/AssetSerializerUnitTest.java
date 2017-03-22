@@ -14,7 +14,8 @@ public class AssetSerializerUnitTest {
     public void testAssetSerializationNormalFlow() throws Exception {
         JSONObject jsonObject = AssetSerializer.serialize(new Asset(
                 "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
-                "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt"
+                "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
+                "text/plain"
         ));
 
         assertEquals("asset", jsonObject.getString("$type"));
@@ -26,6 +27,7 @@ public class AssetSerializerUnitTest {
                 "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
                 jsonObject.getString("$url")
         );
+        assertEquals("text/plain", jsonObject.getString("$content_type"));
     }
 
     @Test
@@ -34,6 +36,7 @@ public class AssetSerializerUnitTest {
         jsonObject.put("$type", "asset");
         jsonObject.put("$name", "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt");
         jsonObject.put("$url", "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt");
+        jsonObject.put("$content_type", "text/plain");
 
         Asset asset = AssetSerializer.deserialize(jsonObject);
         assertEquals(
@@ -44,5 +47,6 @@ public class AssetSerializerUnitTest {
                 "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
                 asset.getUrl()
         );
+        assertEquals("text/plain", asset.getMimeType());
     }
 }

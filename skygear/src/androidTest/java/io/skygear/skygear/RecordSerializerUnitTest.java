@@ -116,7 +116,8 @@ public class RecordSerializerUnitTest {
         data.put("loc", location);
         data.put("attachment", new Asset(
                 "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
-                "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt"
+                "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
+                "text/plain"
         ));
 
         // prepare record
@@ -169,6 +170,7 @@ public class RecordSerializerUnitTest {
                 "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt",
                 attachmentObject.getString("$url")
         );
+        assertEquals("text/plain", attachmentObject.getString("$content_type"));
 
         JSONArray acl = jsonObject.getJSONArray("_access");
         assertEquals(1, acl.length());
@@ -287,6 +289,7 @@ public class RecordSerializerUnitTest {
         attachmentObject.put("$type", "asset");
         attachmentObject.put("$name", "928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt");
         attachmentObject.put("$url", "http://skygear.dev/asset/928739f5-e4f4-4c1c-9377-a0184dac66eb-hello.txt");
+        attachmentObject.put("$content_type", "text/plain");
         jsonObject.put("attachment", attachmentObject);
 
         JSONObject commentReferenceObject = new JSONObject();

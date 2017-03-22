@@ -54,11 +54,12 @@ public class Asset {
      * @param name the name
      * @param url  the url
      */
-    public Asset(String name, String url) {
+    public Asset(String name, String url, String mimeType) {
         super();
 
         this.name = name;
         this.url = url;
+        this.mimeType = mimeType;
         this.pendingUpload = false;
     }
 

@@ -29,11 +29,12 @@ public class AssetUnitTest {
     public void testAssetCreationFromUrl() throws Exception {
         Asset asset = new Asset(
                 "hello.txt",
-                "http://skygear.dev/asset/5da73a77-a86a-490b-a8de-d5009f1fb53e-hello.txt"
+                "http://skygear.dev/asset/5da73a77-a86a-490b-a8de-d5009f1fb53e-hello.txt",
+                "text/plain"
         );
 
         assertEquals("hello.txt", asset.getName());
-        assertNull(asset.getMimeType());
+        assertEquals("text/plain", asset.getMimeType());
         assertEquals(0, asset.getSize());
         assertFalse(asset.isPendingUpload());
         assertEquals(

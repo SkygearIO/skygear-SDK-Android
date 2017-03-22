@@ -87,6 +87,9 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
         if (this.getAsset().getSize() <= 0) {
             throw new InvalidParameterException("Missing data for the asset");
         }
+        if (this.getAsset().getMimeType().length() == 0) {
+            throw new InvalidParameterException("Missing MIME type");
+        }
     }
 
     /**
