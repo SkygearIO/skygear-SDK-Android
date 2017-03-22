@@ -27,9 +27,9 @@ public class AssetPostRequestUnitTest {
     public void setUp() throws Exception {
         asset = new Asset(
                 "hello.txt",
-                "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt"
+                "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt",
+                "text/plain"
         );
-        asset.mimeType = "text/plain";
         asset.data = "hello world".getBytes();
     }
 
@@ -100,10 +100,29 @@ public class AssetPostRequestUnitTest {
     public void testAssetPostRequestValidationNotAllowAssetNoData() throws Exception {
         Asset assetWithoutData = new Asset(
                 "hello.txt",
-                "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt"
+                "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt",
+                "text/plain"
         );
         AssetPostRequest postRequest = new AssetPostRequest(
                 assetWithoutData,
+                "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt",
+                null
+        );
+
+        postRequest.validate();
+    }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testAssetPostRequestValidationNotAllowNonTypedAsset() throws Exception {
+        Asset assetWithoutType = new Asset(
+                "hello.txt",
+                "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt",
+                ""
+        );
+        assetWithoutType.data = "hello world".getBytes();
+
+        AssetPostRequest postRequest = new AssetPostRequest(
+                assetWithoutType,
                 "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt",
                 null
         );

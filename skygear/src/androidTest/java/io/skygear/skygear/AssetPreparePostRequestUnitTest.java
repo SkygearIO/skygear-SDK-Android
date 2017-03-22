@@ -40,7 +40,7 @@ public class AssetPreparePostRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testAssetPreparePostRequestNotAllowNoData() throws Exception {
-        Asset asset = new Asset("hello.txt", "text/plain", null);
+        Asset asset = new Asset("hello.txt", "text/plain", new byte[]{});
         AssetPreparePostRequest request = new AssetPreparePostRequest(asset);
 
         request.validate();
