@@ -21,6 +21,7 @@ public class AssetSerializer {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("$type", "asset");
             jsonObject.put("$name", asset.getName());
+            jsonObject.put("$content_type", asset.getMimeType());
 
             if (asset.getUrl() != null) {
                 jsonObject.put("$url", asset.getUrl());
@@ -44,8 +45,9 @@ public class AssetSerializer {
         if (typeValue.equals("asset")) {
             String assetName = assetJSONObject.getString("$name");
             String assetUrl = assetJSONObject.getString("$url");
+            String assetMimeType = assetJSONObject.getString("$content_type");
 
-            return new Asset(assetName, assetUrl);
+            return new Asset(assetName, assetUrl, assetMimeType);
         }
 
         throw new JSONException("Invalid $type value: " + typeValue);
