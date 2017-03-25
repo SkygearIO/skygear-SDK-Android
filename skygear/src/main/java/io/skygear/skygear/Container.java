@@ -446,7 +446,30 @@ public final class Container implements AuthResolver {
      * @param handler the response handler
      */
     public void getUserByEmails(String[] emails, UserQueryResponseHandler handler) {
-        UserQueryRequest request = new UserQueryRequest(emails);
+        UserQueryByEmailsRequest request = new UserQueryByEmailsRequest(emails);
+        request.responseHandler = handler;
+
+        this.requestManager.sendRequest(request);
+    }
+
+    /**
+     * Gets user by username.
+     *
+     * @param username   the username
+     * @param handler the response handler
+     */
+    public void getUserByUsername(String username, UserQueryResponseHandler handler) {
+        this.getUserByUsernames(new String[] { username }, handler);
+    }
+
+    /**
+     * Gets users by usernames.
+     *
+     * @param usernames  the usernames
+     * @param handler the response handler
+     */
+    public void getUserByUsernames(String[] usernames, UserQueryResponseHandler handler) {
+        UserQueryByUsernamesRequest request = new UserQueryByUsernamesRequest(usernames);
         request.responseHandler = handler;
 
         this.requestManager.sendRequest(request);

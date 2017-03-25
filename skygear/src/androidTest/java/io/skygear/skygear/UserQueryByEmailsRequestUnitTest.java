@@ -10,10 +10,10 @@ import java.security.InvalidParameterException;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class UserQueryRequestUnitTest {
+public class UserQueryByEmailsRequestUnitTest {
     @Test
     public void testUserQueryRequestCreationFlow() throws Exception {
-        UserQueryRequest request = new UserQueryRequest(new String[] {
+        UserQueryByEmailsRequest request = new UserQueryByEmailsRequest(new String[]{
                 "hello@skygear.dev",
                 "world@skygear.dev",
                 "foo@skygear.dev",
@@ -32,7 +32,7 @@ public class UserQueryRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testUserQueryRequestCreationFlowWithNoEmails() throws Exception {
-        UserQueryRequest request = new UserQueryRequest(new String[] {});
+        UserQueryByEmailsRequest request = new UserQueryByEmailsRequest(new String[]{});
         request.validate();
     }
 }

@@ -6,13 +6,13 @@ import java.util.HashMap;
 /**
  * The Skygear User Query Request.
  */
-public class UserQueryRequest extends Request {
+public class UserQueryByEmailsRequest extends Request {
     /**
      * Instantiates a new User Query Request.
      *
      * @param emails the emails
      */
-    public UserQueryRequest(String[] emails) {
+    public UserQueryByEmailsRequest(String[] emails) {
         super("user:query");
 
         this.data = new HashMap<>();
