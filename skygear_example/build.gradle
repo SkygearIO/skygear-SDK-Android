@@ -1,5 +1,4 @@
 //noinspection GradleCompatible
-//noinspection GradleCompatible
 apply plugin: 'com.android.application'
 
 def keystorePassword = System.getenv('KEYSTORE_PASSWORD')

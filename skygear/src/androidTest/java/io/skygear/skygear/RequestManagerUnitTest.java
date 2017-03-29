@@ -4,8 +4,9 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.android.volley.error.AuthFailureError;
-import com.android.volley.request.MultiPartRequest;
+import com.android.volley.AuthFailureError;
+import com.androidfung.volley.toolbox.MultiPartParam;
+import com.androidfung.volley.toolbox.MultiPartRequest;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.Volley;
 
@@ -439,7 +440,7 @@ public class RequestManagerUnitTest {
                         assertTrue(request instanceof MultiPartRequest);
                         MultiPartRequest multiPartRequest = (MultiPartRequest) request;
 
-                        Map<String, MultiPartRequest.MultiPartParam> multipartParams
+                        Map<String, MultiPartParam> multipartParams
                                 = multiPartRequest.getMultipartParams();
                         assertEquals("world", multipartParams.get("hello").value);
                         assertEquals("bar", multipartParams.get("foo").value);
