@@ -31,6 +31,7 @@ android {
         versionName skygearFullVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         debug {
             testCoverageEnabled true
@@ -42,11 +43,13 @@ android {
     }
 
     lintOptions {
-        abortOnError false
+        textReport true
+        textOutput 'stdout'
     }
 }
 
 dependencies {
+
     compile 'com.google.android.gms:play-services-base:9.8.0'
     compile 'com.google.android.gms:play-services-gcm:9.8.0'
 

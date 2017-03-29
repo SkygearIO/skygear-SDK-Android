@@ -3,13 +3,14 @@ package io.skygear.skygear;
 import android.content.Context;
 import android.util.Log;
 
+
+import com.android.volley.error.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.error.AuthFailureError;
 import com.android.volley.request.JsonObjectRequest;
-import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.toolbox.Volley;
+import com.android.volley.request.SimpleMultiPartRequest;
 
 import org.json.JSONObject;
 
