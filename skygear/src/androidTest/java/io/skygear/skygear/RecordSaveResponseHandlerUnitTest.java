@@ -173,7 +173,7 @@ public class RecordSaveResponseHandlerUnitTest {
                 assertEquals(12.345, record1.get("abc"));
 
                 Error.Code code2 = errors.get("48092492-0791-4120-B314-022202AD3971").getCode();
-                String reason2 = errors.get("48092492-0791-4120-B314-022202AD3971").getMessage();
+                String reason2 = errors.get("48092492-0791-4120-B314-022202AD3971").getDetailMessage();
                 assertEquals(Error.Code.UNEXPECTED_ERROR, code2);
                 assertEquals("pq: duplicate key value violates unique constraint \"note__id_key\"", reason2);
 
@@ -228,7 +228,7 @@ public class RecordSaveResponseHandlerUnitTest {
             @Override
             public void onSaveFail(Error error) {
                 assertEquals(Error.Code.UNEXPECTED_ERROR, error.getCode());
-                assertEquals("pq: duplicate key value violates unique constraint \"note__id_key\"", error.getMessage());
+                assertEquals("pq: duplicate key value violates unique constraint \"note__id_key\"", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };
@@ -253,7 +253,7 @@ public class RecordSaveResponseHandlerUnitTest {
 
             @Override
             public void onSaveFail(Error error) {
-                assertEquals("Unknown server error", error.getMessage());
+                assertEquals("Unknown server error", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };

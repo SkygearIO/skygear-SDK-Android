@@ -42,7 +42,7 @@ public class LogoutResponseHandlerUnitTest {
 
             @Override
             public void onLogoutFail(Error error) {
-                assertEquals("Test Error", error.getMessage());
+                assertEquals("Test Error", error.getDetailMessage());
             }
         };
 

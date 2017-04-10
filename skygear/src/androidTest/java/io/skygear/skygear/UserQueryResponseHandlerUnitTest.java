@@ -82,7 +82,7 @@ public class UserQueryResponseHandlerUnitTest {
 
             @Override
             public void onQueryFail(Error error) {
-                assertEquals("Test Error", error.getMessage());
+                assertEquals("Test Error", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };

@@ -50,7 +50,7 @@ public class LogoutResponseHandlerWrapperUnitTest {
             @Override
             public void onLogoutFail(Error error) {
                 checkpoints[0] = true;
-                assertEquals("Test Error", error.getMessage());
+                assertEquals("Test Error", error.getDetailMessage());
             }
         };
 
