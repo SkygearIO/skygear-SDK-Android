@@ -104,8 +104,10 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
                     JSONObject errorObject = new JSONObject(networkErrorString).getJSONObject("error");
                     String errorString = errorObject.getString("message");
                     int errorCodeValue = errorObject.getInt("code");
+                    String errorName = errorObject.getString("name");
+                    JSONObject errorInfo = errorObject.optJSONObject("info");
 
-                    requestError = new Error(errorCodeValue, errorString);
+                    requestError = new Error(errorCodeValue, errorName, errorString, errorInfo);
                 } catch (JSONException e) {
                     requestError = new Error(networkErrorString);
                 }

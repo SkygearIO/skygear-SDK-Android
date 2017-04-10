@@ -309,7 +309,7 @@ public final class Container implements AuthResolver {
                 public void onRegisterError(Error error) {
                     Log.w(TAG, String.format(
                             "Fail to register device token: %s",
-                            error.getMessage()
+                            error.getDetailMessage()
                     ));
                 }
             };
@@ -332,7 +332,7 @@ public final class Container implements AuthResolver {
             public void onUnregisterError(Error error) {
                 Log.w(TAG, String.format(
                         "Fail to unregister device token: %s",
-                        error.getMessage()
+                        error.getDetailMessage()
                 ));
             }
         });

@@ -1,10 +1,15 @@
 package io.skygear.skygear;
 
+import org.json.JSONObject;
+
 /**
  * The Error for the response of Skygear Request.
  */
 public class Error extends Exception {
-    private final Code code;
+    private final int codeValue;
+    private final String name;
+    private final String detailMessage;
+    private final JSONObject info;
 
     /**
      * Instantiates a new Error.
@@ -16,7 +21,7 @@ public class Error extends Exception {
      * @param detailMessage the detail message
      */
     public Error(String detailMessage) {
-        this(Code.UNEXPECTED_ERROR, detailMessage);
+        this(Code.UNEXPECTED_ERROR.getValue(), null, detailMessage, null);
     }
 
     /**
@@ -30,19 +35,24 @@ public class Error extends Exception {
      * @param detailMessage the detail message
      */
     public Error(int codeValue, String detailMessage) {
-        this(Code.fromValue(codeValue), detailMessage);
+        this(codeValue, null, detailMessage, null);
     }
 
     /**
      * Instantiates a new Error.
      *
-     * @param code          the code
+     * @param codeValue     the code
+     * @param name          the name of the error
      * @param detailMessage the detail message
+     * @param info          the info from error message
      */
-    public Error(Code code, String detailMessage) {
-        super(detailMessage);
+    public Error(int codeValue, String name, String detailMessage, JSONObject info) {
+        super(Code.fromValue(codeValue).toString());
 
-        this.code = code;
+        this.codeValue = codeValue;
+        this.name = name;
+        this.detailMessage = detailMessage;
+        this.info = info;
     }
 
     /**
@@ -51,7 +61,7 @@ public class Error extends Exception {
      * @return the code
      */
     public Code getCode() {
-        return code;
+        return Code.fromValue(this.codeValue);
     }
 
     /**
@@ -179,5 +189,64 @@ public class Error extends Exception {
 
             return Code.UNEXPECTED_ERROR;
         }
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case NOT_AUTHENTICATED:
+                    return "You have to be authenticated to perform this operation.";
+                case PERMISSION_DENIED:
+                case ACCESS_KEY_NOT_ACCEPTED:
+                case ACCESS_TOKEN_NOT_ACCEPTED:
+                    return "You are not allowed to perform this operation.";
+                case INVALID_CREDENTIALS:
+                    return "You are not allowed to log in because the credentials you provided are not valid.";
+                case INVALID_SIGNATURE:
+                case BAD_REQUEST:
+                    return "The server is unable to process the request.";
+                case INVALID_ARGUMENT:
+                    return "The server is unable to process the data.";
+                case DUPLICATED:
+                    return "This request contains duplicate of an existing resource on the server.";
+                case RESOURCE_NOT_FOUND:
+                    return "The requested resource is not found.";
+                case NOT_SUPPORTED:
+                    return "This operation is not supported.";
+                case NOT_IMPLEMENTED:
+                    return "This operation is not implemented.";
+                case CONSTRAINT_VIOLATED:
+                case INCOMPATIBLE_SCHEMA:
+                case ATOMIC_OPERATION_FAILURE:
+                case PARTIAL_OPERATION_FAILURE:
+                    return "A problem occurred while processing this request.";
+                case UNDEFINED_OPERATION:
+                    return "The requested operation is not available.";
+                case PLUGIN_INITIALIZING:
+                case PLUGIN_UNAVAILABLE:
+                    return "The server is not ready yet.";
+                case PLUGIN_TIMEOUT:
+                    return "The server took too long to process.";
+                case RECORD_QUERY_INVALID:
+                    return "A problem occurred while processing this request.";
+                case UNEXPECTED_ERROR:
+                    return "An unexpected error has occurred.";
+            }
+            return super.toString();
+        }
+    }
+
+    public String getName () {
+        return this.name;
+    }
+    public int getCodeValue() {
+        return this.codeValue;
+    }
+
+    public String getDetailMessage() {
+        return this.detailMessage;
+    }
+
+    public JSONObject getInfo() {
+        return this.info;
     }
 }
