@@ -62,7 +62,7 @@ public class AuthResponseHandlerUnitTest {
 
             @Override
             public void onAuthFail(Error error) {
-                assertEquals("Test error", error.getMessage());
+                assertEquals("Test error", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };

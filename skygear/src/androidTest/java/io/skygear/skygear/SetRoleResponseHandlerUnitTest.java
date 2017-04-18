@@ -54,7 +54,7 @@ public class SetRoleResponseHandlerUnitTest {
 
             @Override
             public void onSetFail(Error error) {
-                assertEquals("Test Error", error.getMessage());
+                assertEquals("Test Error", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };

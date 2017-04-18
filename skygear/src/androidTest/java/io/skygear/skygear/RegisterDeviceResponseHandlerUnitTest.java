@@ -44,7 +44,7 @@ public class RegisterDeviceResponseHandlerUnitTest {
 
             @Override
             public void onRegisterError(Error error) {
-                assertEquals("Test error", error.getMessage());
+                assertEquals("Test error", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };

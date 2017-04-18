@@ -44,7 +44,7 @@ public class UnregisterDeviceResponseHandlerUnitTest {
 
             @Override
             public void onUnregisterError(Error error) {
-                assertEquals("Test error", error.getMessage());
+                assertEquals("Test error", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };

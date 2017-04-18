@@ -189,7 +189,7 @@ public class AssetPostRequestUnitTest {
                 assertEquals(assetToUpload.getSize(), asset.getSize());
                 assertEquals(assetToUpload.data, asset.data);
 
-                assertEquals("Test Error", error.getMessage());
+                assertEquals("Test Error", error.getDetailMessage());
 
                 checkpoints[0] = true;
             }

@@ -56,7 +56,7 @@ public class UserSaveResponseHandlerUnitTest {
 
             @Override
             public void onSaveFail(Error error) {
-                assertEquals("Test Error", error.getMessage());
+                assertEquals("Test Error", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };

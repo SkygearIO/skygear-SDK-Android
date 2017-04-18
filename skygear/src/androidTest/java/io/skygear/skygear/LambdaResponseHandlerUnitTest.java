@@ -49,7 +49,7 @@ public class LambdaResponseHandlerUnitTest {
 
             @Override
             public void onLambdaFail(Error error) {
-                assertEquals("Test Error", error.getMessage());
+                assertEquals("Test Error", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };

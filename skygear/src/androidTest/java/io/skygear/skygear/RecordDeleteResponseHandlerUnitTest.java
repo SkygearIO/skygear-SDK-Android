@@ -91,7 +91,7 @@ public class RecordDeleteResponseHandlerUnitTest {
 
                 assertEquals("48092492-0791-4120-B314-022202AD3970", ids[0]);
                 assertEquals(Error.Code.RESOURCE_NOT_FOUND, errors.get("48092492-0791-4120-B314-022202AD3971").getCode());
-                assertEquals("record not found", errors.get("48092492-0791-4120-B314-022202AD3971").getMessage());
+                assertEquals("record not found", errors.get("48092492-0791-4120-B314-022202AD3971").getDetailMessage());
 
                 checkpoints[0] = true;
             }
@@ -144,7 +144,7 @@ public class RecordDeleteResponseHandlerUnitTest {
             @Override
             public void onDeleteFail(Error error) {
                 assertEquals(Error.Code.PERMISSION_DENIED, error.getCode());
-                assertEquals("no permission to delete", error.getMessage());
+                assertEquals("no permission to delete", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };
@@ -169,7 +169,7 @@ public class RecordDeleteResponseHandlerUnitTest {
 
             @Override
             public void onDeleteFail(Error error) {
-                assertEquals("Unknown server error", error.getMessage());
+                assertEquals("Unknown server error", error.getDetailMessage());
                 checkpoints[0] = true;
             }
         };

@@ -291,7 +291,8 @@ public class RequestManagerUnitTest {
                                     "  \"error\": {" +
                                     "    \"name\": \"PermissionDenied\", " +
                                     "    \"code\": 102," +
-                                    "    \"message\": \"write is not allowed\"" +
+                                    "    \"message\": \"write is not allowed\"," +
+                                    "    \"info\": {\"foo\":\"bar\"}" +
                                     "  }" +
                                     "}"
                             )
@@ -317,7 +318,14 @@ public class RequestManagerUnitTest {
 
             @Override
             public void onFail(Error error) {
-                assertEquals("write is not allowed", error.getMessage());
+                assertEquals("write is not allowed", error.getDetailMessage());
+                assertEquals("PermissionDenied", error.getName());
+                assertEquals(Error.Code.PERMISSION_DENIED, error.getCode());
+                try {
+                    assertEquals("bar", error.getInfo().getString("foo"));
+                } catch (JSONException e) {
+                    fail(e.getMessage());
+                }
                 checkpoints[0] = true;
                 latch.countDown();
             }
@@ -399,7 +407,7 @@ public class RequestManagerUnitTest {
 
             @Override
             public void onFail(Error error) {
-                assertEquals("Test validation exception", error.getMessage());
+                assertEquals("Test validation exception", error.getDetailMessage());
 
                 checkpoints[0] = true;
                 latch.countDown();

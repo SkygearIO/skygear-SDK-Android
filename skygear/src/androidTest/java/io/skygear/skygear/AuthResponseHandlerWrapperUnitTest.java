@@ -56,7 +56,7 @@ public class AuthResponseHandlerWrapperUnitTest {
             @Override
             public void onAuthFail(Error error) {
                 checkpoints[0] = true;
-                assertEquals("Test Error", error.getMessage());
+                assertEquals("Test Error", error.getDetailMessage());
             }
         };
 
