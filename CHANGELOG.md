@@ -1,3 +1,13 @@
+## 0.23.0 (2017-04-20)
+
+### Features
+- Return user friendly error message in error (#89)
+
+### Other Notes
+- Remove ignoring lint error on example project
+- Change VolleyPlus to Volley
+
+
 ## 0.22.2 (2017-03-31)
 
 ### Features
