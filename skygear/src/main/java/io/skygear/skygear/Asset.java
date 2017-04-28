@@ -51,8 +51,9 @@ public class Asset {
     /**
      * Instantiates a new Asset with name and url.
      *
-     * @param name the name
-     * @param url  the url
+     * @param name     the name
+     * @param url      the url
+     * @param mimeType the MIME type
      */
     public Asset(String name, String url, String mimeType) {
         super();

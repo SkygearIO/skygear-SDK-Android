@@ -5,8 +5,8 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.android.volley.AuthFailureError;
-import com.androidfung.volley.toolbox.MultiPartParam;
-import com.androidfung.volley.toolbox.MultiPartRequest;
+import io.skygear.utils.volley.MultiPartParam;
+import io.skygear.utils.volley.MultiPartRequest;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.Volley;
 
