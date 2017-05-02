@@ -1,27 +1,34 @@
+## 0.23.1 (2017-05-02)
+
+### Bug Fixes
+
+- Remove dependency on jitpack.io (#124)
+
 ## 0.23.0 (2017-04-20)
 
 ### Features
+
 - Return user friendly error message in error (#89)
 
 ### Other Notes
+
 - Remove ignoring lint error on example project
 - Change VolleyPlus to Volley
-
 
 ## 0.22.2 (2017-03-31)
 
 ### Features
+
 - Add user query by username request and related methods
 - Support content type for asset serialization (#92)
 
-
 ### Bug Fixes
+
 - Fix the crash on parsing date string (#109)
 
-
 ### Other Notes
-- Replaced StringBuffer with StringBuilder
 
+- Replaced StringBuffer with StringBuilder
 
 ## 0.22.1 (2017-02-24)
 
