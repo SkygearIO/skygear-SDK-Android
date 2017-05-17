@@ -45,6 +45,7 @@ android {
 
 dependencies {
     compile project(path: ':skygear_core')
+    compile project(path: ':skygear_forgot_password')
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
