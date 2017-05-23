@@ -1,3 +1,7 @@
+## 0.24.1 (2017-05-23)
+
+Revert "Move skygear to skygear_core module"
+
 ## 0.24.0 (2017-05-23)
 
 ### Features
