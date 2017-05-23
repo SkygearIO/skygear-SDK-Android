@@ -1,1 +1,1 @@
-include ':skygear_example', ':skygear', ':skygear_core'
+include ':skygear_example', ':skygear'
