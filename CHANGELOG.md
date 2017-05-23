@@ -1,3 +1,11 @@
+### Features
+
+- Set target SDK version to 25 (#130)
+
+### Other Notes
+
+- Move skygear to skygear_core module (#123)
+
 ## 0.23.1 (2017-05-02)
 
 ### Bug Fixes
