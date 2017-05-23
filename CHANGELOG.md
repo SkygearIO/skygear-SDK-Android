@@ -1,3 +1,5 @@
+## 0.24.0 (2017-05-23)
+
 ### Features
 
 - Set target SDK version to 25 (#130)
