@@ -26,7 +26,7 @@ public class RecordSaveRequestUnitTest {
     public static void setUpClass() throws Exception {
         instrumentationContext = InstrumentationRegistry.getContext().getApplicationContext();
         instrumentationContainer = new Container(instrumentationContext, Configuration.defaultConfiguration());
-        instrumentationPublicDatabase= Database.publicDatabase(instrumentationContainer);
+        instrumentationPublicDatabase= Database.Factory.publicDatabase(instrumentationContainer);
     }
 
     @AfterClass

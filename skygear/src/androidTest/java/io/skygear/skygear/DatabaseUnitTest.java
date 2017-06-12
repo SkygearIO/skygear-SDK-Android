@@ -32,7 +32,7 @@ public class DatabaseUnitTest {
 
     @Test
     public void testPublicDatabaseNormalFlow() throws Exception {
-        Database database = Database.publicDatabase(instrumentationContainer);
+        Database database = Database.Factory.publicDatabase(instrumentationContainer);
 
         assertEquals(instrumentationContainer, database.getContainer());
         assertEquals("_public", database.getName());
@@ -40,7 +40,7 @@ public class DatabaseUnitTest {
 
     @Test
     public void testPrivateDatabaseNormalFlow() throws Exception {
-        Database database = Database.privateDatabase(instrumentationContainer);
+        Database database = Database.Factory.privateDatabase(instrumentationContainer);
 
         assertEquals(instrumentationContainer, database.getContainer());
         assertEquals("_private", database.getName());
@@ -49,7 +49,7 @@ public class DatabaseUnitTest {
     @Test(expected = InvalidParameterException.class)
     public void testDatabaseWeakReferenceToContainer() throws Exception {
         Container container = new Container(instrumentationContext, Configuration.defaultConfiguration());
-        Database database = Database.publicDatabase(container);
+        Database database = Database.Factory.publicDatabase(container);
 
         container = null;
         Runtime.getRuntime().gc();

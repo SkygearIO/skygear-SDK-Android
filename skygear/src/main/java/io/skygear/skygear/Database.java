@@ -22,32 +22,6 @@ public class Database {
     private WeakReference<Container> containerRef;
 
     /**
-     * Instantiates a public database.
-     * <p>
-     * Please be reminded that the skygear container passed in would be weakly referenced.
-     * </p>
-     *
-     * @param container the skygear container
-     * @return the database
-     */
-    public static Database publicDatabase(Container container) {
-        return new Database(PUBLIC_DATABASE_NAME, container);
-    }
-
-    /**
-     * Instantiates a private database.
-     * <p>
-     * Please be reminded that the skygear container passed in would be weakly referenced.
-     * </p>
-     *
-     * @param container the skygear container
-     * @return the database
-     */
-    public static Database privateDatabase(Container container) {
-        return new Database(PRIVATE_DATABASE_NAME, container);
-    }
-
-    /**
      * Instantiates a new Database.
      * <p>
      * Please be reminded that the skygear container passed in would be weakly referenced.
@@ -147,5 +121,33 @@ public class Database {
         request.responseHandler = handler;
 
         this.getContainer().sendRequest(request);
+    }
+
+    static class Factory {
+        /**
+         * Instantiates a public database.
+         * <p>
+         * Please be reminded that the skygear container passed in would be weakly referenced.
+         * </p>
+         *
+         * @param container the skygear container
+         * @return the database
+         */
+        static PublicDatabase publicDatabase(Container container) {
+            return new PublicDatabase(PUBLIC_DATABASE_NAME, container);
+        }
+
+        /**
+         * Instantiates a private database.
+         * <p>
+         * Please be reminded that the skygear container passed in would be weakly referenced.
+         * </p>
+         *
+         * @param container the skygear container
+         * @return the database
+         */
+        static Database privateDatabase(Container container) {
+            return new Database(PRIVATE_DATABASE_NAME, container);
+        }
     }
 }
