@@ -151,7 +151,7 @@ public class PubsubClientUnitTest {
         PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
         pubsubClient.webSocket = webSocketClient;
 
-        PubsubClient.Handler handler = new PubsubClient.Handler() {
+        PubsubHandler handler = new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -190,7 +190,7 @@ public class PubsubClientUnitTest {
         PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
         pubsubClient.webSocket = webSocketClient;
 
-        pubsubClient.subscribe("test_channel_0", new PubsubClient.Handler() {
+        pubsubClient.subscribe("test_channel_0", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -198,7 +198,7 @@ public class PubsubClientUnitTest {
         });
         assertEquals(1, checkCounts[0]);
 
-        pubsubClient.subscribe("test_channel_0", new PubsubClient.Handler() {
+        pubsubClient.subscribe("test_channel_0", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -206,7 +206,7 @@ public class PubsubClientUnitTest {
         });
         assertEquals(1, checkCounts[0]);
 
-        pubsubClient.subscribe("test_channel_1", new PubsubClient.Handler() {
+        pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -235,7 +235,7 @@ public class PubsubClientUnitTest {
 
         final CountDownLatch latch0 = new CountDownLatch(2);
         final CountDownLatch latch1 = new CountDownLatch(1);
-        pubsubClient.subscribe("test_channel_0", new PubsubClient.Handler() {
+        pubsubClient.subscribe("test_channel_0", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 try {
@@ -248,7 +248,7 @@ public class PubsubClientUnitTest {
             }
         });
 
-        pubsubClient.subscribe("test_channel_0", new PubsubClient.Handler() {
+        pubsubClient.subscribe("test_channel_0", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 try {
@@ -261,7 +261,7 @@ public class PubsubClientUnitTest {
             }
         });
 
-        pubsubClient.subscribe("test_channel_1", new PubsubClient.Handler() {
+        pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 try {
@@ -314,7 +314,7 @@ public class PubsubClientUnitTest {
         PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
         pubsubClient.webSocket = webSocketClient;
 
-        PubsubClient.Handler handler = pubsubClient.subscribe("test_channel_1", new PubsubClient.Handler() {
+        PubsubHandler handler = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -355,13 +355,13 @@ public class PubsubClientUnitTest {
         PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
         pubsubClient.webSocket = webSocketClient;
 
-        PubsubClient.Handler handler1 = pubsubClient.subscribe("test_channel_1", new PubsubClient.Handler() {
+        PubsubHandler handler1 = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
-        PubsubClient.Handler handler2 = pubsubClient.subscribe("test_channel_1", new PubsubClient.Handler() {
+        PubsubHandler handler2 = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -401,24 +401,24 @@ public class PubsubClientUnitTest {
         PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
         pubsubClient.webSocket = webSocketClient;
 
-        PubsubClient.Handler handler1 = pubsubClient.subscribe("test_channel_1", new PubsubClient.Handler() {
+        PubsubHandler handler1 = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        PubsubClient.Handler handler2 = pubsubClient.subscribe("test_channel_1", new PubsubClient.Handler() {
+        PubsubHandler handler2 = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        PubsubClient.Handler[] handlers = pubsubClient.unsubscribeAll("test_channel_1");
+        PubsubHandler[] handlers = pubsubClient.unsubscribeAll("test_channel_1");
         assertEquals(2, handlers.length);
 
-        List<PubsubClient.Handler> handlerList = Arrays.asList(handlers);
+        List<PubsubHandler> handlerList = Arrays.asList(handlers);
         assertTrue(handlerList.indexOf(handler1) != -1);
         assertTrue(handlerList.indexOf(handler2) != -1);
 
@@ -504,7 +504,7 @@ public class PubsubClientUnitTest {
         PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
         pubsubClient.webSocket = webSocketClient;
 
-        pubsubClient.subscribe("HelloWorld", new PubsubClient.Handler() {
+        pubsubClient.subscribe("HelloWorld", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -557,21 +557,21 @@ public class PubsubClientUnitTest {
         PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
         pubsubClient.webSocket = emptyWebSocketClient;
 
-        pubsubClient.subscribe("HelloWorld", new PubsubClient.Handler() {
+        pubsubClient.subscribe("HelloWorld", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        pubsubClient.subscribe("FooBar", new PubsubClient.Handler() {
+        pubsubClient.subscribe("FooBar", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        pubsubClient.subscribe("Haha-123", new PubsubClient.Handler() {
+        pubsubClient.subscribe("Haha-123", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");

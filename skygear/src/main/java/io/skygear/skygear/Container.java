@@ -14,7 +14,7 @@ public final class Container {
 
     final PersistentStore persistentStore;
     final Context context;
-    final PubsubClient pubsubClient;
+    final PubsubContainer pubsub;
     final RequestManager requestManager;
     final PublicDatabase publicDatabase;
     final Database privateDatabase;
@@ -32,7 +32,7 @@ public final class Container {
         this.context = context.getApplicationContext();
         this.config = config;
         this.requestManager = new RequestManager(context, config);
-        this.pubsubClient = new PubsubClient(this);
+        this.pubsub = new PubsubContainer(this);
         this.persistentStore = new PersistentStore(context);
         this.publicDatabase = Database.Factory.publicDatabase(this);
         this.privateDatabase = Database.Factory.privateDatabase(this);
@@ -94,12 +94,12 @@ public final class Container {
     }
 
     /**
-     * Gets pubsubClient.
+     * Gets pubsubContainer.
      *
-     * @return the pubsubClient
+     * @return the pusbubContainer
      */
-    public PubsubClient pubsub() {
-        return pubsubClient;
+    public PubsubContainer pubsub() {
+        return pubsub;
     }
 
     /**
@@ -114,7 +114,7 @@ public final class Container {
 
         this.config = config;
         this.requestManager.configure(config);
-        this.pubsubClient.configure(config);
+        this.pubsub.configure(config);
     }
 
     /**

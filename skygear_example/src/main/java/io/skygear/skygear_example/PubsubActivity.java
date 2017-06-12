@@ -15,7 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.skygear.skygear.Container;
-import io.skygear.skygear.PubsubClient;
+import io.skygear.skygear.PubsubHandler;
 
 public class PubsubActivity extends AppCompatActivity {
     private static final String TAG = PubsubActivity.class.getSimpleName();
@@ -81,7 +81,7 @@ public class PubsubActivity extends AppCompatActivity {
         }
 
         this.addMessageToDisplay(String.format("Subscribe to \"%s\"", channelName));
-        this.skygear.pubsub().subscribe(channelName, new PubsubClient.Handler() {
+        this.skygear.pubsub().subscribe(channelName, new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 String messageToDisplay;
