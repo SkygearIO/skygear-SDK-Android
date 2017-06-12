@@ -245,37 +245,6 @@ public final class Container {
     }
 
     /**
-     * Upload asset.
-     *
-     * @param asset           the asset
-     * @param responseHandler the response handler
-     */
-    public void uploadAsset(
-            final Asset asset,
-            final AssetPostRequest.ResponseHandler responseHandler
-    ) {
-        final RequestManager requestManager = this.requestManager;
-
-        AssetPreparePostRequest preparePostRequest = new AssetPreparePostRequest(asset);
-        preparePostRequest.responseHandler = new AssetPreparePostResponseHandler(asset) {
-            @Override
-            public void onPreparePostSuccess(AssetPostRequest postRequest) {
-                postRequest.responseHandler = responseHandler;
-                requestManager.sendAssetPostRequest(postRequest);
-            }
-
-            @Override
-            public void onPreparePostFail(Error error) {
-                if (responseHandler != null) {
-                    responseHandler.onPostFail(asset, error);
-                }
-            }
-        };
-
-        requestManager.sendRequest(preparePostRequest);
-    }
-
-    /**
      * Call lambda function.
      *
      * @param name    the function name

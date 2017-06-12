@@ -437,7 +437,7 @@ public class RecordCreateActivity
         loading.show();
 
         Asset asset = new Asset("Record-Image", mimeType, data);
-        this.skygear.uploadAsset(asset, new AssetPostRequest.ResponseHandler() {
+        this.skygear.getPublicDatabase().uploadAsset(asset, new AssetPostRequest.ResponseHandler() {
             @Override
             public void onPostSuccess(Asset asset, String response) {
                 Log.i(TAG, "handleImageUpload: successfully uploaded to " + asset.getUrl());
