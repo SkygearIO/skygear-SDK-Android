@@ -15,7 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.skygear.skygear.Container;
-import io.skygear.skygear.Pubsub;
+import io.skygear.skygear.PubsubClient;
 
 public class PubsubActivity extends AppCompatActivity {
     private static final String TAG = PubsubActivity.class.getSimpleName();
@@ -81,7 +81,7 @@ public class PubsubActivity extends AppCompatActivity {
         }
 
         this.addMessageToDisplay(String.format("Subscribe to \"%s\"", channelName));
-        this.skygear.getPubsub().subscribe(channelName, new Pubsub.Handler() {
+        this.skygear.pubsub().subscribe(channelName, new PubsubClient.Handler() {
             @Override
             public void handle(JSONObject data) {
                 String messageToDisplay;
@@ -108,7 +108,7 @@ public class PubsubActivity extends AppCompatActivity {
         }
 
         this.addMessageToDisplay(String.format("Unsubscribe to \"%s\"", channelName));
-        this.skygear.getPubsub().unsubscribeAll(channelName);
+        this.skygear.pubsub().unsubscribeAll(channelName);
     }
 
     public void onSendButtonClick(View view) {
@@ -132,7 +132,7 @@ public class PubsubActivity extends AppCompatActivity {
                 Log.w(TAG, "onSendButtonClick: Malformed JSON Object", e);
             }
 
-            this.skygear.getPubsub().publish(channelName, jsonObject);
+            this.skygear.pubsub().publish(channelName, jsonObject);
             this.messageEditText.setText("");
         }
     }

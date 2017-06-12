@@ -14,7 +14,7 @@ public final class Container {
 
     final PersistentStore persistentStore;
     final Context context;
-    final Pubsub pubsub;
+    final PubsubClient pubsubClient;
     final RequestManager requestManager;
     final PublicDatabase publicDatabase;
     final Database privateDatabase;
@@ -32,7 +32,7 @@ public final class Container {
         this.context = context.getApplicationContext();
         this.config = config;
         this.requestManager = new RequestManager(context, config);
-        this.pubsub = new Pubsub(this);
+        this.pubsubClient = new PubsubClient(this);
         this.persistentStore = new PersistentStore(context);
         this.publicDatabase = Database.Factory.publicDatabase(this);
         this.privateDatabase = Database.Factory.privateDatabase(this);
@@ -94,6 +94,15 @@ public final class Container {
     }
 
     /**
+     * Gets pubsubClient.
+     *
+     * @return the pubsubClient
+     */
+    public PubsubClient pubsub() {
+        return pubsubClient;
+    }
+
+    /**
      * Updates configuration of the container
      *
      * @param config configuration of the container
@@ -105,7 +114,7 @@ public final class Container {
 
         this.config = config;
         this.requestManager.configure(config);
-        this.pubsub.configure(config);
+        this.pubsubClient.configure(config);
     }
 
     /**
@@ -133,15 +142,6 @@ public final class Container {
      */
     public String getGcmSenderId() {
         return this.getConfig().getGcmSenderId();
-    }
-
-    /**
-     * Gets pubsub.
-     *
-     * @return the pubsub
-     */
-    public Pubsub getPubsub() {
-        return pubsub;
     }
 
     /**

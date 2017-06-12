@@ -30,7 +30,7 @@ public abstract class SkygearApplication extends Application {
     }
 
     /**
-     * Gets whether the Pubsub Handler Execution Should be in Background.
+     * Gets whether the PubsubClient Handler Execution Should be in Background.
      *
      * @return the boolean indicating whether the execution is in background
      */

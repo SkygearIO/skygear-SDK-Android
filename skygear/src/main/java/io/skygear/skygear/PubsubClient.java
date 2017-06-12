@@ -19,9 +19,9 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * The Skygear Pubsub.
+ * The Skygear PubsubClient.
  */
-public class Pubsub implements WebSocketClientImpl.EventHandler {
+public class PubsubClient implements WebSocketClientImpl.EventHandler {
     /**
      * The constant to indicate infinite retry limit.
      */
@@ -38,7 +38,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     /**
      * The Handlers Map
      * <p>
-     * Mapping Channel Name to Pubsub Handlers
+     * Mapping Channel Name to PubsubClient Handlers
      * </p>
      */
     final Map<String, Set<Handler>> handlers;
@@ -61,14 +61,14 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     Queue<Message> pendingMessages;
 
     /**
-     * Instantiates a new Skygear Pubsub.
+     * Instantiates a new Skygear PubsubClient.
      * <p>
      * Please be reminded that the skygear container passed in would be weakly referenced.
      * </p>
      *
      * @param container the skygear container
      */
-    public Pubsub(Container container) {
+    public PubsubClient(Container container) {
         super();
 
         this.containerRef = new WeakReference<>(container);
@@ -134,16 +134,16 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     public Container getContainer() {
         Container container = this.containerRef.get();
         if (container == null) {
-            throw new InvalidParameterException("Missing container for pubsub");
+            throw new InvalidParameterException("Missing container for pubsubClient");
         }
 
         return container;
     }
 
     /**
-     * Gets pubsub endpoint.
+     * Gets pubsubClient endpoint.
      *
-     * @return the pubsub endpoint
+     * @return the pubsubClient endpoint
      */
     public String getPubsubEndpoint() {
         return this.uri.toString();
@@ -206,21 +206,21 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     private void reconnect() {
         long retryLimit = this.getRetryLimit();
         if (retryLimit != RETRY_LIMIT_INFINITE && this.retryCount > retryLimit) {
-            Log.i(TAG, String.format("Pubsub reconnection count > %d. Give up.", retryLimit));
+            Log.i(TAG, String.format("PubsubClient reconnection count > %d. Give up.", retryLimit));
             return;
         }
 
         if (this.isConnecting()) {
             long retryWaitTime = this.getBoundedRetryWaitTime();
 
-            Log.i(TAG, String.format("Pubsub connecting, retry in %dms", retryWaitTime));
+            Log.i(TAG, String.format("PubsubClient connecting, retry in %dms", retryWaitTime));
             this.delayReconnect(retryWaitTime);
             return;
         }
 
         if (!this.isConnected()) {
             Log.i(TAG, String.format(
-                    "[RetryCount=%d] Pubsub Connecting to: %s",
+                    "[RetryCount=%d] PubsubClient Connecting to: %s",
                     this.retryCount,
                     this.getPubsubEndpoint()
             ));
@@ -240,7 +240,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     }
 
     private void delayReconnect(long delay) {
-        Log.i(TAG, String.format("Pubsub reconnect in %dms", delay));
+        Log.i(TAG, String.format("PubsubClient reconnect in %dms", delay));
 
         Context context = this.getContainer().getContext();
         android.os.Handler handler = new android.os.Handler(context.getMainLooper());
@@ -248,7 +248,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Pubsub.this.reconnect();
+                PubsubClient.this.reconnect();
             }
         }, delay);
     }
@@ -430,7 +430,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
 
     @Override
     public void onOpen(int statusCode, String statusMessage) {
-        Log.i(TAG, String.format("Pubsub connection opened: %d %s", statusCode, statusMessage));
+        Log.i(TAG, String.format("PubsubClient connection opened: %d %s", statusCode, statusMessage));
         this.retryCount = 0;
 
         Set<String> allChannels = this.handlers.keySet();
@@ -492,12 +492,12 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
 
     @Override
     public void onError(WebSocketClientImpl.Exception exception) {
-        Log.i(TAG, "Pubsub connection error: " + exception.getMessage());
+        Log.i(TAG, "PubsubClient connection error: " + exception.getMessage());
     }
 
     @Override
     public void onClose(String reason) {
-        Log.i(TAG, "Pubsub connection close: " + reason);
+        Log.i(TAG, "PubsubClient connection close: " + reason);
         this.delayReconnect(this.getBoundedRetryWaitTime());
     }
 
@@ -514,7 +514,7 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
     }
 
     /**
-     * The Pubsub Message.
+     * The PubsubClient Message.
      */
     static class Message {
         /**
@@ -527,10 +527,10 @@ public class Pubsub implements WebSocketClientImpl.EventHandler {
         final JSONObject data;
 
         /**
-         * Instantiates a new Pubsub Message.
+         * Instantiates a new PubsubClient Message.
          *
-         * @param channel the pubsub channel
-         * @param data    the pubsub data
+         * @param channel the pubsubClient channel
+         * @param data    the pubsubClient data
          */
         Message(String channel, JSONObject data) {
             super();
