@@ -75,7 +75,7 @@ public final class Container {
      *
      * @return the public database
      */
-    public Database publicDatabase() {
+    public PublicDatabase publicDatabase() {
         return publicDatabase;
     }
 
