@@ -108,7 +108,7 @@ public class AuthContainer implements AuthResolver {
         String deviceId = this.persistentStore.deviceId;
         if (this.getCurrentUser() != null && deviceId != null) {
             // Try to unregister the device token before login out
-            this.container.unregisterDeviceToken(new UnregisterDeviceResponseHandler() {
+            this.container.push().unregisterDeviceToken(new UnregisterDeviceResponseHandler() {
                 @Override
                 public void onUnregisterSuccess(String deviceId) {
                     AuthContainer.this.requestManager.sendRequest(logoutRequest);
@@ -204,7 +204,7 @@ public class AuthContainer implements AuthResolver {
         this.persistentStore.save();
 
         this.requestManager.accessToken = user != null ? user.accessToken : null;
-        this.container.registerDeviceToken(this.persistentStore.deviceToken);
+        this.container.push().registerDeviceToken(this.persistentStore.deviceToken);
     }
 
 }

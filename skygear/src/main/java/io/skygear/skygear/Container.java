@@ -1,7 +1,6 @@
 package io.skygear.skygear;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.security.InvalidParameterException;
 
@@ -14,13 +13,14 @@ public final class Container {
 
     final PersistentStore persistentStore;
     final Context context;
-    final PubsubContainer pubsub;
     final RequestManager requestManager;
-    final PublicDatabase publicDatabase;
-    final Database privateDatabase;
     Configuration config;
 
-    private final AuthContainer auth;
+    final AuthContainer auth;
+    final PubsubContainer pubsub;
+    final PushContainer push;
+    final PublicDatabase publicDatabase;
+    final Database privateDatabase;
 
     /**
      * Instantiates a new Container.
@@ -33,6 +33,7 @@ public final class Container {
         this.config = config;
         this.requestManager = new RequestManager(context, config);
         this.pubsub = new PubsubContainer(this);
+        this.push = new PushContainer(this);
         this.persistentStore = new PersistentStore(context);
         this.publicDatabase = Database.Factory.publicDatabase(this);
         this.privateDatabase = Database.Factory.privateDatabase(this);
@@ -103,6 +104,15 @@ public final class Container {
     }
 
     /**
+     * Gets pushContainer.
+     *
+     * @return the pushContainer
+     */
+    public PushContainer push() {
+        return push;
+    }
+
+    /**
      * Updates configuration of the container
      *
      * @param config configuration of the container
@@ -136,15 +146,6 @@ public final class Container {
     }
 
     /**
-     * Gets GCM Sender ID.
-     *
-     * @return the sender id
-     */
-    public String getGcmSenderId() {
-        return this.getConfig().getGcmSenderId();
-    }
-
-    /**
      * Sets request timeout (in milliseconds).
      *
      * @param timeout the timeout
@@ -169,79 +170,6 @@ public final class Container {
      */
     public void sendRequest(Request request) {
         this.requestManager.sendRequest(request);
-    }
-
-    /**
-     * Register device token.
-     *
-     * @param token the token
-     */
-    public void registerDeviceToken(String token) {
-        this.persistentStore.deviceToken = token;
-        this.persistentStore.save();
-
-        if (this.auth.getCurrentUser() != null) {
-            RegisterDeviceRequest request = new RegisterDeviceRequest(
-                    this.persistentStore.deviceId,
-                    this.persistentStore.deviceToken,
-                    this.getContext().getPackageName()
-            );
-
-            request.responseHandler = new RegisterDeviceResponseHandler() {
-                @Override
-                public void onRegisterSuccess(String deviceId) {
-                    Container.this.persistentStore.deviceId = deviceId;
-                    Container.this.persistentStore.save();
-
-                    Log.i(TAG, "Successfully register device with ID = " + deviceId);
-                }
-
-                @Override
-                public void onRegisterError(Error error) {
-                    Log.w(TAG, String.format(
-                            "Fail to register device token: %s",
-                            error.getDetailMessage()
-                    ));
-                }
-            };
-
-            this.requestManager.sendRequest(request);
-        }
-    }
-
-    /**
-     * Unregister device token.
-     */
-    public void unregisterDeviceToken() {
-        this.unregisterDeviceToken(new UnregisterDeviceResponseHandler() {
-            @Override
-            public void onUnregisterSuccess(String deviceId) {
-                Log.i(TAG, "Successfully register device with ID = " + deviceId);
-            }
-
-            @Override
-            public void onUnregisterError(Error error) {
-                Log.w(TAG, String.format(
-                        "Fail to unregister device token: %s",
-                        error.getDetailMessage()
-                ));
-            }
-        });
-    }
-
-    /**
-     * Unregister device token.
-     *
-     * @param handler the response handler
-     */
-    public void unregisterDeviceToken(UnregisterDeviceResponseHandler handler) {
-        String deviceId = this.persistentStore.deviceId;
-        if (this.auth.getCurrentUser() != null && deviceId != null) {
-            UnregisterDeviceRequest request = new UnregisterDeviceRequest(deviceId);
-            request.responseHandler = handler;
-
-            this.requestManager.sendRequest(request);
-        }
     }
 
     /**

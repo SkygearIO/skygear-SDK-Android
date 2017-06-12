@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         this.skygear = Container.defaultContainer(this);
         this.restoreServerConfiguration();
 
-        if (this.skygear.getGcmSenderId() != null) {
+        if (this.skygear.push().getGcmSenderId() != null) {
             Intent gcmTokenRegisterIntent = new Intent(this, RegistrationIntentService.class);
             this.startService(gcmTokenRegisterIntent);
         }
