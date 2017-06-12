@@ -71,6 +71,29 @@ public final class Container {
     }
 
     /**
+     * Gets the public database.
+     *
+     * @return the public database
+     */
+    public Database publicDatabase() {
+        return publicDatabase;
+    }
+
+    /**
+     * Gets the private database.
+     *
+     * @return the private database
+     * @throws AuthenticationException the authentication exception
+     */
+    public Database privateDatabase() throws AuthenticationException {
+        if (this.auth.getCurrentUser() == null) {
+            throw new AuthenticationException("Private database is only available for logged-in user");
+        }
+
+        return privateDatabase;
+    }
+
+    /**
      * Updates configuration of the container
      *
      * @param config configuration of the container
@@ -119,29 +142,6 @@ public final class Container {
      */
     public Pubsub getPubsub() {
         return pubsub;
-    }
-
-    /**
-     * Gets the public database.
-     *
-     * @return the public database
-     */
-    public Database getPublicDatabase() {
-        return publicDatabase;
-    }
-
-    /**
-     * Gets the private database.
-     *
-     * @return the private database
-     * @throws AuthenticationException the authentication exception
-     */
-    public Database getPrivateDatabase() throws AuthenticationException {
-        if (this.auth.getCurrentUser() == null) {
-            throw new AuthenticationException("Private database is only available for logged-in user");
-        }
-
-        return privateDatabase;
     }
 
     /**

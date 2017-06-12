@@ -23,7 +23,6 @@ import io.skygear.skygear.Query;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordDeleteResponseHandler;
 import io.skygear.skygear.RecordQueryResponseHandler;
-import io.skygear.skygear.RecordSaveResponseHandler;
 
 public class RecordQueryActivity extends AppCompatActivity {
     private static final String TAG = RecordQueryActivity.class.getSimpleName();
@@ -147,7 +146,7 @@ public class RecordQueryActivity extends AppCompatActivity {
                 .setMessage("")
                 .create();
 
-        skygear.getPublicDatabase().query(query, new RecordQueryResponseHandler() {
+        skygear.publicDatabase().query(query, new RecordQueryResponseHandler() {
             @Override
             public void onQuerySuccess(Record[] records) {
                 RecordQueryActivity.this.records = records;
@@ -209,7 +208,7 @@ public class RecordQueryActivity extends AppCompatActivity {
                 .setMessage("")
                 .create();
 
-        skygear.getPublicDatabase().delete(this.records, new RecordDeleteResponseHandler() {
+        skygear.publicDatabase().delete(this.records, new RecordDeleteResponseHandler() {
             @Override
             public void onDeleteSuccess(String[] ids) {
                 RecordQueryActivity.this.records = null;

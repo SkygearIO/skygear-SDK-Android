@@ -281,7 +281,7 @@ public class RecordCreateActivity
                 .setMessage("")
                 .create();
 
-        skygear.getPublicDatabase().save(newRecord, new RecordSaveResponseHandler(){
+        skygear.publicDatabase().save(newRecord, new RecordSaveResponseHandler(){
             @Override
             public void onSaveSuccess(Record[] records) {
                 RecordCreateActivity.this.record = records[0];
@@ -338,7 +338,7 @@ public class RecordCreateActivity
                 .setMessage("")
                 .create();
 
-        skygear.getPublicDatabase().delete(this.record, new RecordDeleteResponseHandler() {
+        skygear.publicDatabase().delete(this.record, new RecordDeleteResponseHandler() {
             @Override
             public void onDeleteSuccess(String[] ids) {
                 RecordCreateActivity.this.record = null;
@@ -437,7 +437,7 @@ public class RecordCreateActivity
         loading.show();
 
         Asset asset = new Asset("Record-Image", mimeType, data);
-        this.skygear.getPublicDatabase().uploadAsset(asset, new AssetPostRequest.ResponseHandler() {
+        this.skygear.publicDatabase().uploadAsset(asset, new AssetPostRequest.ResponseHandler() {
             @Override
             public void onPostSuccess(Asset asset, String response) {
                 Log.i(TAG, "handleImageUpload: successfully uploaded to " + asset.getUrl());
