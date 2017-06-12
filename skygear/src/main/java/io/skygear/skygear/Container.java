@@ -8,17 +8,19 @@ import java.security.InvalidParameterException;
 /**
  * Container for Skygear.
  */
-public final class Container implements AuthResolver {
+public final class Container {
     private static final String TAG = "Skygear SDK";
     private static Container sharedInstance;
 
-    private final PersistentStore persistentStore;
-    private final Context context;
-    private final Pubsub pubsub;
-    private Configuration config;
-    private RequestManager requestManager;
-    private Database publicDatabase;
-    private Database privateDatabase;
+    final PersistentStore persistentStore;
+    final Context context;
+    final Pubsub pubsub;
+    final RequestManager requestManager;
+    final Database publicDatabase;
+    final Database privateDatabase;
+    Configuration config;
+
+    private final AuthContainer auth;
 
     /**
      * Instantiates a new Container.
@@ -34,6 +36,8 @@ public final class Container implements AuthResolver {
         this.persistentStore = new PersistentStore(context);
         this.publicDatabase = Database.publicDatabase(this);
         this.privateDatabase = Database.privateDatabase(this);
+
+        this.auth = new AuthContainer(this);
 
         if (this.persistentStore.currentUser != null) {
             this.requestManager.accessToken = this.persistentStore.currentUser.accessToken;
@@ -57,6 +61,13 @@ public final class Container implements AuthResolver {
         }
 
         return sharedInstance;
+    }
+
+    /**
+     * @return auth
+     */
+    public AuthContainer auth() {
+        return auth;
     }
 
     /**
@@ -126,7 +137,7 @@ public final class Container implements AuthResolver {
      * @throws AuthenticationException the authentication exception
      */
     public Database getPrivateDatabase() throws AuthenticationException {
-        if (this.getCurrentUser() == null) {
+        if (this.auth.getCurrentUser() == null) {
             throw new AuthenticationException("Private database is only available for logged-in user");
         }
 
@@ -161,126 +172,6 @@ public final class Container implements AuthResolver {
     }
 
     /**
-     * Gets current user.
-     *
-     * @return the current user
-     */
-    public User getCurrentUser() {
-        return this.persistentStore.currentUser;
-    }
-
-    /**
-     * Sign up with username.
-     *
-     * @param username the username
-     * @param password the password
-     * @param handler  the response handler
-     */
-    public void signupWithUsername(String username, String password, AuthResponseHandler handler) {
-        Request req = new SignupRequest(username, null, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
-
-        this.requestManager.sendRequest(req);
-    }
-
-    /**
-     * Sign up with email.
-     *
-     * @param email    the email
-     * @param password the password
-     * @param handler  the response handler
-     */
-    public void signupWithEmail(String email, String password, AuthResponseHandler handler) {
-        Request req = new SignupRequest(null, email, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
-
-        this.requestManager.sendRequest(req);
-    }
-
-    /**
-     * Sign up anonymously.
-     *
-     * @param handler the handler
-     */
-    public void signupAnonymously(AuthResponseHandler handler) {
-        Request req = new SignupRequest();
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
-
-        this.requestManager.sendRequest(req);
-    }
-
-    /**
-     * Login with username.
-     *
-     * @param username the username
-     * @param password the password
-     * @param handler  the response handler
-     */
-    public void loginWithUsername(String username, String password, AuthResponseHandler handler) {
-        Request req = new LoginRequest(username, null, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
-
-        this.requestManager.sendRequest(req);
-    }
-
-    /**
-     * Login with email.
-     *
-     * @param email    the email
-     * @param password the password
-     * @param handler  the response handler
-     */
-    public void loginWithEmail(String email, String password, AuthResponseHandler handler) {
-        Request req = new LoginRequest(null, email, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
-
-        this.requestManager.sendRequest(req);
-    }
-
-    /**
-     * Logout.
-     *
-     * @param handler the response handler
-     */
-    public void logout(LogoutResponseHandler handler) {
-        final Request logoutRequest = new LogoutRequest();
-        logoutRequest.responseHandler = new LogoutResponseHandlerWrapper(this, handler);
-
-        String deviceId = this.persistentStore.deviceId;
-        if (this.getCurrentUser() != null && deviceId != null) {
-            // Try to unregister the device token before login out
-            this.unregisterDeviceToken(new UnregisterDeviceResponseHandler() {
-                @Override
-                public void onUnregisterSuccess(String deviceId) {
-                    Container.this.requestManager.sendRequest(logoutRequest);
-                }
-
-                @Override
-                public void onUnregisterError(Error error) {
-                    Log.w(TAG, "Fail to unregister device", error);
-                    Container.this.requestManager.sendRequest(logoutRequest);
-                }
-            });
-        } else {
-            this.requestManager.sendRequest(logoutRequest);
-        }
-    }
-
-    /**
-     * Asks "Who Am I?"
-     *
-     * This API gets current user from server using current access token.
-     *
-     * @param handler the handler
-     */
-    public void whoami(AuthResponseHandler handler) {
-        Request req = new GetCurrentUserRequest();
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
-
-        this.requestManager.sendRequest(req);
-    }
-
-    /**
      * Register device token.
      *
      * @param token the token
@@ -289,7 +180,7 @@ public final class Container implements AuthResolver {
         this.persistentStore.deviceToken = token;
         this.persistentStore.save();
 
-        if (this.getCurrentUser() != null) {
+        if (this.auth.getCurrentUser() != null) {
             RegisterDeviceRequest request = new RegisterDeviceRequest(
                     this.persistentStore.deviceId,
                     this.persistentStore.deviceToken,
@@ -345,21 +236,12 @@ public final class Container implements AuthResolver {
      */
     public void unregisterDeviceToken(UnregisterDeviceResponseHandler handler) {
         String deviceId = this.persistentStore.deviceId;
-        if (this.getCurrentUser() != null && deviceId != null) {
+        if (this.auth.getCurrentUser() != null && deviceId != null) {
             UnregisterDeviceRequest request = new UnregisterDeviceRequest(deviceId);
             request.responseHandler = handler;
 
             this.requestManager.sendRequest(request);
         }
-    }
-
-    @Override
-    public void resolveAuthUser(User user) {
-        this.persistentStore.currentUser = user;
-        this.persistentStore.save();
-
-        this.requestManager.accessToken = user != null ? user.accessToken : null;
-        this.registerDeviceToken(this.persistentStore.deviceToken);
     }
 
     /**
@@ -427,65 +309,6 @@ public final class Container implements AuthResolver {
      */
     public void setDefaultRole(Role role, SetRoleResponseHandler handler) {
         this.setDefaultRole(new Role[] { role }, handler);
-    }
-
-    /**
-     * Gets user by email.
-     *
-     * @param email   the email
-     * @param handler the response handler
-     */
-    public void getUserByEmail(String email, UserQueryResponseHandler handler) {
-        this.getUserByEmails(new String[] { email }, handler);
-    }
-
-    /**
-     * Gets user by emails.
-     *
-     * @param emails  the emails
-     * @param handler the response handler
-     */
-    public void getUserByEmails(String[] emails, UserQueryResponseHandler handler) {
-        UserQueryByEmailsRequest request = new UserQueryByEmailsRequest(emails);
-        request.responseHandler = handler;
-
-        this.requestManager.sendRequest(request);
-    }
-
-    /**
-     * Gets user by username.
-     *
-     * @param username   the username
-     * @param handler the response handler
-     */
-    public void getUserByUsername(String username, UserQueryResponseHandler handler) {
-        this.getUserByUsernames(new String[] { username }, handler);
-    }
-
-    /**
-     * Gets users by usernames.
-     *
-     * @param usernames  the usernames
-     * @param handler the response handler
-     */
-    public void getUserByUsernames(String[] usernames, UserQueryResponseHandler handler) {
-        UserQueryByUsernamesRequest request = new UserQueryByUsernamesRequest(usernames);
-        request.responseHandler = handler;
-
-        this.requestManager.sendRequest(request);
-    }
-
-    /**
-     * Save user.
-     *
-     * @param user    the user
-     * @param handler the response handler
-     */
-    public void saveUser(User user, UserSaveResponseHandler handler) {
-        UserSaveRequest request = new UserSaveRequest(user);
-        request.responseHandler = handler;
-
-        this.requestManager.sendRequest(request);
     }
 
     /**

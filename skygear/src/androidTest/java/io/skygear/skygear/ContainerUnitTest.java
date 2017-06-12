@@ -102,7 +102,7 @@ public class ContainerUnitTest {
                 "user123",
                 "user123@skygear.dev"
         );
-        container.resolveAuthUser(user);
+        container.auth().resolveAuthUser(user);
 
         Database privateDatabase = container.getPrivateDatabase();
 

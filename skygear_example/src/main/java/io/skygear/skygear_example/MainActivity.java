@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUserInfoDisplay() {
-        User currentUser = this.skygear.getCurrentUser();
+        User currentUser = this.skygear.auth().getCurrentUser();
         if (currentUser != null) {
             this.accessTokenDisplay.setText(currentUser.getAccessToken());
             this.userIdDisplay.setText(currentUser.getId());
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("")
                 .create();
 
-        this.skygear.logout(new LogoutResponseHandler() {
+        this.skygear.auth().logout(new LogoutResponseHandler() {
             @Override
             public void onLogoutSuccess() {
                 loading.dismiss();
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 .setNeutralButton("Dismiss", null)
                 .create();
 
-        this.skygear.whoami(new AuthResponseHandler() {
+        this.skygear.auth().whoami(new AuthResponseHandler() {
             @Override
             public void onAuthSuccess(User user) {
                 loading.dismiss();
