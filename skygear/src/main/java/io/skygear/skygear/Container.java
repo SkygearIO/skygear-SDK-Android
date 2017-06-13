@@ -32,13 +32,13 @@ public final class Container {
         this.context = context.getApplicationContext();
         this.config = config;
         this.requestManager = new RequestManager(context, config);
-        this.pubsub = new PubsubContainer(this);
-        this.push = new PushContainer(this);
         this.persistentStore = new PersistentStore(context);
-        this.publicDatabase = Database.Factory.publicDatabase(this);
-        this.privateDatabase = Database.Factory.privateDatabase(this);
 
         this.auth = new AuthContainer(this);
+        this.pubsub = new PubsubContainer(this);
+        this.push = new PushContainer(this);
+        this.publicDatabase = Database.Factory.publicDatabase(this);
+        this.privateDatabase = Database.Factory.privateDatabase(this);
 
         if (this.persistentStore.currentUser != null) {
             this.requestManager.accessToken = this.persistentStore.currentUser.accessToken;
@@ -65,7 +65,9 @@ public final class Container {
     }
 
     /**
-     * @return auth
+     * Gets auth container.
+     *
+     * @return the auth container
      */
     public AuthContainer auth() {
         return auth;
@@ -95,18 +97,18 @@ public final class Container {
     }
 
     /**
-     * Gets pubsubContainer.
+     * Gets pubsub container.
      *
-     * @return the pusbubContainer
+     * @return the pusbub container
      */
     public PubsubContainer pubsub() {
         return pubsub;
     }
 
     /**
-     * Gets pushContainer.
+     * Gets push container.
      *
-     * @return the pushContainer
+     * @return the push container
      */
     public PushContainer push() {
         return push;

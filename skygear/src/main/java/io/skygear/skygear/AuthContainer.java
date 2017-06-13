@@ -3,20 +3,33 @@ package io.skygear.skygear;
 
 import android.util.Log;
 
+import java.lang.ref.WeakReference;
+import java.security.InvalidParameterException;
+
 /**
  * Auth Container for Skygear.
  */
 public class AuthContainer implements AuthResolver {
     private static final String TAG = "Skygear SDK";
 
-    private final Container container;
-    private final RequestManager requestManager;
-    private final PersistentStore persistentStore;
+    private WeakReference<Container> containerRef;
 
     AuthContainer(Container container) {
-        this.container = container;
-        this.requestManager = container.requestManager;
-        this.persistentStore = container.persistentStore;
+        this.containerRef = new WeakReference<>(container);
+    }
+
+    /**
+     * Gets container.
+     *
+     * @return the container
+     */
+    public Container getContainer() {
+        Container container = this.containerRef.get();
+        if (container == null) {
+            throw new InvalidParameterException("Missing container for database");
+        }
+
+        return container;
     }
 
     /**
@@ -25,7 +38,7 @@ public class AuthContainer implements AuthResolver {
      * @return the current user
      */
     public User getCurrentUser() {
-        return this.container.persistentStore.currentUser;
+        return this.getContainer().persistentStore.currentUser;
     }
 
     /**
@@ -39,7 +52,7 @@ public class AuthContainer implements AuthResolver {
         Request req = new SignupRequest(username, null, password);
         req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
-        this.requestManager.sendRequest(req);
+        this.getContainer().requestManager.sendRequest(req);
     }
 
     /**
@@ -53,7 +66,7 @@ public class AuthContainer implements AuthResolver {
         Request req = new SignupRequest(null, email, password);
         req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
-        this.requestManager.sendRequest(req);
+        this.getContainer().requestManager.sendRequest(req);
     }
 
     /**
@@ -65,7 +78,7 @@ public class AuthContainer implements AuthResolver {
         Request req = new SignupRequest();
         req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
-        this.requestManager.sendRequest(req);
+        this.getContainer().requestManager.sendRequest(req);
     }
 
     /**
@@ -79,7 +92,7 @@ public class AuthContainer implements AuthResolver {
         Request req = new LoginRequest(username, null, password);
         req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
-        this.requestManager.sendRequest(req);
+        this.getContainer().requestManager.sendRequest(req);
     }
 
     /**
@@ -93,7 +106,7 @@ public class AuthContainer implements AuthResolver {
         Request req = new LoginRequest(null, email, password);
         req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
-        this.requestManager.sendRequest(req);
+        this.getContainer().requestManager.sendRequest(req);
     }
 
     /**
@@ -105,23 +118,23 @@ public class AuthContainer implements AuthResolver {
         final Request logoutRequest = new LogoutRequest();
         logoutRequest.responseHandler = new LogoutResponseHandlerWrapper(this, handler);
 
-        String deviceId = this.persistentStore.deviceId;
+        String deviceId = this.getContainer().persistentStore.deviceId;
         if (this.getCurrentUser() != null && deviceId != null) {
             // Try to unregister the device token before login out
-            this.container.push().unregisterDeviceToken(new UnregisterDeviceResponseHandler() {
+            this.getContainer().push.unregisterDeviceToken(new UnregisterDeviceResponseHandler() {
                 @Override
                 public void onUnregisterSuccess(String deviceId) {
-                    AuthContainer.this.requestManager.sendRequest(logoutRequest);
+                    AuthContainer.this.getContainer().requestManager.sendRequest(logoutRequest);
                 }
 
                 @Override
                 public void onUnregisterError(Error error) {
                     Log.w(TAG, "Fail to unregister device", error);
-                    AuthContainer.this.requestManager.sendRequest(logoutRequest);
+                    AuthContainer.this.getContainer().requestManager.sendRequest(logoutRequest);
                 }
             });
         } else {
-            this.requestManager.sendRequest(logoutRequest);
+            this.getContainer().requestManager.sendRequest(logoutRequest);
         }
     }
 
@@ -136,7 +149,7 @@ public class AuthContainer implements AuthResolver {
         Request req = new GetCurrentUserRequest();
         req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
-        this.requestManager.sendRequest(req);
+        this.getContainer().requestManager.sendRequest(req);
     }
 
     /**
@@ -159,7 +172,7 @@ public class AuthContainer implements AuthResolver {
         UserQueryByEmailsRequest request = new UserQueryByEmailsRequest(emails);
         request.responseHandler = handler;
 
-        this.requestManager.sendRequest(request);
+        this.getContainer().requestManager.sendRequest(request);
     }
 
     /**
@@ -182,7 +195,7 @@ public class AuthContainer implements AuthResolver {
         UserQueryByUsernamesRequest request = new UserQueryByUsernamesRequest(usernames);
         request.responseHandler = handler;
 
-        this.requestManager.sendRequest(request);
+        this.getContainer().requestManager.sendRequest(request);
     }
 
     /**
@@ -195,16 +208,17 @@ public class AuthContainer implements AuthResolver {
         UserSaveRequest request = new UserSaveRequest(user);
         request.responseHandler = handler;
 
-        this.requestManager.sendRequest(request);
+        this.getContainer().requestManager.sendRequest(request);
     }
 
     @Override
     public void resolveAuthUser(User user) {
-        this.persistentStore.currentUser = user;
-        this.persistentStore.save();
+        Container container = this.getContainer();
+        container.persistentStore.currentUser = user;
+        container.persistentStore.save();
 
-        this.requestManager.accessToken = user != null ? user.accessToken : null;
-        this.container.push().registerDeviceToken(this.persistentStore.deviceToken);
+        container.requestManager.accessToken = user != null ? user.accessToken : null;
+        container.push.registerDeviceToken(container.persistentStore.deviceToken);
     }
 
 }

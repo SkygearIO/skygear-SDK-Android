@@ -31,7 +31,6 @@ public class PushContainer {
         return container;
     }
 
-
     /**
      * Gets GCM Sender ID.
      *
@@ -51,7 +50,7 @@ public class PushContainer {
         container.persistentStore.deviceToken = token;
         container.persistentStore.save();
 
-        if (container.auth().getCurrentUser() != null) {
+        if (container.auth.getCurrentUser() != null) {
             RegisterDeviceRequest request = new RegisterDeviceRequest(
                     container.persistentStore.deviceId,
                     container.persistentStore.deviceToken,
