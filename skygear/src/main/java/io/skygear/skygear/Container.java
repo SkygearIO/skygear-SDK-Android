@@ -69,7 +69,7 @@ public final class Container {
      *
      * @return the auth container
      */
-    public AuthContainer auth() {
+    public AuthContainer getAuth() {
         return auth;
     }
 
@@ -78,7 +78,7 @@ public final class Container {
      *
      * @return the public database
      */
-    public PublicDatabase publicDatabase() {
+    public PublicDatabase getPublicDatabase() {
         return publicDatabase;
     }
 
@@ -88,7 +88,7 @@ public final class Container {
      * @return the private database
      * @throws AuthenticationException the authentication exception
      */
-    public Database privateDatabase() throws AuthenticationException {
+    public Database getPrivateDatabase() throws AuthenticationException {
         if (this.auth.getCurrentUser() == null) {
             throw new AuthenticationException("Private database is only available for logged-in user");
         }
@@ -101,7 +101,7 @@ public final class Container {
      *
      * @return the pusbub container
      */
-    public PubsubContainer pubsub() {
+    public PubsubContainer getPubsub() {
         return pubsub;
     }
 
@@ -110,7 +110,7 @@ public final class Container {
      *
      * @return the push container
      */
-    public PushContainer push() {
+    public PushContainer getPush() {
         return push;
     }
 

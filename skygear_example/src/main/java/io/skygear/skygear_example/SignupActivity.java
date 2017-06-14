@@ -61,7 +61,7 @@ public class SignupActivity extends AppCompatActivity {
         Log.i(LOG_TAG, "doSignup: Signup with email: " + email);
         Log.i(LOG_TAG, "doSignup: Signup with password: " + password);
 
-        this.skygear.auth().signupWithEmail(email, password, new AuthResponseHandler() {
+        this.skygear.getAuth().signupWithEmail(email, password, new AuthResponseHandler() {
             @Override
             public void onAuthSuccess(User user) {
                 loading.dismiss();
@@ -106,7 +106,7 @@ public class SignupActivity extends AppCompatActivity {
                 .setNeutralButton("Dismiss", null)
                 .create();
 
-        this.skygear.auth().signupAnonymously(new AuthResponseHandler() {
+        this.skygear.getAuth().signupAnonymously(new AuthResponseHandler() {
             @Override
             public void onAuthSuccess(User user) {
                 loading.dismiss();

@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.i(LOG_TAG, "doLogin: Signup with email: " + email);
         Log.i(LOG_TAG, "doLogin: Signup with password: " + password);
 
-        this.skygear.auth().loginWithEmail(email, password, new AuthResponseHandler() {
+        this.skygear.getAuth().loginWithEmail(email, password, new AuthResponseHandler() {
             @Override
             public void onAuthSuccess(User user) {
                 loading.dismiss();

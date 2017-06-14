@@ -86,7 +86,7 @@ public class ContainerUnitTest {
     public void testContainerPublicDatabase() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
         Container container = new Container(instrumentationContext, config);
-        Database publicDatabase = container.publicDatabase();
+        Database publicDatabase = container.getPublicDatabase();
 
         assertEquals("_public", publicDatabase.getName());
         assertEquals(container, publicDatabase.getContainer());
@@ -102,9 +102,9 @@ public class ContainerUnitTest {
                 "user123",
                 "user123@skygear.dev"
         );
-        container.auth().resolveAuthUser(user);
+        container.getAuth().resolveAuthUser(user);
 
-        Database privateDatabase = container.privateDatabase();
+        Database privateDatabase = container.getPrivateDatabase();
 
         assertEquals("_private", privateDatabase.getName());
         assertEquals(container, privateDatabase.getContainer());
@@ -116,6 +116,6 @@ public class ContainerUnitTest {
     public void testContainerNotAllowGetPrivateDatabaseWithoutLogin() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
         Container container = new Container(instrumentationContext, config);
-        container.privateDatabase();
+        container.getPrivateDatabase();
     }
 }

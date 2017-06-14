@@ -146,7 +146,7 @@ public class RecordQueryActivity extends AppCompatActivity {
                 .setMessage("")
                 .create();
 
-        skygear.publicDatabase().query(query, new RecordQueryResponseHandler() {
+        skygear.getPublicDatabase().query(query, new RecordQueryResponseHandler() {
             @Override
             public void onQuerySuccess(Record[] records) {
                 RecordQueryActivity.this.records = records;
@@ -208,7 +208,7 @@ public class RecordQueryActivity extends AppCompatActivity {
                 .setMessage("")
                 .create();
 
-        skygear.publicDatabase().delete(this.records, new RecordDeleteResponseHandler() {
+        skygear.getPublicDatabase().delete(this.records, new RecordDeleteResponseHandler() {
             @Override
             public void onDeleteSuccess(String[] ids) {
                 RecordQueryActivity.this.records = null;

@@ -61,7 +61,7 @@ public class ServerConfigurationActivity extends AppCompatActivity {
         this.skygear.configure(config);
         this.saveConfiguration(config);
 
-        if (this.skygear.push().getGcmSenderId() != null) {
+        if (this.skygear.getPush().getGcmSenderId() != null) {
             Intent gcmTokenRegisterIntent = new Intent(this, RegistrationIntentService.class);
             this.startService(gcmTokenRegisterIntent);
         }
