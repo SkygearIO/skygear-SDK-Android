@@ -30,7 +30,7 @@ public class Database {
      * @param databaseName the database name
      * @param container    the container
      */
-    Database(String databaseName, Container container) {
+    public Database(String databaseName, Container container) {
         super();
 
         if (!Database.AvailableDatabaseNames.contains(databaseName)) {

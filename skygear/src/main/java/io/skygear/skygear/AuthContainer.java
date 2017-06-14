@@ -14,7 +14,7 @@ public class AuthContainer implements AuthResolver {
 
     private WeakReference<Container> containerRef;
 
-    AuthContainer(Container container) {
+    public AuthContainer(Container container) {
         this.containerRef = new WeakReference<>(container);
     }
 

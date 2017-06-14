@@ -10,7 +10,7 @@ public class PubsubContainer {
 
     private final PubsubClient pubsubClient;
 
-    PubsubContainer(Container container) {
+    public PubsubContainer(Container container) {
         this.pubsubClient = new PubsubClient(container);
     }
 

@@ -68,7 +68,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
      *
      * @param container the skygear container
      */
-    PubsubClient(Container container) {
+    public PubsubClient(Container container) {
         super();
 
         this.containerRef = new WeakReference<>(container);

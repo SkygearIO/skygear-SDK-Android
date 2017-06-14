@@ -18,7 +18,7 @@ public class PublicDatabase extends Database {
      * @param databaseName the database name
      * @param container    the container
      */
-    PublicDatabase(String databaseName, Container container) {
+    public PublicDatabase(String databaseName, Container container) {
         super(databaseName, container);
     }
 
