@@ -28,7 +28,7 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
-public class PubsubUnitTest {
+public class PubsubClientUnitTest {
 
     private abstract class WebSocketClientEmptyImpl implements WebSocketClient {
         @Override
@@ -74,10 +74,10 @@ public class PubsubUnitTest {
 
     @Test
     public void testPubsubCreationFlow() throws Exception {
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
 
-        assertEquals("ws://skygear.dev/pubsub?api_key=changeme", pubsub.getPubsubEndpoint());
-        assertNotNull(pubsub.webSocket);
+        assertEquals("ws://skygear.dev/pubsub?api_key=changeme", pubsubClient.getPubsubEndpoint());
+        assertNotNull(pubsubClient.webSocket);
     }
 
     @Test
@@ -87,13 +87,13 @@ public class PubsubUnitTest {
                 .apiKey("dev2")
                 .build();
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        WebSocketClient oldWebSocket = pubsub.webSocket;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        WebSocketClient oldWebSocket = pubsubClient.webSocket;
 
-        pubsub.configure(config);
+        pubsubClient.configure(config);
 
-        assertEquals("wss://skygear.dev2/pubsub?api_key=dev2", pubsub.getPubsubEndpoint());
-        assertTrue(oldWebSocket != pubsub.webSocket);
+        assertEquals("wss://skygear.dev2/pubsub?api_key=dev2", pubsubClient.getPubsubEndpoint());
+        assertTrue(oldWebSocket != pubsubClient.webSocket);
     }
 
     @Test(expected = InvalidParameterException.class)
@@ -103,8 +103,8 @@ public class PubsubUnitTest {
                 .apiKey("dev2")
                 .build();
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.configure(config);
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.configure(config);
     }
 
     @Test
@@ -118,10 +118,10 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
-        assertTrue(pubsub.isConnected());
+        assertTrue(pubsubClient.isConnected());
         assertTrue(checkpoints[0]);
     }
 
@@ -148,17 +148,17 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
-        Pubsub.Handler handler = new Pubsub.Handler() {
+        PubsubHandler handler = new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         };
 
-        assertEquals(handler, pubsub.subscribe("test_channel_1", handler));
+        assertEquals(handler, pubsubClient.subscribe("test_channel_1", handler));
         assertTrue(checkpoints[0]);
     }
 
@@ -187,10 +187,10 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
-        pubsub.subscribe("test_channel_0", new Pubsub.Handler() {
+        pubsubClient.subscribe("test_channel_0", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -198,7 +198,7 @@ public class PubsubUnitTest {
         });
         assertEquals(1, checkCounts[0]);
 
-        pubsub.subscribe("test_channel_0", new Pubsub.Handler() {
+        pubsubClient.subscribe("test_channel_0", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -206,7 +206,7 @@ public class PubsubUnitTest {
         });
         assertEquals(1, checkCounts[0]);
 
-        pubsub.subscribe("test_channel_1", new Pubsub.Handler() {
+        pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
@@ -230,12 +230,12 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
         final CountDownLatch latch0 = new CountDownLatch(2);
         final CountDownLatch latch1 = new CountDownLatch(1);
-        pubsub.subscribe("test_channel_0", new Pubsub.Handler() {
+        pubsubClient.subscribe("test_channel_0", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 try {
@@ -248,7 +248,7 @@ public class PubsubUnitTest {
             }
         });
 
-        pubsub.subscribe("test_channel_0", new Pubsub.Handler() {
+        pubsubClient.subscribe("test_channel_0", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 try {
@@ -261,7 +261,7 @@ public class PubsubUnitTest {
             }
         });
 
-        pubsub.subscribe("test_channel_1", new Pubsub.Handler() {
+        pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 try {
@@ -274,14 +274,14 @@ public class PubsubUnitTest {
             }
         });
 
-        pubsub.onMessage(new JSONObject(
+        pubsubClient.onMessage(new JSONObject(
                 "{\"channel\": \"test_channel_0\",\"data\": {\"msg\": \"test_msg_0\"}}"
         ));
         latch0.await(1, TimeUnit.SECONDS);
         assertTrue(checkpoints[0]);
         assertTrue(checkpoints[1]);
 
-        pubsub.onMessage(new JSONObject(
+        pubsubClient.onMessage(new JSONObject(
                 "{\"channel\": \"test_channel_1\",\"data\": {\"msg\": \"test_msg_1\"}}"
         ));
         latch1.await(1, TimeUnit.SECONDS);
@@ -311,20 +311,20 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
-        Pubsub.Handler handler = pubsub.subscribe("test_channel_1", new Pubsub.Handler() {
+        PubsubHandler handler = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        assertEquals(handler, pubsub.unsubscribe("test_channel_1", handler));
+        assertEquals(handler, pubsubClient.unsubscribe("test_channel_1", handler));
         assertTrue(checkpoints[0]);
 
-        pubsub.onMessage(new JSONObject(
+        pubsubClient.onMessage(new JSONObject(
                 "{\"channel\": \"test_channel_1\",\"data\": {\"msg\": \"test_msg_1\"}}"
         ));
     }
@@ -352,26 +352,26 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
-        Pubsub.Handler handler1 = pubsub.subscribe("test_channel_1", new Pubsub.Handler() {
+        PubsubHandler handler1 = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
-        Pubsub.Handler handler2 = pubsub.subscribe("test_channel_1", new Pubsub.Handler() {
+        PubsubHandler handler2 = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        pubsub.unsubscribe("test_channel_1", handler1);
+        pubsubClient.unsubscribe("test_channel_1", handler1);
         assertFalse(checkpoints[0]);
 
-        pubsub.unsubscribe("test_channel_1", handler2);
+        pubsubClient.unsubscribe("test_channel_1", handler2);
         assertTrue(checkpoints[0]);
     }
 
@@ -398,27 +398,27 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
-        Pubsub.Handler handler1 = pubsub.subscribe("test_channel_1", new Pubsub.Handler() {
+        PubsubHandler handler1 = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        Pubsub.Handler handler2 = pubsub.subscribe("test_channel_1", new Pubsub.Handler() {
+        PubsubHandler handler2 = pubsubClient.subscribe("test_channel_1", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        Pubsub.Handler[] handlers = pubsub.unsubscribeAll("test_channel_1");
+        PubsubHandler[] handlers = pubsubClient.unsubscribeAll("test_channel_1");
         assertEquals(2, handlers.length);
 
-        List<Pubsub.Handler> handlerList = Arrays.asList(handlers);
+        List<PubsubHandler> handlerList = Arrays.asList(handlers);
         assertTrue(handlerList.indexOf(handler1) != -1);
         assertTrue(handlerList.indexOf(handler2) != -1);
 
@@ -451,10 +451,10 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
-        pubsub.publish(
+        pubsubClient.publish(
                 "test_channel_1",
                 new JSONObject("{\"msg\": \"test_msg_1\"}")
         );
@@ -472,9 +472,9 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
-        pubsub.publish("test_channel_1", null);
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
+        pubsubClient.publish("test_channel_1", null);
     }
 
     @Test
@@ -501,19 +501,19 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
-        pubsub.subscribe("HelloWorld", new Pubsub.Handler() {
+        pubsubClient.subscribe("HelloWorld", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
-        assertEquals(1, pubsub.handlers.get("HelloWorld").size());
+        assertEquals(1, pubsubClient.handlers.get("HelloWorld").size());
 
-        pubsub.unsubscribeAll("HelloWorld");
-        assertNull(pubsub.handlers.get("HelloWorld"));
+        pubsubClient.unsubscribeAll("HelloWorld");
+        assertNull(pubsubClient.handlers.get("HelloWorld"));
     }
 
     @Test
@@ -554,32 +554,32 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = emptyWebSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = emptyWebSocketClient;
 
-        pubsub.subscribe("HelloWorld", new Pubsub.Handler() {
+        pubsubClient.subscribe("HelloWorld", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        pubsub.subscribe("FooBar", new Pubsub.Handler() {
+        pubsubClient.subscribe("FooBar", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        pubsub.subscribe("Haha-123", new Pubsub.Handler() {
+        pubsubClient.subscribe("Haha-123", new PubsubHandler() {
             @Override
             public void handle(JSONObject data) {
                 fail("Should not run handle function");
             }
         });
 
-        pubsub.webSocket = checkingWebSocketClient;
-        pubsub.onOpen(101, "Switching Protocols");
+        pubsubClient.webSocket = checkingWebSocketClient;
+        pubsubClient.onOpen(101, "Switching Protocols");
 
         assertTrue(checkpoints.get("HelloWorld"));
         assertTrue(checkpoints.get("FooBar"));
@@ -600,34 +600,34 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = webSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = webSocketClient;
 
-        pubsub.publish(
+        pubsubClient.publish(
                 "test_channel",
                 new JSONObject("{\"msg\": \"test_msg_1\"}")
         );
-        pubsub.publish(
+        pubsubClient.publish(
                 "test_channel",
                 new JSONObject("{\"msg\": \"test_msg_2\"}")
         );
-        pubsub.publish(
+        pubsubClient.publish(
                 "test_channel",
                 new JSONObject("{\"msg\": \"test_msg_3\"}")
         );
 
-        Queue<Pubsub.Message> pendingMessages = pubsub.pendingMessages;
+        Queue<PubsubClient.Message> pendingMessages = pubsubClient.pendingMessages;
         assertEquals(3, pendingMessages.size());
 
-        Pubsub.Message message1 = pendingMessages.remove();
+        PubsubClient.Message message1 = pendingMessages.remove();
         assertEquals("test_channel", message1.channel);
         assertEquals("{\"msg\":\"test_msg_1\"}", message1.data.toString());
 
-        Pubsub.Message message2 = pendingMessages.remove();
+        PubsubClient.Message message2 = pendingMessages.remove();
         assertEquals("test_channel", message2.channel);
         assertEquals("{\"msg\":\"test_msg_2\"}", message2.data.toString());
 
-        Pubsub.Message message3 = pendingMessages.remove();
+        PubsubClient.Message message3 = pendingMessages.remove();
         assertEquals("test_channel", message3.channel);
         assertEquals("{\"msg\":\"test_msg_3\"}", message3.data.toString());
     }
@@ -672,24 +672,24 @@ public class PubsubUnitTest {
             }
         };
 
-        Pubsub pubsub = new Pubsub(instrumentationContainer);
-        pubsub.webSocket = disconnectedWebSocketClient;
+        PubsubClient pubsubClient = new PubsubClient(instrumentationContainer);
+        pubsubClient.webSocket = disconnectedWebSocketClient;
 
-        pubsub.publish(
+        pubsubClient.publish(
                 "test_channel",
                 new JSONObject("{\"msg\": \"test_msg_1\"}")
         );
-        pubsub.publish(
+        pubsubClient.publish(
                 "test_channel",
                 new JSONObject("{\"msg\": \"test_msg_2\"}")
         );
-        pubsub.publish(
+        pubsubClient.publish(
                 "test_channel",
                 new JSONObject("{\"msg\": \"test_msg_3\"}")
         );
 
-        pubsub.webSocket = connectedWebSocketClient;
-        pubsub.onOpen(101, "Switching Protocols");
+        pubsubClient.webSocket = connectedWebSocketClient;
+        pubsubClient.onOpen(101, "Switching Protocols");
 
         assertTrue(checkpoints.get("test_msg_1"));
         assertTrue(checkpoints.get("test_msg_2"));

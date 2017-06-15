@@ -60,7 +60,7 @@ public class UserQueryActivity extends AppCompatActivity {
                 .setNeutralButton("Dismiss", null)
                 .create();
 
-        this.skygear.getUserByEmail(email, new UserQueryResponseHandler() {
+        this.skygear.getAuth().getUserByEmail(email, new UserQueryResponseHandler() {
 
             @Override
             public void onQuerySuccess(User[] users) {

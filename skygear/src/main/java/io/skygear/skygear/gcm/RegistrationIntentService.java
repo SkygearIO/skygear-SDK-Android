@@ -37,7 +37,7 @@ public class RegistrationIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Container container = Container.defaultContainer(this.getApplicationContext());
-        String gcmSenderId = container.getGcmSenderId();
+        String gcmSenderId = container.getPush().getGcmSenderId();
 
         if (gcmSenderId != null) {
             try {
@@ -47,7 +47,7 @@ public class RegistrationIntentService extends IntentService {
                 );
                 Log.i(TAG, "Successfully get device token = " + token);
 
-                container.registerDeviceToken(token);
+                container.getPush().registerDeviceToken(token);
             } catch (IOException e) {
                 Log.w(TAG, String.format("Fail to get GCM device token: %s", e.getMessage()), e);
             }

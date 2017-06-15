@@ -22,32 +22,6 @@ public class Database {
     private WeakReference<Container> containerRef;
 
     /**
-     * Instantiates a public database.
-     * <p>
-     * Please be reminded that the skygear container passed in would be weakly referenced.
-     * </p>
-     *
-     * @param container the skygear container
-     * @return the database
-     */
-    public static Database publicDatabase(Container container) {
-        return new Database(PUBLIC_DATABASE_NAME, container);
-    }
-
-    /**
-     * Instantiates a private database.
-     * <p>
-     * Please be reminded that the skygear container passed in would be weakly referenced.
-     * </p>
-     *
-     * @param container the skygear container
-     * @return the database
-     */
-    public static Database privateDatabase(Container container) {
-        return new Database(PRIVATE_DATABASE_NAME, container);
-    }
-
-    /**
      * Instantiates a new Database.
      * <p>
      * Please be reminded that the skygear container passed in would be weakly referenced.
@@ -56,7 +30,7 @@ public class Database {
      * @param databaseName the database name
      * @param container    the container
      */
-    Database(String databaseName, Container container) {
+    public Database(String databaseName, Container container) {
         super();
 
         if (!Database.AvailableDatabaseNames.contains(databaseName)) {
@@ -147,5 +121,64 @@ public class Database {
         request.responseHandler = handler;
 
         this.getContainer().sendRequest(request);
+    }
+
+    /**
+     * Upload asset.
+     *
+     * @param asset           the asset
+     * @param responseHandler the response handler
+     */
+    public void uploadAsset(
+            final Asset asset,
+            final AssetPostRequest.ResponseHandler responseHandler
+    ) {
+        final RequestManager requestManager = this.getContainer().requestManager;
+
+        AssetPreparePostRequest preparePostRequest = new AssetPreparePostRequest(asset);
+        preparePostRequest.responseHandler = new AssetPreparePostResponseHandler(asset) {
+            @Override
+            public void onPreparePostSuccess(AssetPostRequest postRequest) {
+                postRequest.responseHandler = responseHandler;
+                requestManager.sendAssetPostRequest(postRequest);
+            }
+
+            @Override
+            public void onPreparePostFail(Error error) {
+                if (responseHandler != null) {
+                    responseHandler.onPostFail(asset, error);
+                }
+            }
+        };
+
+        requestManager.sendRequest(preparePostRequest);
+    }
+
+    static class Factory {
+        /**
+         * Instantiates a public database.
+         * <p>
+         * Please be reminded that the skygear container passed in would be weakly referenced.
+         * </p>
+         *
+         * @param container the skygear container
+         * @return the database
+         */
+        static PublicDatabase publicDatabase(Container container) {
+            return new PublicDatabase(PUBLIC_DATABASE_NAME, container);
+        }
+
+        /**
+         * Instantiates a private database.
+         * <p>
+         * Please be reminded that the skygear container passed in would be weakly referenced.
+         * </p>
+         *
+         * @param container the skygear container
+         * @return the database
+         */
+        static Database privateDatabase(Container container) {
+            return new Database(PRIVATE_DATABASE_NAME, container);
+        }
     }
 }

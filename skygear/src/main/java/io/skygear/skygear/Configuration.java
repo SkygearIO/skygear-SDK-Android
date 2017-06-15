@@ -25,7 +25,7 @@ public final class Configuration {
     final String gcmSenderId;
 
     /**
-     * Boolean indicating whether Pubsub Handler Execution is in Background.
+     * Boolean indicating whether PubsubClient Handler Execution is in Background.
      */
     final boolean pubsubHandlerExecutionInBackground;
 
@@ -69,7 +69,7 @@ public final class Configuration {
     }
 
     /**
-     * Is pubsub handler execution in background boolean.
+     * Is pubsubClient handler execution in background boolean.
      *
      * @return the boolean
      */
@@ -132,7 +132,7 @@ public final class Configuration {
         }
 
         /**
-         * Sets whether Pubsub Handlers Execution Should be in Background.
+         * Sets whether PubsubClient Handlers Execution Should be in Background.
          *
          * @param isInBackground the boolean indicating whether the execution is in background
          * @return the builder
