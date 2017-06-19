@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
+import java.util.Date;
 
 /**
  * Auth Container for Skygear.
@@ -210,6 +211,32 @@ public class AuthContainer implements AuthResolver {
 
         this.getContainer().requestManager.sendRequest(request);
     }
+
+    /**
+     * Call forgot password lambda function.
+     *
+     * @param email   the email which the forgot password email should be sent to
+     * @param handler the response handler
+     */
+    public void forgotPassword(String email, LambdaResponseHandler handler) {
+        Object[] argv = new Object[]{email};
+        this.getContainer().callLambdaFunction("user:forgot-password", argv, handler);
+    }
+
+    /**
+     * Call reset password lambda function.
+     *
+     * @param userID      the user whose is resetting password
+     * @param code        the code user received for forgot password
+     * @param expireAt    when should the reset password url expire
+     * @param newPassword the new password after resetting
+     * @param handler the response handler
+     */
+    public void resetPassword(String userID, String code, Date expireAt, String newPassword, LambdaResponseHandler handler) {
+        Object[] argv = new Object[]{userID, code, expireAt, newPassword};
+        this.getContainer().callLambdaFunction("user:reset-password", argv, handler);
+    }
+
 
     @Override
     public void resolveAuthUser(User user) {
