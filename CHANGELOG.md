@@ -1,3 +1,18 @@
+## 1.0.0 (2017-06-30)
+
+### Incompatible Changes
+
+- Update API grouping (#133, SkygearIO/features#71)
+
+### Features
+
+- Add forgot password methods to AuthContainer
+
+### Other Notes
+
+- Add copyright notice
+- Update gradle build to 2.3.0 (#131)
+
 ## 0.24.1 (2017-05-23)
 
 Revert "Move skygear to skygear_core module"
