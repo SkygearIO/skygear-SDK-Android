@@ -244,7 +244,7 @@ public class AccessControl {
      * @param user the user
      * @return the access
      */
-    public Entry getAccess(User user) {
+    public Entry getAccess(Record user) {
         return this.getAccess(user.getId());
     }
 
@@ -350,7 +350,7 @@ public class AccessControl {
          * @param user  the user
          * @param level the level
          */
-        public Entry(User user, Level level) {
+        public Entry(Record user, Level level) {
             this(user.getId(), level);
         }
 

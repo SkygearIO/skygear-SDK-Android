@@ -26,5 +26,5 @@ public interface AuthResolver {
      *
      * @param user authenticated user
      */
-    void resolveAuthUser(User user);
+    void resolveAuthUser(Record user, String accessToken);
 }

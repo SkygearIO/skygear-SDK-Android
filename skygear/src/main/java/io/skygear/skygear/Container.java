@@ -56,10 +56,7 @@ public final class Container {
         this.push = new PushContainer(this);
         this.publicDatabase = Database.Factory.publicDatabase(this);
         this.privateDatabase = Database.Factory.privateDatabase(this);
-
-        if (this.persistentStore.currentUser != null) {
-            this.requestManager.accessToken = this.persistentStore.currentUser.accessToken;
-        }
+        this.requestManager.accessToken = this.persistentStore.accessToken;
 
         if (this.persistentStore.defaultAccessControl != null) {
             AccessControl.defaultAccessControl = this.persistentStore.defaultAccessControl;

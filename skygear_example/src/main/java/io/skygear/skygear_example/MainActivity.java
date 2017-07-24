@@ -31,8 +31,8 @@ import io.skygear.skygear.Configuration;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
 import io.skygear.skygear.LogoutResponseHandler;
+import io.skygear.skygear.Record;
 import io.skygear.skygear.Role;
-import io.skygear.skygear.User;
 import io.skygear.skygear.gcm.RegistrationIntentService;
 
 public class MainActivity extends AppCompatActivity {
@@ -85,11 +85,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUserInfoDisplay() {
-        User currentUser = this.skygear.getAuth().getCurrentUser();
+        Record currentUser = this.skygear.getAuth().getCurrentUser();
         if (currentUser != null) {
-            this.accessTokenDisplay.setText(currentUser.getAccessToken());
             this.userIdDisplay.setText(currentUser.getId());
-            this.emailDisplay.setText(currentUser.getEmail());
+            this.emailDisplay.setText((String) currentUser.get("email"));
         } else {
             this.accessTokenDisplay.setText(R.string.undefined);
             this.userIdDisplay.setText(R.string.undefined);
@@ -166,35 +165,14 @@ public class MainActivity extends AppCompatActivity {
 
         this.skygear.getAuth().whoami(new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
+            public void onAuthSuccess(Record user) {
                 loading.dismiss();
 
                 StringBuffer buffer = new StringBuffer();
                 buffer.append("Current user:\n");
                 buffer.append(String.format("\tUser ID: %s\n", user.getId()));
-                buffer.append(String.format("\tUsername: %s\n", user.getUsername()));
-                buffer.append(String.format("\tEmail: %s\n", user.getEmail()));
-
-                if (user.getLastLoginTime() != null) {
-                    buffer.append(String.format(
-                            "\tLast Login: %s\n",
-                            user.getLastLoginTime().toString())
-                    );
-                }
-
-                if (user.getLastSeenTime() != null) {
-                    buffer.append(String.format(
-                            "\tLast Seen: %s\n",
-                            user.getLastSeenTime().toString())
-                    );
-                }
-
-                if (user.getRoles().length > 0) {
-                    buffer.append("\tRoles:\n");
-                    for (Role perRole : user.getRoles()) {
-                        buffer.append("\t\t").append(perRole.getName()).append("\n");
-                    }
-                }
+                buffer.append(String.format("\tUsername: %s\n", user.get("username")));
+                buffer.append(String.format("\tEmail: %s\n", user.get("email")));
 
                 successDialog.setMessage(buffer.toString());
                 successDialog.show();

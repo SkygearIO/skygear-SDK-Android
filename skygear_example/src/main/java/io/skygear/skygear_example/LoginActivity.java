@@ -29,7 +29,7 @@ import android.widget.EditText;
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
-import io.skygear.skygear.User;
+import io.skygear.skygear.Record;
 
 public class LoginActivity extends AppCompatActivity {
     private static String LOG_TAG = LoginActivity.class.getSimpleName();
@@ -80,9 +80,9 @@ public class LoginActivity extends AppCompatActivity {
 
         this.skygear.getAuth().loginWithEmail(email, password, new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
+            public void onAuthSuccess(Record user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + user.getAccessToken());
+                successDialog.setMessage("Success with user_id:\n" + user.getId());
                 successDialog.show();
             }
 

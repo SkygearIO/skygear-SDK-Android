@@ -37,6 +37,7 @@ class PersistentStore {
     static final String SKYGEAR_PREF_SPACE = "SkygearSharedPreferences";
 
     static final String CURRENT_USER_KEY = "current_user";
+    static final String ACCESS_TOKEN_KEY = "access_token";
     static final String DEFAULT_ACCESS_CONTROL_KEY = "default_access_control";
     static final String DEVICE_ID_KEY = "device_id";
     static final String DEVICE_TOKEN_KEY = "device_token";
@@ -45,7 +46,12 @@ class PersistentStore {
     /**
      * The Current user.
      */
-    User currentUser;
+    Record currentUser;
+
+    /**
+     * The access token
+     */
+    String accessToken;
 
     /**
      * The Default Access Control.
@@ -102,25 +108,37 @@ class PersistentStore {
     }
 
     private void restoreAuthUser(SharedPreferences pref) {
-        String currentUserString = pref.getString(CURRENT_USER_KEY, "{}");
+        String currentUserString = pref.getString(CURRENT_USER_KEY, null);
 
-        try {
-            this.currentUser = UserSerializer.deserialize(
-                    new JSONObject(currentUserString)
-            );
-        } catch (JSONException e) {
-            Log.w(TAG, "Fail to decode saved current user object");
+        if (currentUserString == null) {
             this.currentUser = null;
+        } else {
+            try {
+                this.currentUser = RecordSerializer.deserialize(
+                        new JSONObject(currentUserString)
+                );
+            } catch (JSONException e) {
+                Log.w(TAG, "Fail to decode saved current user object");
+                this.currentUser = null;
+            }
         }
+
+        this.accessToken = pref.getString(ACCESS_TOKEN_KEY, null);
     }
 
     private void saveAuthUser(SharedPreferences.Editor prefEditor) {
         if (this.currentUser != null) {
             prefEditor.putString(CURRENT_USER_KEY,
-                    UserSerializer.serialize(this.currentUser).toString()
+                    RecordSerializer.serialize(this.currentUser).toString()
             );
         } else {
             prefEditor.remove(CURRENT_USER_KEY);
+        }
+
+        if (this.accessToken != null) {
+            prefEditor.putString(ACCESS_TOKEN_KEY, this.accessToken);
+        } else {
+            prefEditor.remove(ACCESS_TOKEN_KEY);
         }
     }
 

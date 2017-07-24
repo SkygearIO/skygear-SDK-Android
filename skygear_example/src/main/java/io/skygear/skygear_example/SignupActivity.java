@@ -29,7 +29,7 @@ import android.widget.EditText;
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
-import io.skygear.skygear.User;
+import io.skygear.skygear.Record;
 
 public class SignupActivity extends AppCompatActivity {
     private static String LOG_TAG = SignupActivity.class.getSimpleName();
@@ -80,12 +80,12 @@ public class SignupActivity extends AppCompatActivity {
 
         this.skygear.getAuth().signupWithEmail(email, password, new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
+            public void onAuthSuccess(Record user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + user.getAccessToken());
+                successDialog.setMessage("Success with user_id:\n" + user.getId());
                 successDialog.show();
 
-                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.getAccessToken());
+                Log.i(LOG_TAG, "onAuthSuccess");
             }
 
             @Override
@@ -125,12 +125,12 @@ public class SignupActivity extends AppCompatActivity {
 
         this.skygear.getAuth().signupAnonymously(new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
+            public void onAuthSuccess(Record user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + user.getAccessToken());
+                successDialog.setMessage("Success with user_id:\n" + user.getId());
                 successDialog.show();
 
-                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.getAccessToken());
+                Log.i(LOG_TAG, "onAuthSuccess");
             }
 
             @Override

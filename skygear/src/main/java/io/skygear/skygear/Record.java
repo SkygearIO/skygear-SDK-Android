@@ -58,7 +58,7 @@ public class Record implements Parcelable {
      * @param type the record type
      */
     public Record(String type) {
-        this(type, null);
+        this(type, null, null);
     }
 
     /**
@@ -68,14 +68,39 @@ public class Record implements Parcelable {
      * @param data the data
      */
     public Record(String type, Map<String, Object>data) {
+        this(type, null, data);
+    }
+
+    /**
+     * Instantiates a new Skygear Record.
+     *
+     * @param type the record type
+     * @param id the record id
+     */
+    public Record(String type, String id) {
+        this(type, id, null);
+    }
+
+    /**
+     * Instantiates a new Skygear Record.
+     *
+     * @param type the record type
+     * @param id the record id
+     * @param data the data
+     */
+    public Record(String type, String id, Map<String, Object>data) {
         super();
 
         if (!RecordSerializer.isValidType(type)) {
             throw new InvalidParameterException("Invalid record type");
         }
 
-        this.id = UUID.randomUUID().toString();
         this.type = type;
+        if (id == null || id.isEmpty()) {
+            this.id = UUID.randomUUID().toString();
+        } else {
+            this.id = id;
+        }
 
         this.ownerId = null;
         this.creatorId = null;
@@ -253,7 +278,11 @@ public class Record implements Parcelable {
      *
      * @param user the user
      */
-    public void setReadWriteAccess(User user) {
+    public void setReadWriteAccess(Record user) {
+        if (!user.getType().equals("user")) {
+            throw new InvalidParameterException("Record type should be user");
+        }
+
         this.setReadWriteAccess(user.getId());
     }
 
@@ -262,7 +291,11 @@ public class Record implements Parcelable {
      *
      * @param user the user
      */
-    public void setReadOnly(User user) {
+    public void setReadOnly(Record user) {
+        if (!user.getType().equals("user")) {
+            throw new InvalidParameterException("Record type should be user");
+        }
+
         this.setReadOnly(user.getId());
     }
 
@@ -271,7 +304,11 @@ public class Record implements Parcelable {
      *
      * @param user the user
      */
-    public void setNoAccess(User user) {
+    public void setNoAccess(Record user) {
+        if (!user.getType().equals("user")) {
+            throw new InvalidParameterException("Record type should be user");
+        }
+
         this.setNoAccess(user.getId());
     }
 
@@ -357,7 +394,11 @@ public class Record implements Parcelable {
      * @param user the user
      * @return the boolean indicating whether it is writable for a user.
      */
-    public boolean isWritable(User user) {
+    public boolean isWritable(Record user) {
+        if (!user.getType().equals("user")) {
+            throw new InvalidParameterException("Record type should be user");
+        }
+
         return this.isWritable(user.getId());
     }
 
@@ -367,7 +408,11 @@ public class Record implements Parcelable {
      * @param user the user
      * @return the boolean indicating whether it is readable for a user.
      */
-    public boolean isReadable(User user) {
+    public boolean isReadable(Record user) {
+        if (!user.getType().equals("user")) {
+            throw new InvalidParameterException("Record type should be user");
+        }
+
         return this.isReadable(user.getId());
     }
 

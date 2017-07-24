@@ -45,9 +45,11 @@ class AuthResponseHandlerWrapper implements ResponseHandler {
     @Override
     public void onSuccess(JSONObject result) {
         try {
-            User authUser = UserSerializer.deserialize(result);
+            JSONObject profile = result.optJSONObject("profile");
+            String accessToken = result.getString("access_token");
+            Record authUser = RecordSerializer.deserialize(profile);
             if (this.authResolver != null) {
-                this.authResolver.resolveAuthUser(authUser);
+                this.authResolver.resolveAuthUser(authUser, accessToken);
             }
             if (this.originalHandler != null) {
                 this.originalHandler.onSuccess(result);

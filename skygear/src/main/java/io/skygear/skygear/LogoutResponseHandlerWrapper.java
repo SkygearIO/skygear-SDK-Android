@@ -44,7 +44,7 @@ class LogoutResponseHandlerWrapper implements ResponseHandler {
     @Override
     public void onSuccess(JSONObject result) {
         if (this.resolver != null) {
-            this.resolver.resolveAuthUser(null);
+            this.resolver.resolveAuthUser(null, null);
         }
         if (this.originalHandler != null) {
             this.originalHandler.onSuccess(result);

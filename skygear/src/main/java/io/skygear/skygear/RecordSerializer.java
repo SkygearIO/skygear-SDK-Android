@@ -197,7 +197,7 @@ public class RecordSerializer {
      * @throws JSONException the JSON exception
      */
     static Record deserialize(JSONObject jsonObject) throws JSONException {
-        String typedId = (String) jsonObject.remove("_id");
+        String typedId = jsonObject.optString("_id");
         String[] split = typedId.split("/", 2);
 
         if (split.length < 2 || split[1].length() == 0) {

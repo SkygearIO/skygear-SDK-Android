@@ -57,7 +57,7 @@ public class AuthContainer implements AuthResolver {
      *
      * @return the current user
      */
-    public User getCurrentUser() {
+    public Record getCurrentUser() {
         return this.getContainer().persistentStore.currentUser;
     }
 
@@ -201,65 +201,6 @@ public class AuthContainer implements AuthResolver {
     }
 
     /**
-     * Gets user by email.
-     *
-     * @param email   the email
-     * @param handler the response handler
-     */
-    public void getUserByEmail(String email, UserQueryResponseHandler handler) {
-        this.getUserByEmails(new String[] { email }, handler);
-    }
-
-    /**
-     * Gets user by emails.
-     *
-     * @param emails  the emails
-     * @param handler the response handler
-     */
-    public void getUserByEmails(String[] emails, UserQueryResponseHandler handler) {
-        UserQueryByEmailsRequest request = new UserQueryByEmailsRequest(emails);
-        request.responseHandler = handler;
-
-        this.getContainer().requestManager.sendRequest(request);
-    }
-
-    /**
-     * Gets user by username.
-     *
-     * @param username   the username
-     * @param handler the response handler
-     */
-    public void getUserByUsername(String username, UserQueryResponseHandler handler) {
-        this.getUserByUsernames(new String[] { username }, handler);
-    }
-
-    /**
-     * Gets users by usernames.
-     *
-     * @param usernames  the usernames
-     * @param handler the response handler
-     */
-    public void getUserByUsernames(String[] usernames, UserQueryResponseHandler handler) {
-        UserQueryByUsernamesRequest request = new UserQueryByUsernamesRequest(usernames);
-        request.responseHandler = handler;
-
-        this.getContainer().requestManager.sendRequest(request);
-    }
-
-    /**
-     * Save user.
-     *
-     * @param user    the user
-     * @param handler the response handler
-     */
-    public void saveUser(User user, UserSaveResponseHandler handler) {
-        UserSaveRequest request = new UserSaveRequest(user);
-        request.responseHandler = handler;
-
-        this.getContainer().requestManager.sendRequest(request);
-    }
-
-    /**
      * Call forgot password lambda function.
      *
      * @param email   the email which the forgot password email should be sent to
@@ -286,12 +227,13 @@ public class AuthContainer implements AuthResolver {
 
 
     @Override
-    public void resolveAuthUser(User user) {
+    public void resolveAuthUser(Record user, String accessToken) {
         Container container = this.getContainer();
         container.persistentStore.currentUser = user;
+        container.persistentStore.accessToken = accessToken;
         container.persistentStore.save();
 
-        container.requestManager.accessToken = user != null ? user.accessToken : null;
+        container.requestManager.accessToken = accessToken;
         container.push.registerDeviceToken(container.persistentStore.deviceToken);
     }
 

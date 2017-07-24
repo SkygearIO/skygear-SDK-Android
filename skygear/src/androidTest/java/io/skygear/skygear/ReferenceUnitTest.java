@@ -36,7 +36,7 @@ public class ReferenceUnitTest {
 
     @Test
     public void testReferenceCreationUsingRecordFlow() throws Exception {
-        Record aNote = new Record("Note", null);
+        Record aNote = new Record("Note");
         Reference reference = new Reference(aNote);
 
         assertEquals(aNote.getId(), reference.id);
