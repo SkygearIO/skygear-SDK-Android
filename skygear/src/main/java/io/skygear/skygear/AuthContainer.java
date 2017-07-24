@@ -23,6 +23,8 @@ import android.util.Log;
 import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Auth Container for Skygear.
@@ -60,6 +62,20 @@ public class AuthContainer implements AuthResolver {
     }
 
     /**
+     * Sign up with auth data.
+     *
+     * @param authData the unique identifier of a user
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void signup(Map authData, String password, AuthResponseHandler handler) {
+        Request req = new SignupRequest(authData, password);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.getContainer().requestManager.sendRequest(req);
+    }
+
+    /**
      * Sign up with username.
      *
      * @param username the username
@@ -67,10 +83,10 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void signupWithUsername(String username, String password, AuthResponseHandler handler) {
-        Request req = new SignupRequest(username, null, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        Map authData = new HashMap<>();
+        authData.put("username", username);
 
-        this.getContainer().requestManager.sendRequest(req);
+        this.signup(authData, password, handler);
     }
 
     /**
@@ -81,10 +97,10 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void signupWithEmail(String email, String password, AuthResponseHandler handler) {
-        Request req = new SignupRequest(null, email, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        Map authData = new HashMap<>();
+        authData.put("email", email);
 
-        this.getContainer().requestManager.sendRequest(req);
+        this.signup(authData, password, handler);
     }
 
     /**
@@ -100,6 +116,20 @@ public class AuthContainer implements AuthResolver {
     }
 
     /**
+     * Login with auth data.
+     *
+     * @param authData the unique identifier of a user
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void login(Map authData, String password, AuthResponseHandler handler) {
+        Request req = new LoginRequest(authData, password);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.getContainer().requestManager.sendRequest(req);
+    }
+
+    /**
      * Login with username.
      *
      * @param username the username
@@ -107,10 +137,10 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void loginWithUsername(String username, String password, AuthResponseHandler handler) {
-        Request req = new LoginRequest(username, null, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        Map authData = new HashMap<>();
+        authData.put("username", username);
 
-        this.getContainer().requestManager.sendRequest(req);
+        this.login(authData, password, handler);
     }
 
     /**
@@ -121,10 +151,10 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void loginWithEmail(String email, String password, AuthResponseHandler handler) {
-        Request req = new LoginRequest(null, email, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        Map authData = new HashMap<>();
+        authData.put("email", email);
 
-        this.getContainer().requestManager.sendRequest(req);
+        this.login(authData, password, handler);
     }
 
     /**
