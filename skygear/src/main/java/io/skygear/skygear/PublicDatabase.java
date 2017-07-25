@@ -18,6 +18,8 @@
 package io.skygear.skygear;
 
 
+import java.security.InvalidParameterException;
+
 /**
  * The Skygear Public Database.
  * <p>
@@ -107,5 +109,49 @@ public class PublicDatabase extends Database {
      */
     public void setDefaultRole(Role role, SetRoleResponseHandler handler) {
         this.setDefaultRole(new Role[] { role }, handler);
+    }
+
+    /**
+     * Get user role
+     *
+     * @param users   the users array
+     * @param handler the handler
+     */
+    public void getUserRole(Record[] users, GetUserRoleResponseHandler handler) {
+        GetUserRoleRequest request = new GetUserRoleRequest(users);
+        request.responseHandler = handler;
+
+        RequestManager requestManager = this.getContainer().requestManager;
+        requestManager.sendRequest(request);
+    }
+
+    /**
+     * Assign user role
+     *
+     * @param users   the users array
+     * @param roles   the roles array
+     * @param handler the handler
+     */
+    public void assignUserRole(Record[] users, Role[] roles, SetUserRoleResponseHandler handler) {
+        AssignUserRoleRequest request = new AssignUserRoleRequest(users, roles);
+        request.responseHandler = handler;
+
+        RequestManager requestManager = this.getContainer().requestManager;
+        requestManager.sendRequest(request);
+    }
+
+    /**
+     * Revoke user role
+     *
+     * @param users   the users array
+     * @param roles   the roles array
+     * @param handler the handler
+     */
+    public void revokeUserRole(Record[] users, Role[] roles, SetUserRoleResponseHandler handler) {
+        RevokeUserRoleRequest request = new RevokeUserRoleRequest(users, roles);
+        request.responseHandler = handler;
+
+        RequestManager requestManager = this.getContainer().requestManager;
+        requestManager.sendRequest(request);
     }
 }
