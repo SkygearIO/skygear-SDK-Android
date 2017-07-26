@@ -26,6 +26,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
@@ -35,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private static String LOG_TAG = LoginActivity.class.getSimpleName();
 
     private Container skygear;
+    private EditText usernameInput;
     private EditText emailInput;
     private EditText passwordInput;
 
@@ -50,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void doLogin(View view) {
+        String username = this.usernameInput.getText().toString();
         String email = this.emailInput.getText().toString();
         String password = this.passwordInput.getText().toString();
 
@@ -75,10 +80,19 @@ public class LoginActivity extends AppCompatActivity {
                 .setNeutralButton("Dismiss", null)
                 .create();
 
+        Log.i(LOG_TAG, "doLogin: Signup with username: " + username);
         Log.i(LOG_TAG, "doLogin: Signup with email: " + email);
         Log.i(LOG_TAG, "doLogin: Signup with password: " + password);
 
-        this.skygear.getAuth().loginWithEmail(email, password, new AuthResponseHandler() {
+        Map authData = new HashMap();
+        if (!username.isEmpty()) {
+            authData.put("username", username);
+        }
+        if (!email.isEmpty()) {
+            authData.put("email", email);
+        }
+
+        this.skygear.getAuth().login(authData, password, new AuthResponseHandler() {
             @Override
             public void onAuthSuccess(Record user) {
                 loading.dismiss();
