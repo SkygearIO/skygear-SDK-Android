@@ -87,6 +87,7 @@ class PersistentStore {
         SharedPreferences pref = this.context.getSharedPreferences(SKYGEAR_PREF_SPACE, Context.MODE_PRIVATE);
 
         this.restoreAuthUser(pref);
+        this.restoreAccessToken(pref);
         this.restoreDefaultAccessControl(pref);
         this.restoreDeviceId(pref);
         this.restoreDeviceToken(pref);
@@ -100,6 +101,7 @@ class PersistentStore {
         SharedPreferences.Editor prefEditor = pref.edit();
 
         this.saveAuthUser(prefEditor);
+        this.saveAccessToken(prefEditor);
         this.saveDefaultAccessControl(prefEditor);
         this.saveDeviceId(prefEditor);
         this.saveDeviceToken(prefEditor);
@@ -122,8 +124,6 @@ class PersistentStore {
                 this.currentUser = null;
             }
         }
-
-        this.accessToken = pref.getString(ACCESS_TOKEN_KEY, null);
     }
 
     private void saveAuthUser(SharedPreferences.Editor prefEditor) {
@@ -134,7 +134,13 @@ class PersistentStore {
         } else {
             prefEditor.remove(CURRENT_USER_KEY);
         }
+    }
 
+    private void restoreAccessToken(SharedPreferences pref) {
+        this.accessToken = pref.getString(ACCESS_TOKEN_KEY, null);
+    }
+
+    private void saveAccessToken(SharedPreferences.Editor prefEditor) {
         if (this.accessToken != null) {
             prefEditor.putString(ACCESS_TOKEN_KEY, this.accessToken);
         } else {
