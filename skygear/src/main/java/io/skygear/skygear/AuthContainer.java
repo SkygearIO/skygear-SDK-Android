@@ -78,7 +78,19 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void signup(Map<String, Object> authData, String password, AuthResponseHandler handler) {
-        Request req = new SignupRequest(authData, password);
+        this.signup(authData, password, null, handler);
+    }
+
+    /**
+     * Sign up with auth data.
+     *
+     * @param authData the unique identifier of a user
+     * @param password the password
+     * @param profile  the user profile
+     * @param handler  the response handler
+     */
+    public void signup(Map<String, Object> authData, String password, Map<String, Object> profile, AuthResponseHandler handler) {
+        Request req = new SignupRequest(authData, password, profile);
         req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
         this.getContainer().requestManager.sendRequest(req);
@@ -92,10 +104,22 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void signupWithUsername(String username, String password, AuthResponseHandler handler) {
+        this.signupWithUsername(username, password, null, handler);
+    }
+
+    /**
+     * Sign up with username.
+     *
+     * @param username the username
+     * @param password the password
+     * @param profile  the user profile
+     * @param handler  the response handler
+     */
+    public void signupWithUsername(String username, String password, Map<String, Object> profile, AuthResponseHandler handler) {
         Map<String, Object> authData = new HashMap<>();
         authData.put("username", username);
 
-        this.signup(authData, password, handler);
+        this.signup(authData, password, profile, handler);
     }
 
     /**
@@ -106,10 +130,22 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void signupWithEmail(String email, String password, AuthResponseHandler handler) {
+        this.signupWithEmail(email, password, null, handler);
+    }
+
+    /**
+     * Sign up with email.
+     *
+     * @param email    the email
+     * @param password the password
+     * @param profile  the user profile
+     * @param handler  the response handler
+     */
+    public void signupWithEmail(String email, String password, Map<String, Object> profile, AuthResponseHandler handler) {
         Map<String, Object> authData = new HashMap<>();
         authData.put("email", email);
 
-        this.signup(authData, password, handler);
+        this.signup(authData, password, profile, handler);
     }
 
     /**

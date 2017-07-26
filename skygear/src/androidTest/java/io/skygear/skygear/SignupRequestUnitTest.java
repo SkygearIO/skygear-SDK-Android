@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -33,11 +34,14 @@ import static junit.framework.Assert.assertTrue;
 public class SignupRequestUnitTest {
     @Test
     public void testSignupRequestFlow() throws Exception {
-        Map authData = new HashMap<>();
+        Map<String, Object> authData = new HashMap<>();
         authData.put("username", "user123");
         authData.put("email", "user123@skygear.dev");
 
-        SignupRequest req = new SignupRequest(authData, "123456");
+        Map<String, Object> profile = new HashMap<>();
+        profile.put("nickname", "iamyourfather");
+
+        SignupRequest req = new SignupRequest(authData, "123456", profile);
         Map<String, Object> data = req.data;
         Map<String, Object> payloadAuthData = (Map<String, Object>) data.get("auth_data");
 
@@ -45,6 +49,10 @@ public class SignupRequestUnitTest {
         assertEquals("user123", payloadAuthData.get("username"));
         assertEquals("user123@skygear.dev", payloadAuthData.get("email"));
         assertEquals("123456", data.get("password"));
+
+        Map<String, Object> payloadProfile = (Map<String, Object>) data.get("profile");
+
+        assertEquals("iamyourfather", payloadProfile.get("nickname"));
     }
 
     @Test
@@ -61,13 +69,13 @@ public class SignupRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testSignupRequestInvalidateAuthDataNull() throws Exception {
-        SignupRequest req = new SignupRequest(null, "123456");
+        SignupRequest req = new SignupRequest(null, "123456", null);
         req.validate();
     }
 
     @Test(expected = InvalidParameterException.class)
     public void testSignupRequestInvalidateAuthDataEmpty() throws Exception {
-        SignupRequest req = new SignupRequest(new HashMap<String, Object>(), "123456");
+        SignupRequest req = new SignupRequest(new HashMap<String, Object>(), "123456", null);
         req.validate();
     }
 
@@ -76,7 +84,7 @@ public class SignupRequestUnitTest {
         Map authData = new HashMap<>();
         authData.put("username", "user123");
 
-        SignupRequest req = new SignupRequest(authData, null);
+        SignupRequest req = new SignupRequest(authData, null, null);
         req.validate();
     }
 }

@@ -32,8 +32,9 @@ public class SignupRequest extends Request {
      *
      * @param authData the unique identifier of a user
      * @param password the password
+     * @param profile  the user profile
      */
-    public SignupRequest(Map<String, Object> authData, String password) {
+    public SignupRequest(Map<String, Object> authData, String password, Map<String, Object> profile) {
         super("auth:signup");
 
         this.anonymous = false;
@@ -41,6 +42,10 @@ public class SignupRequest extends Request {
 
         this.data.put("auth_data", authData);
         this.data.put("password", password);
+
+        if (profile != null) {
+            this.data.put("profile", profile);
+        }
     }
 
     /**
