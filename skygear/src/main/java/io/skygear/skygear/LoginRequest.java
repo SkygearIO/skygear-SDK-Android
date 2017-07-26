@@ -31,7 +31,7 @@ public class LoginRequest extends Request {
      * @param authData the unique identifier of a user
      * @param password the password
      */
-    public LoginRequest(Map authData, String password) {
+    public LoginRequest(Map<String, Object> authData, String password) {
         super("auth:login");
 
         this.data = new HashMap<>();

@@ -67,7 +67,7 @@ public class SignupRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testSignupRequestInvalidateAuthDataEmpty() throws Exception {
-        SignupRequest req = new SignupRequest(new HashMap<>(), "123456");
+        SignupRequest req = new SignupRequest(new HashMap<String, Object>(), "123456");
         req.validate();
     }
 

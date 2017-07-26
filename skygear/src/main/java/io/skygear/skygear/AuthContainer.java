@@ -77,7 +77,7 @@ public class AuthContainer implements AuthResolver {
      * @param password the password
      * @param handler  the response handler
      */
-    public void signup(Map authData, String password, AuthResponseHandler handler) {
+    public void signup(Map<String, Object> authData, String password, AuthResponseHandler handler) {
         Request req = new SignupRequest(authData, password);
         req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
@@ -92,7 +92,7 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void signupWithUsername(String username, String password, AuthResponseHandler handler) {
-        Map authData = new HashMap<>();
+        Map<String, Object> authData = new HashMap<>();
         authData.put("username", username);
 
         this.signup(authData, password, handler);
@@ -106,7 +106,7 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void signupWithEmail(String email, String password, AuthResponseHandler handler) {
-        Map authData = new HashMap<>();
+        Map<String, Object> authData = new HashMap<>();
         authData.put("email", email);
 
         this.signup(authData, password, handler);
@@ -131,7 +131,7 @@ public class AuthContainer implements AuthResolver {
      * @param password the password
      * @param handler  the response handler
      */
-    public void login(Map authData, String password, AuthResponseHandler handler) {
+    public void login(Map<String, Object> authData, String password, AuthResponseHandler handler) {
         Request req = new LoginRequest(authData, password);
         req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
 
@@ -146,7 +146,7 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void loginWithUsername(String username, String password, AuthResponseHandler handler) {
-        Map authData = new HashMap<>();
+        Map<String, Object> authData = new HashMap<>();
         authData.put("username", username);
 
         this.login(authData, password, handler);
@@ -160,7 +160,7 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void loginWithEmail(String email, String password, AuthResponseHandler handler) {
-        Map authData = new HashMap<>();
+        Map<String, Object> authData = new HashMap<>();
         authData.put("email", email);
 
         this.login(authData, password, handler);

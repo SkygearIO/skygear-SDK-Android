@@ -54,7 +54,7 @@ public class LoginRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testLoginRequestInvalidateAuthDataEmpty() throws Exception {
-        LoginRequest req = new LoginRequest(new HashMap<>(), "123456");
+        LoginRequest req = new LoginRequest(new HashMap<String, Object>(), "123456");
         req.validate();
     }
 

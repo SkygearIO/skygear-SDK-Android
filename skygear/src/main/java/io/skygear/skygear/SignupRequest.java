@@ -33,7 +33,7 @@ public class SignupRequest extends Request {
      * @param authData the unique identifier of a user
      * @param password the password
      */
-    public SignupRequest(Map authData, String password) {
+    public SignupRequest(Map<String, Object> authData, String password) {
         super("auth:signup");
 
         this.anonymous = false;
