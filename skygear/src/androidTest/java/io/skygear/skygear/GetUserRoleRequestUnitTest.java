@@ -22,7 +22,6 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.security.InvalidParameterException;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
@@ -31,10 +30,7 @@ import static junit.framework.Assert.assertEquals;
 public class GetUserRoleRequestUnitTest {
     @Test
     public void testGetUserRoleRequestCreation() throws Exception {
-        GetUserRoleRequest request = new GetUserRoleRequest(new Record[]{
-                new Record("user", "user1"),
-                new Record("user", "user2")
-        });
+        GetUserRoleRequest request = new GetUserRoleRequest(new String[]{"user1", "user2"});
 
         assertEquals("role:get", request.action);
 
@@ -43,13 +39,5 @@ public class GetUserRoleRequestUnitTest {
         assertEquals(users.length, 2);
         assertEquals(users[0], "user1");
         assertEquals(users[1], "user2");
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testGetUserRoleRequestInvalidUserRecord() throws Exception {
-        new GetUserRoleRequest(new Record[]{
-                new Record("user", "user1"),
-                new Record("something", "user2")
-        });
     }
 }

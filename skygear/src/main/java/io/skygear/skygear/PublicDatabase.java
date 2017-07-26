@@ -118,7 +118,17 @@ public class PublicDatabase extends Database {
      * @param handler the handler
      */
     public void getUserRole(Record[] users, GetUserRoleResponseHandler handler) {
-        GetUserRoleRequest request = new GetUserRoleRequest(users);
+        this.getUserRole(this.getUserIDs(users), handler);
+    }
+
+    /**
+     * Get user role
+     *
+     * @param userIDs the user id array
+     * @param handler the handler
+     */
+    public void getUserRole(String[] userIDs, GetUserRoleResponseHandler handler) {
+        GetUserRoleRequest request = new GetUserRoleRequest(userIDs);
         request.responseHandler = handler;
 
         RequestManager requestManager = this.getContainer().requestManager;
@@ -133,7 +143,18 @@ public class PublicDatabase extends Database {
      * @param handler the handler
      */
     public void assignUserRole(Record[] users, Role[] roles, SetUserRoleResponseHandler handler) {
-        AssignUserRoleRequest request = new AssignUserRoleRequest(users, roles);
+        this.assignUserRole(this.getUserIDs(users), this.getRoleNames(roles), handler);
+    }
+
+    /**
+     * Assign user role
+     *
+     * @param userIDs   the user id array
+     * @param roleNames the role name array
+     * @param handler   the handler
+     */
+    public void assignUserRole(String[] userIDs, String[] roleNames, SetUserRoleResponseHandler handler) {
+        AssignUserRoleRequest request = new AssignUserRoleRequest(userIDs, roleNames);
         request.responseHandler = handler;
 
         RequestManager requestManager = this.getContainer().requestManager;
@@ -141,17 +162,51 @@ public class PublicDatabase extends Database {
     }
 
     /**
-     * Revoke user role
+     * Assign user role
      *
      * @param users   the users array
      * @param roles   the roles array
      * @param handler the handler
      */
     public void revokeUserRole(Record[] users, Role[] roles, SetUserRoleResponseHandler handler) {
-        RevokeUserRoleRequest request = new RevokeUserRoleRequest(users, roles);
+        this.revokeUserRole(this.getUserIDs(users), this.getRoleNames(roles), handler);
+    }
+
+    /**
+     * Revoke user role
+     *
+     * @param userIDs   the user id array
+     * @param roleNames the role name array
+     * @param handler   the handler
+     */
+    public void revokeUserRole(String[] userIDs, String[] roleNames, SetUserRoleResponseHandler handler) {
+        RevokeUserRoleRequest request = new RevokeUserRoleRequest(userIDs, roleNames);
         request.responseHandler = handler;
 
         RequestManager requestManager = this.getContainer().requestManager;
         requestManager.sendRequest(request);
+    }
+
+    private String[] getUserIDs(Record[] users) {
+        String[] userIDs = new String[users.length];
+        for (int i = 0; i < users.length; i++) {
+            Record user = users[i];
+            if (!user.getType().equals("user")) {
+                throw new InvalidParameterException("Record type should be user");
+            }
+
+            userIDs[i] = users[i].getId();
+        }
+
+        return userIDs;
+    }
+
+    private String[] getRoleNames(Role[] roles) {
+        String[] roleNames = new String[roles.length];
+        for (int i = 0; i < roles.length; i++) {
+            roleNames[i] = roles[i].getName();
+        }
+
+        return roleNames;
     }
 }

@@ -1,6 +1,5 @@
 package io.skygear.skygear;
 
-import java.security.InvalidParameterException;
 import java.util.HashMap;
 
 /**
@@ -8,37 +7,15 @@ import java.util.HashMap;
  */
 public class RevokeUserRoleRequest extends Request {
     /**
-     * Instantiates a new Assign User Role Request.
+     * Instantiates a new Revoke User Role Request.
      *
-     * @param users the users array
-     * @param roles the roles array
+     * @param userIDs   the user id array
+     * @param roleNames the role name array
      */
-    public RevokeUserRoleRequest(Record[] users, Role[] roles) {
+    public RevokeUserRoleRequest(String[] userIDs, String []roleNames) {
         super("role:revoke");
-
-        this.validateUserRecords(users);
-
         this.data = new HashMap<>();
-
-        String[] userIDs = new String[users.length];
-        for (int idx = 0; idx < users.length; idx++) {
-            userIDs[idx] = users[idx].getId();
-        }
-
-        String[] roleNames = new String[roles.length];
-        for (int idx = 0; idx < roles.length; idx++) {
-            roleNames[idx] = roles[idx].getName();
-        }
-
         this.data.put("users", userIDs);
         this.data.put("roles", roleNames);
-    }
-
-    private void validateUserRecords(Record[] users) {
-        for (Record user : users) {
-            if (!user.getType().equals("user")) {
-                throw new InvalidParameterException("Record type should be user");
-            }
-        }
     }
 }
