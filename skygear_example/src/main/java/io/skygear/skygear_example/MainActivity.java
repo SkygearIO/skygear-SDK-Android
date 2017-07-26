@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             this.userIdDisplay.setText(currentUser.getId());
             this.emailDisplay.setText((String) currentUser.get("email"));
+            this.accessTokenDisplay.setText(this.skygear.getAuth().getCurrentAccessToken());
         } else {
             this.accessTokenDisplay.setText(R.string.undefined);
             this.userIdDisplay.setText(R.string.undefined);
