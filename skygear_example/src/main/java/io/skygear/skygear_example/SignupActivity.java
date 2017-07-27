@@ -26,15 +26,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
-import io.skygear.skygear.User;
+import io.skygear.skygear.Record;
 
 public class SignupActivity extends AppCompatActivity {
     private static String LOG_TAG = SignupActivity.class.getSimpleName();
 
     private Container skygear;
+    private EditText usernameInput;
     private EditText emailInput;
     private EditText passwordInput;
 
@@ -43,6 +47,7 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        this.usernameInput = (EditText) findViewById(R.id.username_input);
         this.emailInput = (EditText) findViewById(R.id.email_input);
         this.passwordInput = (EditText) findViewById(R.id.password_input);
 
@@ -50,6 +55,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void doSignup(View v) {
+        String username = this.usernameInput.getText().toString();
         String email = this.emailInput.getText().toString();
         String password = this.passwordInput.getText().toString();
 
@@ -75,17 +81,26 @@ public class SignupActivity extends AppCompatActivity {
                 .setNeutralButton("Dismiss", null)
                 .create();
 
+        Log.i(LOG_TAG, "doSignup: Signup with username: " + username);
         Log.i(LOG_TAG, "doSignup: Signup with email: " + email);
         Log.i(LOG_TAG, "doSignup: Signup with password: " + password);
 
-        this.skygear.getAuth().signupWithEmail(email, password, new AuthResponseHandler() {
+        Map authData = new HashMap();
+        if (!username.isEmpty()) {
+            authData.put("username", username);
+        }
+        if (!email.isEmpty()) {
+            authData.put("email", email);
+        }
+
+        this.skygear.getAuth().signup(authData, password, new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
+            public void onAuthSuccess(Record user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + user.getAccessToken());
+                successDialog.setMessage("Success with user_id:\n" + user.getId());
                 successDialog.show();
 
-                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.getAccessToken());
+                Log.i(LOG_TAG, "onAuthSuccess");
             }
 
             @Override
@@ -125,12 +140,12 @@ public class SignupActivity extends AppCompatActivity {
 
         this.skygear.getAuth().signupAnonymously(new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
+            public void onAuthSuccess(Record user) {
                 loading.dismiss();
-                successDialog.setMessage("Success with token:\n" + user.getAccessToken());
+                successDialog.setMessage("Success with user_id:\n" + user.getId());
                 successDialog.show();
 
-                Log.i(LOG_TAG, "onAuthSuccess: Got token: " + user.getAccessToken());
+                Log.i(LOG_TAG, "onAuthSuccess");
             }
 
             @Override

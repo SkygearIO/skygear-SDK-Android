@@ -32,6 +32,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -83,22 +86,23 @@ public class PersistentStoreUnitTest {
         editor.putString(
                 PersistentStore.CURRENT_USER_KEY,
                 "{" +
-                        "\"_id\": \"123\"," +
-                        "\"access_token\": \"token_123\"," +
+                        "\"_id\": \"user/123\"," +
                         "\"username\": \"user_123\"," +
                         "\"email\": \"user123@skygear.dev\"" +
-
                 "}"
         );
+        editor.putString(PersistentStore.ACCESS_TOKEN_KEY, "token_123");
         editor.commit();
 
         PersistentStore persistentStore = new PersistentStore(instrumentationContext);
-        User currentUser = persistentStore.currentUser;
+        Record currentUser = persistentStore.currentUser;
 
+        assertEquals("user", currentUser.type);
         assertEquals("123", currentUser.id);
-        assertEquals("token_123", currentUser.accessToken);
-        assertEquals("user_123", currentUser.username);
-        assertEquals("user123@skygear.dev", currentUser.email);
+        assertEquals("user_123", currentUser.get("username"));
+        assertEquals("user123@skygear.dev", currentUser.get("email"));
+
+        assertEquals("token_123", persistentStore.accessToken);
     }
 
     @Test
@@ -110,12 +114,12 @@ public class PersistentStoreUnitTest {
     @Test
     public void testPersistentStoreSaveUser() throws Exception {
         PersistentStore persistentStore = new PersistentStore(instrumentationContext);
-        persistentStore.currentUser = new User(
-                "12345",
-                "token_12345",
-                "user_12345",
-                "user12345@skygear.dev"
-        );
+        Map profile = new HashMap<>();
+        profile.put("username", "user_12345");
+        profile.put("email", "user12345@skygear.dev");
+
+        persistentStore.currentUser = new Record("user", "12345", profile);
+        persistentStore.accessToken = "token_12345";
         persistentStore.save();
 
         SharedPreferences pref = instrumentationContext.getSharedPreferences(
@@ -126,10 +130,10 @@ public class PersistentStoreUnitTest {
         String currentUserString = pref.getString(PersistentStore.CURRENT_USER_KEY, "{}");
         JSONObject currentUserJson = new JSONObject(currentUserString);
 
-        assertEquals("12345", currentUserJson.getString("_id"));
-        assertEquals("token_12345", currentUserJson.getString("access_token"));
+        assertEquals("user/12345", currentUserJson.getString("_id"));
         assertEquals("user_12345", currentUserJson.getString("username"));
         assertEquals("user12345@skygear.dev", currentUserJson.getString("email"));
+        assertEquals("token_12345", pref.getString(PersistentStore.ACCESS_TOKEN_KEY, null));
     }
 
     @Test

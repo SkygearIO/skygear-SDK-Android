@@ -22,24 +22,22 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import java.util.Map;
+
+import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class ReferenceUnitTest {
+public class FetchUserRoleRequestUnitTest {
     @Test
-    public void testReferenceCreationNormalFlow() throws Exception {
-        Reference noteRef = new Reference("Note", "123");
+    public void testGetUserRoleRequestCreation() throws Exception {
+        FetchUserRoleRequest request = new FetchUserRoleRequest(new String[]{"user1", "user2"});
 
-        assertEquals("Note", noteRef.type);
-        assertEquals("123", noteRef.id);
-    }
+        assertEquals("role:get", request.action);
 
-    @Test
-    public void testReferenceCreationUsingRecordFlow() throws Exception {
-        Record aNote = new Record("Note");
-        Reference reference = new Reference(aNote);
-
-        assertEquals(aNote.getId(), reference.id);
-        assertEquals(aNote.getType(), reference.type);
+        Map<String, Object> data = request.data;
+        String[] users = (String[]) data.get("users");
+        assertEquals(users.length, 2);
+        assertEquals(users[0], "user1");
+        assertEquals(users[1], "user2");
     }
 }

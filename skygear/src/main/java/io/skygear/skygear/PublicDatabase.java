@@ -18,6 +18,8 @@
 package io.skygear.skygear;
 
 
+import java.security.InvalidParameterException;
+
 /**
  * The Skygear Public Database.
  * <p>
@@ -107,5 +109,104 @@ public class PublicDatabase extends Database {
      */
     public void setDefaultRole(Role role, SetRoleResponseHandler handler) {
         this.setDefaultRole(new Role[] { role }, handler);
+    }
+
+    /**
+     * Get user role
+     *
+     * @param users   the users array
+     * @param handler the handler
+     */
+    public void fetchUserRole(Record[] users, FetchUserRoleResponseHandler handler) {
+        this.fetchUserRole(this.getUserIDs(users), handler);
+    }
+
+    /**
+     * Get user role
+     *
+     * @param userIDs the user id array
+     * @param handler the handler
+     */
+    public void fetchUserRole(String[] userIDs, FetchUserRoleResponseHandler handler) {
+        FetchUserRoleRequest request = new FetchUserRoleRequest(userIDs);
+        request.responseHandler = handler;
+
+        RequestManager requestManager = this.getContainer().requestManager;
+        requestManager.sendRequest(request);
+    }
+
+    /**
+     * Assign user role
+     *
+     * @param users   the users array
+     * @param roles   the roles array
+     * @param handler the handler
+     */
+    public void assignUserRole(Record[] users, Role[] roles, SetUserRoleResponseHandler handler) {
+        this.assignUserRole(this.getUserIDs(users), this.getRoleNames(roles), handler);
+    }
+
+    /**
+     * Assign user role
+     *
+     * @param userIDs   the user id array
+     * @param roleNames the role name array
+     * @param handler   the handler
+     */
+    public void assignUserRole(String[] userIDs, String[] roleNames, SetUserRoleResponseHandler handler) {
+        AssignUserRoleRequest request = new AssignUserRoleRequest(userIDs, roleNames);
+        request.responseHandler = handler;
+
+        RequestManager requestManager = this.getContainer().requestManager;
+        requestManager.sendRequest(request);
+    }
+
+    /**
+     * Assign user role
+     *
+     * @param users   the users array
+     * @param roles   the roles array
+     * @param handler the handler
+     */
+    public void revokeUserRole(Record[] users, Role[] roles, SetUserRoleResponseHandler handler) {
+        this.revokeUserRole(this.getUserIDs(users), this.getRoleNames(roles), handler);
+    }
+
+    /**
+     * Revoke user role
+     *
+     * @param userIDs   the user id array
+     * @param roleNames the role name array
+     * @param handler   the handler
+     */
+    public void revokeUserRole(String[] userIDs, String[] roleNames, SetUserRoleResponseHandler handler) {
+        RevokeUserRoleRequest request = new RevokeUserRoleRequest(userIDs, roleNames);
+        request.responseHandler = handler;
+
+        RequestManager requestManager = this.getContainer().requestManager;
+        requestManager.sendRequest(request);
+    }
+
+    private String[] getUserIDs(Record[] users) {
+        String[] userIDs = new String[users.length];
+        for (int i = 0; i < users.length; i++) {
+            Record user = users[i];
+            if (!user.getType().equals("user")) {
+                throw new InvalidParameterException("Record type should be user");
+            }
+
+            userIDs[i] = users[i].getId();
+        }
+
+        return userIDs;
+    }
+
+    private String[] getRoleNames(Role[] roles) {
+        String[] roleNames = new String[roles.length];
+        for (int i = 0; i < roles.length; i++) {
+            roleNames[i] = roles[i].getName();
+        }
+
+        return roleNames;
     }
 }

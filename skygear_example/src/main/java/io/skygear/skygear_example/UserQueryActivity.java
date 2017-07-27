@@ -28,8 +28,6 @@ import android.widget.TextView;
 
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
-import io.skygear.skygear.User;
-import io.skygear.skygear.UserQueryResponseHandler;
 
 public class UserQueryActivity extends AppCompatActivity {
 
@@ -76,44 +74,5 @@ public class UserQueryActivity extends AppCompatActivity {
                 .setMessage("")
                 .setNeutralButton("Dismiss", null)
                 .create();
-
-        this.skygear.getAuth().getUserByEmail(email, new UserQueryResponseHandler() {
-
-            @Override
-            public void onQuerySuccess(User[] users) {
-                loading.dismiss();
-
-                String message = "Cannot find any users";
-                if (users.length > 0) {
-                    message = "Successfully find the user";
-                }
-
-                successDialog.setMessage(message);
-                successDialog.show();
-
-                StringBuffer buffer = new StringBuffer();
-
-                for (User perUser : users) {
-                    buffer.append(String.format(
-                            "ID: %s\n",
-                            perUser.getId()
-                    )).append(String.format(
-                            "Email: %s\n",
-                            perUser.getEmail()
-                    )).append("\n");
-                }
-
-                UserQueryActivity.this.display(buffer.toString());
-            }
-
-            @Override
-            public void onQueryFail(Error error) {
-                loading.dismiss();
-                failDialog.setMessage("Fail with reason: \n" + error.getMessage());
-                failDialog.show();
-
-                UserQueryActivity.this.display("");
-            }
-        });
     }
 }

@@ -35,13 +35,11 @@ public class AuthResponseHandlerUnitTest {
         final boolean[] checkpoints = { false };
         AuthResponseHandler authResponseHandler = new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
-                assertEquals("my-token", user.accessToken);
+            public void onAuthSuccess(Record user) {
+                assertEquals("user", user.type);
                 assertEquals("user-id-1", user.id);
-                assertEquals("user1", user.getUsername());
-                assertEquals("user1@skygear.dev", user.getEmail());
-                assertTrue(user.roles.contains(new Role("Developer")));
-                assertTrue(user.roles.contains(new Role("Designer")));
+                assertEquals("user1", user.get("username"));
+                assertEquals("user1@skygear.dev", user.get("email"));
 
                 checkpoints[0] = true;
             }
@@ -61,7 +59,19 @@ public class AuthResponseHandlerUnitTest {
                 "  \"roles\": [" +
                 "    \"Developer\"," +
                 "    \"Designer\"" +
-                "  ]" +
+                "  ]," +
+                "  \"profile\": {" +
+                "    \"_type\": \"record\"," +
+                "    \"_id\": \"user/user-id-1\"," +
+                "    \"_created_by\": \"user-id-1\"," +
+                "    \"_ownerID\": \"user-id-1\"," +
+                "    \"_updated_by\": \"user-id-1\"," +
+                "    \"_access\": null," +
+                "    \"_created_at\": \"2006-01-02T15:04:05Z\"," +
+                "    \"_updated_at\": \"2006-01-02T15:04:05Z\"," +
+                "    \"username\": \"user1\"," +
+                "    \"email\": \"user1@skygear.dev\"" +
+                "  }" +
                 "}"
         ));
 
@@ -73,7 +83,7 @@ public class AuthResponseHandlerUnitTest {
         final boolean[] checkpoints = { false };
         AuthResponseHandler authResponseHandler = new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
+            public void onAuthSuccess(Record user) {
                 fail("Should not get success callback");
             }
 

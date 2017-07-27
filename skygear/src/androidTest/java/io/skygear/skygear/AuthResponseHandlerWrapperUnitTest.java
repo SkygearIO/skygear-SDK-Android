@@ -35,10 +35,10 @@ public class AuthResponseHandlerWrapperUnitTest {
         final boolean[] checkpoints = { false };
         AuthResponseHandler authResponseHandler = new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
+            public void onAuthSuccess(Record user) {
                 checkpoints[0] = true;
+                assertEquals("user", user.type);
                 assertEquals("user_001", user.id);
-                assertEquals("my-token", user.accessToken);
             }
 
             @Override
@@ -56,6 +56,10 @@ public class AuthResponseHandlerWrapperUnitTest {
         data.put("user_id", "user_001");
         data.put("access_token", "my-token");
 
+        JSONObject profile = new JSONObject();
+        profile.put("_id", "user/user_001");
+        data.put("profile", profile);
+
         wrapper.onSuccess(data);
 
         assertTrue(checkpoints[0]);
@@ -66,7 +70,7 @@ public class AuthResponseHandlerWrapperUnitTest {
         final boolean[] checkpoints = { false };
         AuthResponseHandler authResponseHandler = new AuthResponseHandler() {
             @Override
-            public void onAuthSuccess(User user) {
+            public void onAuthSuccess(Record user) {
                 fail("Should not get success callback");
             }
 
@@ -92,10 +96,11 @@ public class AuthResponseHandlerWrapperUnitTest {
         final boolean[] checkpoints = { false };
         AuthResolver resolver = new AuthResolver() {
             @Override
-            public void resolveAuthUser(User user) {
+            public void resolveAuthUser(Record user, String accessToken) {
                 checkpoints[0] = true;
+                assertEquals("user", user.type);
                 assertEquals("user_001", user.id);
-                assertEquals("my-token", user.accessToken);
+                assertEquals("my-token", accessToken);
 
             }
         };
@@ -105,6 +110,10 @@ public class AuthResponseHandlerWrapperUnitTest {
         JSONObject data = new JSONObject();
         data.put("user_id", "user_001");
         data.put("access_token", "my-token");
+
+        JSONObject profile = new JSONObject();
+        profile.put("_id", "user/user_001");
+        data.put("profile", profile);
 
         wrapper.onSuccess(data);
 

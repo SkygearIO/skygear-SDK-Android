@@ -23,6 +23,8 @@ import android.util.Log;
 import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Auth Container for Skygear.
@@ -55,8 +57,43 @@ public class AuthContainer implements AuthResolver {
      *
      * @return the current user
      */
-    public User getCurrentUser() {
+    public Record getCurrentUser() {
         return this.getContainer().persistentStore.currentUser;
+    }
+
+    /**
+     * Gets current access token
+     *
+     * @return the current access token
+     */
+    public String getCurrentAccessToken() {
+        return this.getContainer().persistentStore.accessToken;
+    }
+
+    /**
+     * Sign up with auth data.
+     *
+     * @param authData the unique identifier of a user
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void signup(Map<String, Object> authData, String password, AuthResponseHandler handler) {
+        this.signup(authData, password, null, handler);
+    }
+
+    /**
+     * Sign up with auth data.
+     *
+     * @param authData the unique identifier of a user
+     * @param password the password
+     * @param profile  the user profile
+     * @param handler  the response handler
+     */
+    public void signup(Map<String, Object> authData, String password, Map<String, Object> profile, AuthResponseHandler handler) {
+        Request req = new SignupRequest(authData, password, profile);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.getContainer().requestManager.sendRequest(req);
     }
 
     /**
@@ -67,10 +104,22 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void signupWithUsername(String username, String password, AuthResponseHandler handler) {
-        Request req = new SignupRequest(username, null, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        this.signupWithUsername(username, password, null, handler);
+    }
 
-        this.getContainer().requestManager.sendRequest(req);
+    /**
+     * Sign up with username.
+     *
+     * @param username the username
+     * @param password the password
+     * @param profile  the user profile
+     * @param handler  the response handler
+     */
+    public void signupWithUsername(String username, String password, Map<String, Object> profile, AuthResponseHandler handler) {
+        Map<String, Object> authData = new HashMap<>();
+        authData.put("username", username);
+
+        this.signup(authData, password, profile, handler);
     }
 
     /**
@@ -81,10 +130,22 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void signupWithEmail(String email, String password, AuthResponseHandler handler) {
-        Request req = new SignupRequest(null, email, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        this.signupWithEmail(email, password, null, handler);
+    }
 
-        this.getContainer().requestManager.sendRequest(req);
+    /**
+     * Sign up with email.
+     *
+     * @param email    the email
+     * @param password the password
+     * @param profile  the user profile
+     * @param handler  the response handler
+     */
+    public void signupWithEmail(String email, String password, Map<String, Object> profile, AuthResponseHandler handler) {
+        Map<String, Object> authData = new HashMap<>();
+        authData.put("email", email);
+
+        this.signup(authData, password, profile, handler);
     }
 
     /**
@@ -100,6 +161,20 @@ public class AuthContainer implements AuthResolver {
     }
 
     /**
+     * Login with auth data.
+     *
+     * @param authData the unique identifier of a user
+     * @param password the password
+     * @param handler  the response handler
+     */
+    public void login(Map<String, Object> authData, String password, AuthResponseHandler handler) {
+        Request req = new LoginRequest(authData, password);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.getContainer().requestManager.sendRequest(req);
+    }
+
+    /**
      * Login with username.
      *
      * @param username the username
@@ -107,10 +182,10 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void loginWithUsername(String username, String password, AuthResponseHandler handler) {
-        Request req = new LoginRequest(username, null, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        Map<String, Object> authData = new HashMap<>();
+        authData.put("username", username);
 
-        this.getContainer().requestManager.sendRequest(req);
+        this.login(authData, password, handler);
     }
 
     /**
@@ -121,10 +196,10 @@ public class AuthContainer implements AuthResolver {
      * @param handler  the response handler
      */
     public void loginWithEmail(String email, String password, AuthResponseHandler handler) {
-        Request req = new LoginRequest(null, email, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        Map<String, Object> authData = new HashMap<>();
+        authData.put("email", email);
 
-        this.getContainer().requestManager.sendRequest(req);
+        this.login(authData, password, handler);
     }
 
     /**
@@ -171,65 +246,6 @@ public class AuthContainer implements AuthResolver {
     }
 
     /**
-     * Gets user by email.
-     *
-     * @param email   the email
-     * @param handler the response handler
-     */
-    public void getUserByEmail(String email, UserQueryResponseHandler handler) {
-        this.getUserByEmails(new String[] { email }, handler);
-    }
-
-    /**
-     * Gets user by emails.
-     *
-     * @param emails  the emails
-     * @param handler the response handler
-     */
-    public void getUserByEmails(String[] emails, UserQueryResponseHandler handler) {
-        UserQueryByEmailsRequest request = new UserQueryByEmailsRequest(emails);
-        request.responseHandler = handler;
-
-        this.getContainer().requestManager.sendRequest(request);
-    }
-
-    /**
-     * Gets user by username.
-     *
-     * @param username   the username
-     * @param handler the response handler
-     */
-    public void getUserByUsername(String username, UserQueryResponseHandler handler) {
-        this.getUserByUsernames(new String[] { username }, handler);
-    }
-
-    /**
-     * Gets users by usernames.
-     *
-     * @param usernames  the usernames
-     * @param handler the response handler
-     */
-    public void getUserByUsernames(String[] usernames, UserQueryResponseHandler handler) {
-        UserQueryByUsernamesRequest request = new UserQueryByUsernamesRequest(usernames);
-        request.responseHandler = handler;
-
-        this.getContainer().requestManager.sendRequest(request);
-    }
-
-    /**
-     * Save user.
-     *
-     * @param user    the user
-     * @param handler the response handler
-     */
-    public void saveUser(User user, UserSaveResponseHandler handler) {
-        UserSaveRequest request = new UserSaveRequest(user);
-        request.responseHandler = handler;
-
-        this.getContainer().requestManager.sendRequest(request);
-    }
-
-    /**
      * Call forgot password lambda function.
      *
      * @param email   the email which the forgot password email should be sent to
@@ -256,12 +272,13 @@ public class AuthContainer implements AuthResolver {
 
 
     @Override
-    public void resolveAuthUser(User user) {
+    public void resolveAuthUser(Record user, String accessToken) {
         Container container = this.getContainer();
         container.persistentStore.currentUser = user;
+        container.persistentStore.accessToken = accessToken;
         container.persistentStore.save();
 
-        container.requestManager.accessToken = user != null ? user.accessToken : null;
+        container.requestManager.accessToken = accessToken;
         container.push.registerDeviceToken(container.persistentStore.deviceToken);
     }
 

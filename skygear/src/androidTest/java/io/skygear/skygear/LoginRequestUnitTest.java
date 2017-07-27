@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
+import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
@@ -30,52 +31,39 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class LoginRequestUnitTest {
     @Test
-    public void testLoginRequestUsernameFlow() throws Exception {
-        LoginRequest req = new LoginRequest("user123", null, "123456");
+    public void testLoginRequestFlow() throws Exception {
+        Map authData = new HashMap<>();
+        authData.put("username", "user123");
+        authData.put("email", "user123@skygear.dev");
+
+        LoginRequest req = new LoginRequest(authData, "123456");
         Map<String, Object> data = req.data;
+        Map<String, Object> payloadAuthData = (Map<String, Object>) data.get("auth_data");
 
         assertEquals("auth:login", req.action);
-        assertEquals("user123", data.get("username"));
-        assertEquals("123456", data.get("password"));
-    }
-
-    @Test
-    public void testLoginRequestEmailFlow() throws Exception {
-        LoginRequest req = new LoginRequest(null, "user123@skygear.dev", "123456");
-        Map<String, Object> data = req.data;
-
-        assertEquals("auth:login", req.action);
-        assertEquals("user123@skygear.dev", data.get("email"));
+        assertEquals("user123", payloadAuthData.get("username"));
+        assertEquals("user123@skygear.dev", payloadAuthData.get("email"));
         assertEquals("123456", data.get("password"));
     }
 
     @Test(expected = InvalidParameterException.class)
-    public void testLoginRequestInvalidateEmailUsernameCoexistence() throws Exception {
-        LoginRequest req = new LoginRequest("user123", "user123@skygear.dev", "123456");
+    public void testLoginRequestInvalidateAuthDataNull() throws Exception {
+        LoginRequest req = new LoginRequest(null, "123456");
         req.validate();
     }
 
     @Test(expected = InvalidParameterException.class)
-    public void testLoginRequestInvalidateEmailUsernameBothNull() throws Exception {
-        LoginRequest req = new LoginRequest(null, null, "123456");
-        req.validate();
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testLoginRequestInvalidateUsernameEmpty() throws Exception {
-        LoginRequest req = new LoginRequest("", null, "123456");
-        req.validate();
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testLoginRequestInvalidateEmailEmpty() throws Exception {
-        LoginRequest req = new LoginRequest(null, "", "123456");
+    public void testLoginRequestInvalidateAuthDataEmpty() throws Exception {
+        LoginRequest req = new LoginRequest(new HashMap<String, Object>(), "123456");
         req.validate();
     }
 
     @Test(expected = InvalidParameterException.class)
     public void testLoginRequestInvalidatePasswordNull() throws Exception {
-        LoginRequest req = new LoginRequest("user123", null, null);
+        Map authData = new HashMap<>();
+        authData.put("username", "user123");
+
+        LoginRequest req = new LoginRequest(authData, null);
         req.validate();
     }
 }

@@ -23,7 +23,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -31,23 +33,26 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class SignupRequestUnitTest {
     @Test
-    public void testSignupRequestUsernameFlow() throws Exception {
-        SignupRequest req = new SignupRequest("user123", null, "123456");
+    public void testSignupRequestFlow() throws Exception {
+        Map<String, Object> authData = new HashMap<>();
+        authData.put("username", "user123");
+        authData.put("email", "user123@skygear.dev");
+
+        Map<String, Object> profile = new HashMap<>();
+        profile.put("nickname", "iamyourfather");
+
+        SignupRequest req = new SignupRequest(authData, "123456", profile);
         Map<String, Object> data = req.data;
+        Map<String, Object> payloadAuthData = (Map<String, Object>) data.get("auth_data");
 
         assertEquals("auth:signup", req.action);
-        assertEquals("user123", data.get("username"));
+        assertEquals("user123", payloadAuthData.get("username"));
+        assertEquals("user123@skygear.dev", payloadAuthData.get("email"));
         assertEquals("123456", data.get("password"));
-    }
 
-    @Test
-    public void testSignupRequestEmailFlow() throws Exception {
-        SignupRequest req = new SignupRequest(null, "user123@skygear.dev", "123456");
-        Map<String, Object> data = req.data;
+        Map<String, Object> payloadProfile = (Map<String, Object>) data.get("profile");
 
-        assertEquals("auth:signup", req.action);
-        assertEquals("user123@skygear.dev", data.get("email"));
-        assertEquals("123456", data.get("password"));
+        assertEquals("iamyourfather", payloadProfile.get("nickname"));
     }
 
     @Test
@@ -63,32 +68,23 @@ public class SignupRequestUnitTest {
     }
 
     @Test(expected = InvalidParameterException.class)
-    public void testSighupRequestInvalidateEmailUsernameCoexistence() throws Exception {
-        SignupRequest req = new SignupRequest("user123", "user123@skygear.dev", "123456");
+    public void testSignupRequestInvalidateAuthDataNull() throws Exception {
+        SignupRequest req = new SignupRequest(null, "123456", null);
         req.validate();
     }
 
     @Test(expected = InvalidParameterException.class)
-    public void testSighupRequestInvalidateEmailUsernameBothNull() throws Exception {
-        SignupRequest req = new SignupRequest(null, null, "123456");
+    public void testSignupRequestInvalidateAuthDataEmpty() throws Exception {
+        SignupRequest req = new SignupRequest(new HashMap<String, Object>(), "123456", null);
         req.validate();
     }
 
     @Test(expected = InvalidParameterException.class)
-    public void testSighupRequestInvalidateUsernameEmpty() throws Exception {
-        SignupRequest req = new SignupRequest("", null, "123456");
-        req.validate();
-    }
+    public void testSignupRequestInvalidatePasswordNull() throws Exception {
+        Map authData = new HashMap<>();
+        authData.put("username", "user123");
 
-    @Test(expected = InvalidParameterException.class)
-    public void testSighupRequestInvalidateEmailEmpty() throws Exception {
-        SignupRequest req = new SignupRequest(null, "", "123456");
-        req.validate();
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testSighupRequestInvalidatePasswordNull() throws Exception {
-        SignupRequest req = new SignupRequest("user123", null, null);
+        SignupRequest req = new SignupRequest(authData, null, null);
         req.validate();
     }
 }

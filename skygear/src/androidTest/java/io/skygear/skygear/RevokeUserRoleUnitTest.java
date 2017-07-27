@@ -22,30 +22,31 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
-public class UserSaveRequestUnitTest {
+public class RevokeUserRoleUnitTest {
     @Test
-    public void testUserSaveRequestCreationFlow() throws Exception {
-        User user = new User("123", "token_123", "user123", "user123@skygear.dev");
-        user.addRole(new Role("Citizen"));
-        user.addRole(new Role("Programmer"));
+    public void testRevokeUserRoleRequestCreation() throws Exception {
+        String[] users = new String[]{"user1", "user2"};
+        String[] roles = new String[]{"Admin", "Developer", "Tester"};
 
-        UserSaveRequest request = new UserSaveRequest(user);
-        assertEquals("user:update", request.action);
+        RevokeUserRoleRequest request = new RevokeUserRoleRequest(users, roles);
+
+        assertEquals("role:revoke", request.action);
 
         Map<String, Object> data = request.data;
-        assertEquals("123", data.get("_id"));
-        assertEquals("user123@skygear.dev", data.get("email"));
+        String[] userIDs = (String[]) data.get("users");
+        assertEquals(userIDs.length, 2);
+        assertEquals(userIDs[0], "user1");
+        assertEquals(userIDs[1], "user2");
 
-        List<String> roleNameList = Arrays.asList((String[]) data.get("roles"));
-        assertTrue(roleNameList.contains("Citizen"));
-        assertTrue(roleNameList.contains("Programmer"));
+        String[] roleNames = (String[]) data.get("roles");
+        assertEquals(roleNames.length, 3);
+        assertEquals(roleNames[0], "Admin");
+        assertEquals(roleNames[1], "Developer");
+        assertEquals(roleNames[2], "Tester");
     }
 }

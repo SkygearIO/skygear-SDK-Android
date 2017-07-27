@@ -48,6 +48,7 @@
     <string name="pubsub">Pubsub</string>
     <string name="user_management">User Management</string>
     <string name="user_query">User Query</string>
+    <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="email_indicator">Email:</string>
     <string name="lambda_functions">Lambda Functions</string>

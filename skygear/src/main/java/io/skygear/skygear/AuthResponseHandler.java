@@ -29,7 +29,7 @@ public abstract class AuthResponseHandler implements ResponseHandler {
      *
      * @param user authenticated user
      */
-    public abstract void onAuthSuccess(User user);
+    public abstract void onAuthSuccess(Record user);
 
     /**
      * Auth fail callback
@@ -41,7 +41,8 @@ public abstract class AuthResponseHandler implements ResponseHandler {
     @Override
     public void onSuccess(JSONObject result) {
         try {
-            this.onAuthSuccess(UserSerializer.deserialize(result));
+            JSONObject profile = result.getJSONObject("profile");
+            this.onAuthSuccess(RecordSerializer.deserialize(profile));
         } catch (JSONException e) {
             this.onAuthFail(new Error("Malformed server response"));
         }

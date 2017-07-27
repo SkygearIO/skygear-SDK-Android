@@ -86,9 +86,10 @@ public class LogoutResponseHandlerWrapperUnitTest {
         final boolean[] checkpoints = { false };
         AuthResolver resolver = new AuthResolver() {
             @Override
-            public void resolveAuthUser(User user) {
+            public void resolveAuthUser(Record user, String accessToken) {
                 checkpoints[0] = true;
                 assertNull(user);
+                assertNull(accessToken);
             }
         };
 

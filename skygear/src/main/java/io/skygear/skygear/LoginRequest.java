@@ -19,6 +19,7 @@ package io.skygear.skygear;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Login request.
@@ -27,37 +28,29 @@ public class LoginRequest extends Request {
     /**
      * Instantiates a new Login request.
      *
-     * @param username the username
-     * @param email    the email
+     * @param authData the unique identifier of a user
      * @param password the password
      */
-    public LoginRequest(String username, String email, String password) {
+    public LoginRequest(Map<String, Object> authData, String password) {
         super("auth:login");
 
         this.data = new HashMap<>();
 
-        this.data.put("username", username);
-        this.data.put("email", email);
+        this.data.put("auth_data", authData);
         this.data.put("password", password);
     }
 
     @Override
     protected void validate() throws Exception {
-        String username = (String) this.data.get("username");
-        String email = (String) this.data.get("email");
+        Map authData = (Map) this.data.get("auth_data");
         String password = (String) this.data.get("password");
 
-        if (username != null && email != null) {
-            throw new InvalidParameterException("Username and email should not coexist");
+        if (authData == null) {
+            throw new InvalidParameterException("Auth data should not be null");
         }
 
-        if (username == null && email == null) {
-            throw new InvalidParameterException("Username and email should not both be null");
-        }
-
-        String identifier = username != null ? username : email;
-        if (identifier.length() == 0) {
-            throw new InvalidParameterException("Username and email should not both be empty");
+        if (authData.isEmpty()) {
+            throw new InvalidParameterException("Auth data should not be empty");
         }
 
         if (password == null) {

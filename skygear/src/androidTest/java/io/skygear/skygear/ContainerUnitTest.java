@@ -28,6 +28,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
@@ -113,13 +116,12 @@ public class ContainerUnitTest {
     public void testContainerPrivateDatabase() throws Exception {
         Configuration config = Configuration.defaultConfiguration();
         Container container = new Container(instrumentationContext, config);
-        User user = new User(
-                "user_123",
-                "token_123",
-                "user123",
-                "user123@skygear.dev"
-        );
-        container.getAuth().resolveAuthUser(user);
+        Map profile =  new HashMap<>();
+        profile.put("username", "user123");
+        profile.put("email", "user123@skygear.dev");
+
+        Record user = new Record("user", profile);
+        container.getAuth().resolveAuthUser(user, "token_123");
 
         Database privateDatabase = container.getPrivateDatabase();
 
