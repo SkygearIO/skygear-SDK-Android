@@ -11,22 +11,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The Get Skygear User Role Response Handler.
+ * The Fetch Skygear User Role Response Handler.
  */
-public abstract class GetUserRoleResponseHandler implements ResponseHandler {
+public abstract class FetchUserRoleResponseHandler implements ResponseHandler {
     /**
-     * Get success callback.
+     * Fetch success callback.
      *
      * @param userRoles a user-to-roles mapping
      */
-    public abstract void onGetSuccess(Map<String, Role[]> userRoles);
+    public abstract void onFetchSuccess(Map<String, Role[]> userRoles);
 
     /**
-     * Get fail callback.
+     * Fetch fail callback.
      *
      * @param error the error
      */
-    public abstract void onGetFail(Error error);
+    public abstract void onFetchFail(Error error);
 
     private Map<String, Role[]> parseUserRoles(JSONObject result) throws JSONException {
         Map<String, Role[]> userRoles = new HashMap<>();
@@ -50,14 +50,14 @@ public abstract class GetUserRoleResponseHandler implements ResponseHandler {
     public void onSuccess(JSONObject result) {
         try {
             Map<String, Role[]> userRoles = this.parseUserRoles(result.getJSONObject("result"));
-            this.onGetSuccess(userRoles);
+            this.onFetchSuccess(userRoles);
         } catch (JSONException e) {
-            this.onGetFail(new Error("Malformed server response"));
+            this.onFetchFail(new Error("Malformed server response"));
         }
     }
 
     @Override
     public void onFail(Error error) {
-        this.onGetFail(error);
+        this.onFetchFail(error);
     }
 }

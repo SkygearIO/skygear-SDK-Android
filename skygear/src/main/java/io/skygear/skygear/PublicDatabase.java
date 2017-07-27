@@ -117,8 +117,8 @@ public class PublicDatabase extends Database {
      * @param users   the users array
      * @param handler the handler
      */
-    public void getUserRole(Record[] users, GetUserRoleResponseHandler handler) {
-        this.getUserRole(this.getUserIDs(users), handler);
+    public void fetchUserRole(Record[] users, FetchUserRoleResponseHandler handler) {
+        this.fetchUserRole(this.getUserIDs(users), handler);
     }
 
     /**
@@ -127,8 +127,8 @@ public class PublicDatabase extends Database {
      * @param userIDs the user id array
      * @param handler the handler
      */
-    public void getUserRole(String[] userIDs, GetUserRoleResponseHandler handler) {
-        GetUserRoleRequest request = new GetUserRoleRequest(userIDs);
+    public void fetchUserRole(String[] userIDs, FetchUserRoleResponseHandler handler) {
+        FetchUserRoleRequest request = new FetchUserRoleRequest(userIDs);
         request.responseHandler = handler;
 
         RequestManager requestManager = this.getContainer().requestManager;

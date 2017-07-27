@@ -30,14 +30,14 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
-public class GetUserRoleResponseHandlerUnitTest {
+public class FetchUserRoleResponseHandlerUnitTest {
 
     @Test
     public void testGetUserRoleResponseHandlerSuccessFlow() throws Exception {
         final boolean[] checkpoints = new boolean[] { false };
-        GetUserRoleResponseHandler handler = new GetUserRoleResponseHandler() {
+        FetchUserRoleResponseHandler handler = new FetchUserRoleResponseHandler() {
             @Override
-            public void onGetSuccess(Map<String, Role[]> userRoles) {
+            public void onFetchSuccess(Map<String, Role[]> userRoles) {
                 assertEquals(userRoles.size(), 3);
                 assertTrue(userRoles.containsKey("user1"));
                 assertEquals(userRoles.get("user1").length, 1);
@@ -53,7 +53,7 @@ public class GetUserRoleResponseHandlerUnitTest {
             }
 
             @Override
-            public void onGetFail(Error error) {
+            public void onFetchFail(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -74,14 +74,14 @@ public class GetUserRoleResponseHandlerUnitTest {
     @Test
     public void testGetUserRoleResponseHandlerErrorFlow() throws Exception {
         final boolean[] checkpoints = new boolean[] { false };
-        GetUserRoleResponseHandler handler = new GetUserRoleResponseHandler() {
+        FetchUserRoleResponseHandler handler = new FetchUserRoleResponseHandler() {
             @Override
-            public void onGetSuccess(Map<String, Role[]> userRoles) {
+            public void onFetchSuccess(Map<String, Role[]> userRoles) {
                 fail("Should not get success callback");
             }
 
             @Override
-            public void onGetFail(Error error) {
+            public void onFetchFail(Error error) {
                 assertEquals("Test Error", error.getDetailMessage());
                 checkpoints[0] = true;
             }

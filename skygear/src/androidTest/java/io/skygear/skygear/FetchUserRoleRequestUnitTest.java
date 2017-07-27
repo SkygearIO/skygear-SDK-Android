@@ -27,10 +27,10 @@ import java.util.Map;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class GetUserRoleRequestUnitTest {
+public class FetchUserRoleRequestUnitTest {
     @Test
     public void testGetUserRoleRequestCreation() throws Exception {
-        GetUserRoleRequest request = new GetUserRoleRequest(new String[]{"user1", "user2"});
+        FetchUserRoleRequest request = new FetchUserRoleRequest(new String[]{"user1", "user2"});
 
         assertEquals("role:get", request.action);
 
