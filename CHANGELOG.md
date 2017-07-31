@@ -1,3 +1,11 @@
+## 1.1.0.alpha.0 (2017-07-31)
+
+### Incompatible Changes
+
+- Move user related role API to AuthContainer (#142)
+- New signup & login API (#142)
+- Remove user object (#142)
+
 ## 1.0.0 (2017-06-30)
 
 ### Incompatible Changes
