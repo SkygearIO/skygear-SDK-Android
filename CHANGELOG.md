@@ -1,10 +1,22 @@
-## 1.1.0.alpha.0 (2017-07-31)
+## Changes since 1.0.0
 
 ### Incompatible Changes
 
-- Move user related role API to AuthContainer (#142)
-- New signup & login API (#142)
-- Remove user object (#142)
+- Authentication-related function will return Record instead of User object
+
+  In previous version of SKYKit, authentication methods return a User object
+  which contains user-related information such as User ID, username and
+  email. These information is moved to user record and the authentication
+  methods are updated to return Record instead.
+
+### Features
+
+- Move user related role api to AuthContainer
+- New signup login, remove user object (#142)
+
+### Other Notes
+
+- Upload doc prefixed with version to s3 bucket for CI
 
 ## 1.0.0 (2017-06-30)
 
