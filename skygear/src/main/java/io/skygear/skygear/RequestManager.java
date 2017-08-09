@@ -126,6 +126,7 @@ public class RequestManager {
         Map<String, String> extra = new HashMap<>();
 
         extra.put("X-Skygear-API-Key", this.apiKey);
+        extra.put("X-Skygear-SDK-Version", "skygear-SDK-Android/" + BuildConfig.VERSION_NAME);
 
         if (this.accessToken != null && this.accessToken.length() > 0) {
             extra.put("X-Skygear-Access-Token", this.accessToken);
