@@ -1,4 +1,4 @@
-VERSION := v$(shell git describe --always --tags --dirty)
+VERSION := v$(shell git describe --always)
 DOCS_AWS_BUCKET := docs.skygear.io
 DOCS_AWS_DISTRIBUTION := E31J8XF8IPV2V
 DOCS_PREFIX = /android/reference
@@ -14,6 +14,10 @@ build:
 .PHONY: clean
 clean:
 	-rm skygear/build
+
+.PHONY: update-version
+update-version:
+	sed -i "" "s/def skygearVersion = \".*\"/def skygearVersion = \"$(VERSION)\"/" skygear/build.gradle
 
 .PHONY: doc-upload
 doc-upload:
