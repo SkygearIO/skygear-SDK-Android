@@ -19,8 +19,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
-def skygearVersion = "git describe --abbrev=0 --tags".execute().text.trim()
-def skygearFullVersion = "git describe --always --tags".execute().text.trim()
+def skygearVersion = "1.1.0"
 
 group = 'io.skygear'
 version = skygearVersion
@@ -45,7 +44,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
-        versionName skygearFullVersion
+        versionName skygearVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -118,7 +117,7 @@ bintray {
         vcsUrl = 'https://github.com/SkygearIO/skygear-SDK-Android.git'
         publish = true
         version {
-            name = skygearFullVersion
+            name = skygearVersion
             desc = "Skygear Android SDK ${skygearVersion}"
             released  = new Date()
             vcsTag = skygearVersion
