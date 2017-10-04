@@ -34,6 +34,7 @@ import java.util.Set;
 public class RecordSaveRequest extends Request {
     private String databaseId;
     private List<Record> records;
+    private boolean atomic;
 
     /**
      * Instantiates a record save request with default properties.
@@ -56,6 +57,15 @@ public class RecordSaveRequest extends Request {
         this.records = Arrays.asList(records);
         this.updateData();
     }
+    
+    public boolean getAtomic() {
+        return this.atomic;
+    }
+
+    public void setAtomic(boolean atomic) {
+        this.atomic = atomic;
+        this.updateData();
+    }
 
     private void updateData() {
         JSONArray recordArray = new JSONArray();
@@ -66,6 +76,7 @@ public class RecordSaveRequest extends Request {
 
         this.data.put("records", recordArray);
         this.data.put("database_id", this.databaseId);
+        this.data.put("atomic", this.atomic);
     }
 
     @Override

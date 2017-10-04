@@ -32,6 +32,8 @@ import java.security.InvalidParameterException;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
 
 @RunWith(AndroidJUnit4.class)
 public class RecordSaveRequestUnitTest {
@@ -68,6 +70,8 @@ public class RecordSaveRequestUnitTest {
         JSONArray records = (JSONArray) data.get("records");
         assertEquals(2, records.length());
 
+        assertFalse((boolean)data.get("atomic"));
+
         JSONObject record1 = (JSONObject) records.get(0);
         assertEquals(
                 String.format("%s/%s", note1.getType(), note1.getId()),
@@ -83,6 +87,15 @@ public class RecordSaveRequestUnitTest {
         assertEquals(2, record2.getInt("identifier"));
 
         recordSaveRequest.validate();
+    }
+
+    @Test
+    public void testRecordSaveRequestAtomic() throws Exception {
+        RecordSaveRequest recordSaveRequest
+                = new RecordSaveRequest(new Record[]{}, instrumentationPublicDatabase);
+        recordSaveRequest.setAtomic(true);
+        Map<String, Object> data = recordSaveRequest.data;
+        assertTrue((boolean)data.get("atomic"));
     }
 
     @Test(expected = InvalidParameterException.class)
