@@ -71,4 +71,8 @@
     <string name="signup_with_email">Signup With Email</string>
     <string name="signup_anonymously">Signup Anonymously</string>
     <string name="or">Or</string>
+    <string name="change_password">Change Password</string>
+    <string name="old_password">Old Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
 </resources>

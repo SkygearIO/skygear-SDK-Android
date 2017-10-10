@@ -257,6 +257,20 @@ public class AuthContainer implements AuthResolver {
     }
 
     /**
+     * Change user password
+     *
+     * @param newPassword the new password
+     * @param oldPassword the old password
+     * @param handler     the response handler
+     */
+    public void changePassword(String newPassword, String oldPassword, AuthResponseHandler handler) {
+        Request req = new ChangePasswordRequest(newPassword, oldPassword);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.getContainer().requestManager.sendRequest(req);
+    }
+
+    /**
      * Call reset password lambda function.
      *
      * @param userID      the user whose is resetting password

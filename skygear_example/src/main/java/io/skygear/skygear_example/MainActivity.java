@@ -189,6 +189,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void goChangePassword(View v) {
+        startActivity(new Intent(this, ChangePasswordActivity.class));
+    }
+
     public void goSignup(View v) {
         startActivity(new Intent(this, SignupActivity.class));
     }

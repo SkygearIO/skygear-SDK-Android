@@ -51,6 +51,9 @@
             android:name=".LoginActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ChangePasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".RecordCreateActivity"
             android:screenOrientation="portrait" />
         <activity
