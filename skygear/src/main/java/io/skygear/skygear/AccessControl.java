@@ -312,7 +312,7 @@ public class AccessControl {
     /**
      * The Skygear Access Control Entry.
      */
-    static class Entry implements Comparable<Entry> {
+    public static class Entry implements Comparable<Entry> {
         private boolean isPublic = false;
         private Level level = null;
         private String userId = null;
@@ -478,7 +478,7 @@ public class AccessControl {
     /**
      * The Skygear Access Level.
      */
-    enum Level {
+    public enum Level {
         /**
          * No access level.
          */
