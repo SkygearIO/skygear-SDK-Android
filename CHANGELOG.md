@@ -1,3 +1,20 @@
+## 1.1.1 (2017-10-23)
+
+### Features
+
+- Implement change password (#147)
+- Implement save records atomically (#134)
+- Add sdk version to request header
+
+### Bug Fixes
+
+- Fix example project login crash (#152)
+
+### Other Notes
+
+- Upgrade websocket lib (#165)
+- Add support for Android SDK version 26 (#158)
+
 ## 1.1.0 (2017-08-07)
 
 ### Incompatible Changes
