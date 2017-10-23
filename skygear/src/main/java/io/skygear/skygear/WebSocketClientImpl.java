@@ -19,13 +19,12 @@ package io.skygear.skygear;
 
 import android.util.Log;
 
-import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
-import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.security.KeyManagementException;
@@ -38,6 +37,7 @@ import java.security.UnrecoverableKeyException;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * The WebSocket Client Implementation.
@@ -57,7 +57,7 @@ class WebSocketClientImpl
      * @param eventHandler the event handler
      */
     WebSocketClientImpl(URI serverURI, EventHandler eventHandler) {
-        super(serverURI, new Draft_17());
+        super(serverURI);
         this.eventHandler = new WeakReference<>(eventHandler);
 
         String scheme = serverURI.getScheme();
@@ -78,12 +78,12 @@ class WebSocketClientImpl
             try {
                 ctx = SSLContext.getInstance("TLS");
                 ctx.init(keyManagers, null, new SecureRandom());
-            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                SSLSocketFactory factory = ctx.getSocketFactory();
+                this.setSocket(factory.createSocket());
+            } catch (NoSuchAlgorithmException | KeyManagementException | IOException e) {
                 Log.w(TAG, "WebSocketClientImpl: Fail to create SSL Context", e);
                 throw new RuntimeException(e);
             }
-
-            this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(ctx));
         }
     }
 
