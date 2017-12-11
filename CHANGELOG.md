@@ -1,3 +1,9 @@
+## 1.2.0 (2017-12-11)
+
+### Bug Fixes
+
+- Set AccessControl.Entry and AccessControl.Level public
+
 ## 1.1.1 (2017-10-23)
 
 ### Features
