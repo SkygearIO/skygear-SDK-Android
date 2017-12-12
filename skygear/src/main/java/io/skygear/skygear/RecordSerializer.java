@@ -157,13 +157,25 @@ public class RecordSerializer {
 
             JSONObject jsonObject = new JSONObject(recordData);
             jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
-            jsonObject.put("_created_at", DateSerializer.stringFromDate(record.createdAt));
-            jsonObject.put("_updated_at", DateSerializer.stringFromDate(record.updatedAt));
-            jsonObject.put("_created_by", record.creatorId);
-            jsonObject.put("_updated_by", record.updaterId);
-            jsonObject.put("_ownerID", record.ownerId);
+            if (record.createdAt != null) {
+                jsonObject.put("_created_at", DateSerializer.stringFromDate(record.createdAt));
+            }
+            if (record.updatedAt != null) {
+                jsonObject.put("_updated_at", DateSerializer.stringFromDate(record.updatedAt));
+            }
+            if (record.creatorId != null) {
+                jsonObject.put("_created_by", record.creatorId);
+            }
+            if (record.updaterId != null) {
+                jsonObject.put("_updated_by", record.updaterId);
+            }
+            if (record.ownerId != null) {
+                jsonObject.put("_ownerID", record.ownerId);
+            }
 
-            jsonObject.put("_access", AccessControlSerializer.serialize(record.getAccess()));
+            if (record.getAccess() != null) {
+                jsonObject.put("_access", AccessControlSerializer.serialize(record.getAccess()));
+            }
 
             // handle _transient
             Map<String, Object> transientMap = record.getTransient();
@@ -221,9 +233,15 @@ public class RecordSerializer {
         }
 
         // handle _created_by, _updated_by, _ownerID
-        record.creatorId = jsonObject.optString("_created_by");
-        record.updaterId = jsonObject.optString("_updated_by");
-        record.ownerId = jsonObject.optString("_ownerID");
+        if (jsonObject.has("_created_by")) {
+            record.creatorId = jsonObject.getString("_created_by");
+        }
+        if (jsonObject.has("_updated_by")) {
+            record.updaterId = jsonObject.getString("_updated_by");
+        }
+        if (jsonObject.has("_ownerID")) {
+            record.ownerId = jsonObject.getString("_ownerID");
+        }
 
         // handle _access
         JSONArray accessJsonArray = null;
