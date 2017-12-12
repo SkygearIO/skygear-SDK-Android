@@ -23,6 +23,7 @@ import android.support.test.runner.AndroidJUnit4;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -474,5 +475,20 @@ public class RecordSerializerUnitTest {
 
         Record aNote = RecordSerializer.deserialize(jsonObject);
         assertEquals(JSONObject.NULL, aNote.get("null-value-key"));
+    }
+
+    @Test
+    public void testRecordSerializeAndDeserialize() throws Exception {
+        Record note = new Record("note");
+        JSONObject jsonObject = RecordSerializer.serialize(note);
+        Record record = RecordSerializer.deserialize(jsonObject);
+
+        assertEquals(note.id, record.id);
+        assertEquals(note.ownerId, record.ownerId);
+        assertEquals(note.createdAt, record.createdAt);
+        assertEquals(note.creatorId, record.creatorId);
+        assertEquals(note.updatedAt, record.updatedAt);
+        assertEquals(note.updaterId, record.updaterId);
+        assertEquals(note.data, record.data);
     }
 }
