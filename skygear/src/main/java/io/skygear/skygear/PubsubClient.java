@@ -64,6 +64,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
     private String apiKey;
     private long retryCount;
     private WeakReference<Container> containerRef;
+    private WeakReference<PubsubListener> listenerRef;
     private boolean handlerExecutionInBackground;
     private HandlerThread backgroundThread;
 
@@ -89,6 +90,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
         super();
 
         this.containerRef = new WeakReference<>(container);
+        this.listenerRef = new WeakReference<>(null);
         this.handlers = new HashMap<>();
         this.pendingMessages = new LinkedList<>();
         this.retryCount = 0;
@@ -459,6 +461,11 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
         Queue<Message> pendingMessages = this.pendingMessages;
         this.pendingMessages = new LinkedList<>();
 
+        PubsubListener listener = listenerRef.get();
+        if (listener != null) {
+            listener.onConnectionChanged(true);
+        }
+
         while (pendingMessages.peek() != null) {
             Message message = pendingMessages.poll();
             this.publish(message.channel, message.data);
@@ -511,12 +518,27 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
     @Override
     public void onError(WebSocketClientImpl.Exception exception) {
         Log.i(TAG, "PubsubClient connection error: " + exception.getMessage());
+
+        PubsubListener listener = listenerRef.get();
+        if (listener != null) {
+            listener.onConnectionError(exception);
+        }
     }
 
     @Override
     public void onClose(String reason) {
+
         Log.i(TAG, "PubsubClient connection close: " + reason);
         this.delayReconnect(this.getBoundedRetryWaitTime());
+
+        PubsubListener listener = listenerRef.get();
+        if (listener != null) {
+            listener.onConnectionChanged(false);
+        }
+    }
+
+    void setListener(PubsubListener listener) {
+        listenerRef = new WeakReference<>(listener);
     }
 
     /**
