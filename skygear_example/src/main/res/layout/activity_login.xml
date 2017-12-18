@@ -27,7 +27,7 @@
     android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="io.skygear.skygear_example.SignupActivity">
+    tools:context="io.skygear.skygear_example.LoginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
