@@ -75,4 +75,6 @@
     <string name="old_password">Old Password</string>
     <string name="new_password">New Password</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="login_custom_token">Login with Custom Token</string>
+    <string name="custom_token">Custom Token</string>
 </resources>

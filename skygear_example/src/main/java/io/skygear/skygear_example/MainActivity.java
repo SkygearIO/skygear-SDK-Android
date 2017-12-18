@@ -201,6 +201,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, LoginActivity.class));
     }
 
+    public void doLoginWithCustomToken(View view) {
+        startActivity(new Intent(this, CustomTokenLoginActivity.class));
+    }
+
     public void goRecordCreateDelete(View view) {
         startActivity(new Intent(this, RecordCreateActivity.class));
     }
