@@ -37,7 +37,7 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
     /**
      * The Data.
      */
-    Map<String, Object> data;
+    public Map<String, Object> data;
     /**
      * The Response handler.
      */
