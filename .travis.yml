@@ -29,7 +29,7 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew :skygear:build :skygear:connectedAndroidTest --info --stacktrace
+  - ./gradlew :skygear:build :skygear:connectedAndroidTest --stacktrace
 
 before_deploy:
   - scripts/build-apk.sh
