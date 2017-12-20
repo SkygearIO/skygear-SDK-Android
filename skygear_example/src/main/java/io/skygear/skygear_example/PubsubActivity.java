@@ -27,12 +27,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.skygear.skygear.Container;
 import io.skygear.skygear.PubsubHandler;
+import io.skygear.skygear.PubsubListener;
 
 public class PubsubActivity extends AppCompatActivity {
     private static final String TAG = PubsubActivity.class.getSimpleName();
@@ -43,6 +45,7 @@ public class PubsubActivity extends AppCompatActivity {
     private EditText messageEditText;
     private ScrollView displayScrollView;
     private TextView display;
+    private Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,41 @@ public class PubsubActivity extends AppCompatActivity {
 
         this.displayScrollView = (ScrollView) findViewById(R.id.pubsub_display_scrollview);
         this.display = (TextView) findViewById(R.id.pubsub_display);
+
+        this.skygear.getPubsub().setListener(new PubsubListener() {
+            @Override
+            public void onConnectionChanged(final boolean isConnected) {
+                PubsubActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mToast != null) {
+                            mToast.cancel();
+                        }
+                        mToast = Toast.makeText(PubsubActivity.this,
+                                isConnected ? "Connected" : "Disconnected",
+                                Toast.LENGTH_LONG);
+                        mToast.show();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onConnectionError(final Exception e) {
+                PubsubActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mToast != null) {
+                            mToast.cancel();
+                        }
+                        mToast = Toast.makeText(PubsubActivity.this,
+                                "Connection Error: " + e.getMessage(),
+                                Toast.LENGTH_LONG);
+                        mToast.show();
+                    }
+                });
+            }
+        });
     }
 
     private void dismissKeyboard() {
