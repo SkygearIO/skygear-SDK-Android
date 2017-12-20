@@ -35,7 +35,7 @@ public class CustomTokenLoginRequestUnitTest {
         String tokenString = "eyXXXX";
 
         CustomTokenLoginRequest req = new CustomTokenLoginRequest("eyXXXX");
-        Map<String, Object> data = req.data;
+        Map<String, Object> data = req.getData();
 
         assertEquals("sso:custom_token:login", req.action);
         assertEquals("eyXXXX", data.get("token"));
