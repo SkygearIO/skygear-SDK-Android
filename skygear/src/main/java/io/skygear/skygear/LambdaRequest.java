@@ -90,7 +90,7 @@ public class LambdaRequest extends Request {
                     );
                 }
             }
-            this.data.put("args", args);
+            this.data.put("args", new JSONObject(args));
         }
     }
 

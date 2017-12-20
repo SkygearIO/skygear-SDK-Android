@@ -72,6 +72,9 @@
             android:name=".LambdaActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".LambdaWithMapActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ServerConfigurationActivity"
             android:screenOrientation="portrait" />
 
