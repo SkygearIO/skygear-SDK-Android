@@ -20,6 +20,7 @@ package io.skygear.skygear;
 import android.content.Context;
 
 import java.security.InvalidParameterException;
+import java.util.Map;
 
 /**
  * Container for Skygear.
@@ -195,7 +196,7 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(String name, LambdaResponseHandler handler) {
-        this.callLambdaFunction(name, null, handler);
+        this.callLambdaFunction(name, (Object[]) null, handler);
     }
 
     /**
@@ -206,6 +207,20 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(String name, Object[] args, LambdaResponseHandler handler) {
+        LambdaRequest request = new LambdaRequest(name, args);
+        request.responseHandler = handler;
+
+        this.requestManager.sendRequest(request);
+    }
+
+    /**
+     * Call lambda function with arguments map.
+     *
+     * @param name    the function name
+     * @param args    the arguments map
+     * @param handler the response handler
+     */
+    public void callLambdaFunction(String name, Map<String, Object> args, LambdaResponseHandler handler) {
         LambdaRequest request = new LambdaRequest(name, args);
         request.responseHandler = handler;
 
