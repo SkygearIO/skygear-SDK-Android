@@ -25,6 +25,7 @@ import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import io.skygear.skygear.sso.CustomTokenLoginRequest;
 
 /**
  * Auth Container for Skygear.
@@ -200,6 +201,23 @@ public class AuthContainer implements AuthResolver {
         authData.put("email", email);
 
         this.login(authData, password, handler);
+    }
+
+    /**
+     * Login with custom token.
+     *
+     * The custom token is typically created on an external server hosting a user
+     * database. This server generates the custom token so that the user on an
+     * external server can log in to Skygear Server.
+     *
+     * @param token    the token string
+     * @param handler  the response handler
+     */
+    public void loginWithCustomToken(String token, AuthResponseHandler handler) {
+        Request req = new CustomTokenLoginRequest(token);
+        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+
+        this.getContainer().requestManager.sendRequest(req);
     }
 
     /**

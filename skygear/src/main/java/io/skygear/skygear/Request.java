@@ -23,6 +23,7 @@ import com.android.volley.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -37,7 +38,7 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
     /**
      * The Data.
      */
-    Map<String, Object> data;
+    protected Map<String, Object> data;
     /**
      * The Response handler.
      */
@@ -73,6 +74,10 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
         this.action = action;
         this.data = data;
         this.responseHandler = responseHandler;
+    }
+
+    public Map<String, Object> getData() {
+        return Collections.unmodifiableMap(this.data);
     }
 
     /**
