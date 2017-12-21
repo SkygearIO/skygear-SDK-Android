@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
 import java.util.Date;
+import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -52,7 +53,7 @@ public class LambdaRequestUnitTest {
 
     @Test
     public void testLambdaRequestAllowNullArgumentList() throws Exception {
-        LambdaRequest request = new LambdaRequest("test:op1", null);
+        LambdaRequest request = new LambdaRequest("test:op1", (Object[]) null);
 
         assertEquals("test:op1", request.action);
         assertNull(request.data.get("args"));
@@ -101,4 +102,56 @@ public class LambdaRequestUnitTest {
     public void testLambdaRequestIncompatibleValueValidation() throws Exception {
         new LambdaRequest("test:op1", new Object[]{new Date()});
     }
+
+    @Test
+    public void testLambdaRequestAllowNullArgumentWithMap() throws Exception {
+        LambdaRequest request = new LambdaRequest(
+                "test:op1",
+                new HashMap<String, Object>() {{
+                    put("key1", "hello");
+                    put("key2", "world");
+                    put("key3", null);
+                }}
+        );
+
+        assertEquals("test:op1", request.action);
+
+        JSONObject args = (JSONObject) request.data.get("args");
+        assertEquals(3, args.length());
+        assertEquals("hello", args.getString("key1"));
+        assertEquals("world", args.getString("key2"));
+        assertTrue(args.isNull("key3"));
+    }
+
+    @Test
+    public void testLambdaRequestCompatibleValueWithMapValidation() throws Exception {
+        final JSONObject jsonObject = new JSONObject("{\"hello\":\"world\"}");
+        final JSONArray jsonArray = new JSONArray("[\"hello\",\"world\"]");
+
+        LambdaRequest request = new LambdaRequest(
+                "test:op1", new HashMap<String, Object>() {{
+            put("key1", false);
+            put("key2", (byte) 3);
+            put("key3", 'c');
+            put("key4", 3.4);
+            put("key5", 3.4f);
+            put("key6", 3);
+            put("key7", 3L);
+            put("key8", (short) 3);
+            put("key9", "3");
+            put("key10", jsonObject);
+            put("key11", jsonArray);
+        }});
+
+        request.validate();
+    }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testLambdaRequestIncompatibleValueWithMapValidation() throws Exception {
+        new LambdaRequest("test:op1", new HashMap<String, Object>() {{
+            put("key1", new Date());
+        }});
+    }
+
+
 }
