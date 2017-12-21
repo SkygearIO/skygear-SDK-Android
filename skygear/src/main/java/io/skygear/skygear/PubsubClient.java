@@ -463,7 +463,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
 
         PubsubListener listener = listenerRef.get();
         if (listener != null) {
-            listener.onConnectionChanged(true);
+            listener.onOpen();
         }
 
         while (pendingMessages.peek() != null) {
@@ -521,7 +521,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
 
         PubsubListener listener = listenerRef.get();
         if (listener != null) {
-            listener.onConnectionError(exception);
+            listener.onError(exception);
         }
     }
 
@@ -533,7 +533,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
 
         PubsubListener listener = listenerRef.get();
         if (listener != null) {
-            listener.onConnectionChanged(false);
+            listener.onClose();
         }
     }
 

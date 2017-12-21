@@ -62,7 +62,7 @@ public class PubsubActivity extends AppCompatActivity {
 
         this.skygear.getPubsub().setListener(new PubsubListener() {
             @Override
-            public void onConnectionChanged(final boolean isConnected) {
+            public void onOpen() {
                 PubsubActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -70,7 +70,7 @@ public class PubsubActivity extends AppCompatActivity {
                             mToast.cancel();
                         }
                         mToast = Toast.makeText(PubsubActivity.this,
-                                isConnected ? "Connected" : "Disconnected",
+                                "Connected",
                                 Toast.LENGTH_LONG);
                         mToast.show();
                     }
@@ -79,7 +79,24 @@ public class PubsubActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onConnectionError(final Exception e) {
+            public void onClose() {
+                PubsubActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mToast != null) {
+                            mToast.cancel();
+                        }
+                        mToast = Toast.makeText(PubsubActivity.this,
+                                "Disconnected",
+                                Toast.LENGTH_LONG);
+                        mToast.show();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onError(final Exception e) {
                 PubsubActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

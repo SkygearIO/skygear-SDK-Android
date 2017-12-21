@@ -2,6 +2,7 @@ package io.skygear.skygear;
 
 
 public interface PubsubListener {
-    void onConnectionChanged(boolean isConnected);
-    void onConnectionError(Exception e);
+    void onOpen();
+    void onClose();
+    void onError(Exception e);
 }
