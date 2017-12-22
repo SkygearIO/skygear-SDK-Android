@@ -310,6 +310,14 @@
                     android:onClick="goLambda"
                     android:text="@string/lambda_functions" />
 
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp"
+                    android:onClick="goLambdaWithMap"
+                    android:text="@string/lambda_functions_with_map" />
+
             </LinearLayout>
 
         </LinearLayout>

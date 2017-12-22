@@ -52,9 +52,12 @@
     <string name="email">Email</string>
     <string name="email_indicator">Email:</string>
     <string name="lambda_functions">Lambda Functions</string>
+    <string name="lambda_functions_with_map">Lambda Functions With Map</string>
     <string name="others">Others</string>
     <string name="lambda_function_name">Name</string>
     <string name="function_arguments">Arguments</string>
+    <string name="function_keys">Keys</string>
+    <string name="function_values">Values</string>
     <string name="server_config">Server Configuration</string>
     <string name="configure">Configure</string>
     <string name="endpoint">Endpoint</string>

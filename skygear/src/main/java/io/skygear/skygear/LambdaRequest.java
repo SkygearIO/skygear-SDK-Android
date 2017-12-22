@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -67,6 +68,29 @@ public class LambdaRequest extends Request {
 
             List<Object> argList = Arrays.asList(args);
             this.data.put("args", new JSONArray(argList));
+        }
+    }
+
+    /**
+     * Instantiates a new Skygear Lambda Function Request.
+     *
+     * @param name the name
+     * @param args the args
+     */
+    public LambdaRequest(String name, Map<String, Object> args) {
+        super(name);
+
+        this.data = new HashMap<>();
+
+        if (args != null) {
+            for (String key : args.keySet()) {
+                if (!this.isCompatibleArgument(args.get(key))) {
+                    throw new InvalidParameterException(
+                            String.format("Argument at index %s is incompatible", key)
+                    );
+                }
+            }
+            this.data.put("args", new JSONObject(args));
         }
     }
 

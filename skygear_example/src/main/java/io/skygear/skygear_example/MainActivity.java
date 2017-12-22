@@ -225,6 +225,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, LambdaActivity.class));
     }
 
+    public void goLambdaWithMap(View view) {
+        startActivity(new Intent(this, LambdaWithMapActivity.class));
+    }
+
     public void goServerConfiguration(View view) {
         startActivity(new Intent(this, ServerConfigurationActivity.class));
     }
