@@ -63,52 +63,35 @@ public class PubsubActivity extends AppCompatActivity {
         this.skygear.getPubsub().setListener(new PubsubListener() {
             @Override
             public void onOpen() {
-                PubsubActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mToast != null) {
-                            mToast.cancel();
-                        }
-                        mToast = Toast.makeText(PubsubActivity.this,
-                                "Connected",
-                                Toast.LENGTH_LONG);
-                        mToast.show();
-                    }
-                });
-
+                if (mToast != null) {
+                    mToast.cancel();
+                }
+                mToast = Toast.makeText(PubsubActivity.this,
+                        "Connected",
+                        Toast.LENGTH_LONG);
+                mToast.show();
             }
 
             @Override
             public void onClose() {
-                PubsubActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mToast != null) {
-                            mToast.cancel();
-                        }
-                        mToast = Toast.makeText(PubsubActivity.this,
-                                "Disconnected",
-                                Toast.LENGTH_LONG);
-                        mToast.show();
-                    }
-                });
-
+                if (mToast != null) {
+                    mToast.cancel();
+                }
+                mToast = Toast.makeText(PubsubActivity.this,
+                        "Disconnected",
+                        Toast.LENGTH_LONG);
+                mToast.show();
             }
 
             @Override
             public void onError(final Exception e) {
-                PubsubActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mToast != null) {
-                            mToast.cancel();
-                        }
-                        mToast = Toast.makeText(PubsubActivity.this,
-                                "Connection Error: " + e.getMessage(),
-                                Toast.LENGTH_LONG);
-                        mToast.show();
-                    }
-                });
+                if (mToast != null) {
+                    mToast.cancel();
+                }
+                mToast = Toast.makeText(PubsubActivity.this,
+                        "Connection Error: " + e.getMessage(),
+                        Toast.LENGTH_LONG);
+                mToast.show();
             }
         });
     }
