@@ -145,4 +145,11 @@ public class PubsubContainer {
     public void publish(String channel, JSONObject data) {
         pubsubClient.publish(channel, data);
     }
+
+    /**
+     * Set Pubsub Listener
+     *
+     * @param listener the listener
+     */
+    public void setListener(PubsubListener listener) { pubsubClient.setListener(listener); }
 }

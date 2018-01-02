@@ -19,6 +19,7 @@ package io.skygear.skygear;
 
 import android.content.Context;
 import android.os.HandlerThread;
+import android.os.Handler;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -64,6 +65,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
     private String apiKey;
     private long retryCount;
     private WeakReference<Container> containerRef;
+    private WeakReference<PubsubListener> listenerRef;
     private boolean handlerExecutionInBackground;
     private HandlerThread backgroundThread;
 
@@ -89,6 +91,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
         super();
 
         this.containerRef = new WeakReference<>(container);
+        this.listenerRef = new WeakReference<>(null);
         this.handlers = new HashMap<>();
         this.pendingMessages = new LinkedList<>();
         this.retryCount = 0;
@@ -260,7 +263,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
         Log.i(TAG, String.format("PubsubClient reconnect in %dms", delay));
 
         Context context = this.getContainer().getContext();
-        android.os.Handler handler = new android.os.Handler(context.getMainLooper());
+        Handler handler = new android.os.Handler(context.getMainLooper());
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -459,6 +462,17 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
         Queue<Message> pendingMessages = this.pendingMessages;
         this.pendingMessages = new LinkedList<>();
 
+        final PubsubListener listener = listenerRef.get();
+        if (listener != null) {
+            Handler handler = getHandler();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onOpen();
+                }
+            });
+        }
+
         while (pendingMessages.peek() != null) {
             Message message = pendingMessages.poll();
             this.publish(message.channel, message.data);
@@ -481,18 +495,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
             Log.w(TAG, "Invalid JSON Object", e);
         }
 
-        Context context = this.getContainer().getContext();
-        android.os.Handler handler;
-
-        if (!this.handlerExecutionInBackground) {
-            handler = new android.os.Handler(context.getMainLooper());
-        } else {
-            if (this.backgroundThread == null || this.backgroundThread.getLooper() == null) {
-                throw new IllegalStateException("Background thread is not yet created");
-            }
-
-            handler = new android.os.Handler(this.backgroundThread.getLooper());
-        }
+        Handler handler = getHandler();
 
         Set<PubsubHandler> channelHandlers = this.handlers.get(channel);
         if (channelHandlers != null) {
@@ -509,14 +512,54 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
     }
 
     @Override
-    public void onError(WebSocketClientImpl.Exception exception) {
+    public void onError(final WebSocketClientImpl.Exception exception) {
         Log.i(TAG, "PubsubClient connection error: " + exception.getMessage());
+
+        final PubsubListener listener = listenerRef.get();
+        if (listener != null) {
+            Handler handler = getHandler();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onError(exception);
+                }
+            });
+        }
     }
 
     @Override
     public void onClose(String reason) {
+
         Log.i(TAG, "PubsubClient connection close: " + reason);
         this.delayReconnect(this.getBoundedRetryWaitTime());
+
+        final PubsubListener listener = listenerRef.get();
+
+        if (listener != null) {
+            Handler handler = getHandler();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onClose();
+                }
+            });
+        }
+    }
+
+    private Handler getHandler() {
+        if (!this.handlerExecutionInBackground) {
+            return new android.os.Handler(getContainer().getContext().getMainLooper());
+        } else {
+            if (this.backgroundThread == null || this.backgroundThread.getLooper() == null) {
+                throw new IllegalStateException("Background thread is not yet created");
+            }
+
+            return new android.os.Handler(this.backgroundThread.getLooper());
+        }
+    }
+
+    void setListener(PubsubListener listener) {
+        listenerRef = new WeakReference<>(listener);
     }
 
     /**
