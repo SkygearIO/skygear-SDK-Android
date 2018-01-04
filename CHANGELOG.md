@@ -1,3 +1,21 @@
+## 1.3.0 (2018-01-04)
+
+### Features
+
+- Add PubsubListener to hook up with PubsubClient onOpen, onClose and onError
+  (#173)
+- Support calling lambda with map (#120)
+- Add loginWithCustomToken (#172)
+
+### Bug Fixes
+
+- Check null value when serializing and deserializing reserved fields
+
+### Other Notes
+
+- Reduce log on android test
+- Change tools:context in activity_login layout
+
 ## 1.2.0 (2017-12-11)
 
 ### Bug Fixes
