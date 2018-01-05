@@ -17,6 +17,7 @@
 
 package io.skygear.skygear;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -70,6 +71,16 @@ public class Error extends Exception {
         this.name = name;
         this.detailMessage = detailMessage;
         this.info = info;
+    }
+
+    /**
+     * Instantiates a new Error.
+     *
+     * @param jsonObject     the json error object
+     * @throws JSONException if jsonObject does't contain error required attribute
+     */
+    public Error(JSONObject jsonObject) throws JSONException {
+        this(jsonObject.getInt("code"), jsonObject.getString("name"), jsonObject.getString("message"), jsonObject.optJSONObject("info"));
     }
 
     /**
