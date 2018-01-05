@@ -18,6 +18,7 @@
 package io.skygear.skygear;
 
 
+import android.app.Activity;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -26,6 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import io.skygear.skygear.sso.CustomTokenLoginRequest;
+import io.skygear.skygear.sso.OAuthManager;
 
 /**
  * Auth Container for Skygear.
@@ -221,6 +223,18 @@ public class AuthContainer implements AuthResolver {
     }
 
     /**
+     * Login oauth provider by web oauth flow.
+     *
+     * @param providerID the provider id, e.g. google, facebook
+     * @param options    the options
+     * @param activity   a valid activity context
+     * @param handler    the response handler
+     */
+    public void loginOAuthProvider(String providerID, Map<String, Object> options, final Activity activity, final AuthResponseHandler handler) {
+        new OAuthManager().loginProvider(this, providerID, options, activity, handler);
+    }
+
+    /**
      * Logout.
      *
      * @param handler the response handler
@@ -295,7 +309,7 @@ public class AuthContainer implements AuthResolver {
      * @param code        the code user received for forgot password
      * @param expireAt    when should the reset password url expire
      * @param newPassword the new password after resetting
-     * @param handler the response handler
+     * @param handler     the response handler
      */
     public void resetPassword(String userID, String code, Date expireAt, String newPassword, LambdaResponseHandler handler) {
         Object[] argv = new Object[]{userID, code, expireAt, newPassword};
@@ -323,7 +337,7 @@ public class AuthContainer implements AuthResolver {
      * @param handler the handler
      */
     public void setAdminRole(Role role, SetRoleResponseHandler handler) {
-        this.setAdminRole(new Role[] { role }, handler);
+        this.setAdminRole(new Role[]{role}, handler);
     }
 
     /**
@@ -347,7 +361,7 @@ public class AuthContainer implements AuthResolver {
      * @param handler the handler
      */
     public void setDefaultRole(Role role, SetRoleResponseHandler handler) {
-        this.setDefaultRole(new Role[] { role }, handler);
+        this.setDefaultRole(new Role[]{role}, handler);
     }
 
     /**

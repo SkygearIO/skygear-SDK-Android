@@ -135,7 +135,7 @@ public class RecordSerializer {
      * @param record the record
      * @return the JSON object
      */
-    static JSONObject serialize(Record record) {
+    public static JSONObject serialize(Record record) {
         try {
             HashMap<String, Object> recordData = new HashMap<>(record.data);
 
@@ -208,7 +208,7 @@ public class RecordSerializer {
      * @return the Skygear Record
      * @throws JSONException the JSON exception
      */
-    static Record deserialize(JSONObject jsonObject) throws JSONException {
+    public static Record deserialize(JSONObject jsonObject) throws JSONException {
         String typedId = jsonObject.optString("_id");
         String[] split = typedId.split("/", 2);
 

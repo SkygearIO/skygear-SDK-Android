@@ -17,4 +17,6 @@
 
 <resources>
     <string name="app_name">Skygear</string>
+    <string name="skygear_scheme">skygear</string>
+    <string name="skygear_domain">skygeario.com</string>
 </resources>
