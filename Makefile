@@ -19,6 +19,10 @@ clean:
 release-commit:
 	./scripts/release-commit.sh
 
+.PHONY: update-version
+update-version:
+sed -i "" "s/def skygearVersion = \".*\"/def skygearVersion = \"$(VERSION)\"/" skygear/build.gradle
+
 .PHONY: doc-upload
 doc-upload:
 	aws s3 sync skygear/build/docs/javadoc s3://$(DOCS_AWS_BUCKET)$(DOCS_PREFIX)/$(VERSION) --delete
