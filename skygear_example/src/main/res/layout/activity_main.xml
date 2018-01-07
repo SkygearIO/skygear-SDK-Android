@@ -213,6 +213,15 @@
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="goOAuth"
+                    android:text="@string/social_login"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp"
+                    />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:onClick="doGetCurrentUser"
                     android:text="@string/who_am_i"
                     android:layout_marginLeft="1dp"

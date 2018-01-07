@@ -77,6 +77,9 @@
         <activity
             android:name=".ServerConfigurationActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".OAuthActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Delegate Skygear SDK to manage GCM Services -->
         <receiver

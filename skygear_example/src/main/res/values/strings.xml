@@ -17,6 +17,7 @@
 
 <resources>
     <string name="app_name">SkygearExample</string>
+    <string name="skygear_scheme">skygearexample</string>
     <string name="user_name">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
@@ -73,6 +74,7 @@
     <string name="gcm_sender_id">GCM Sender ID</string>
     <string name="signup_with_email">Signup With Email</string>
     <string name="signup_anonymously">Signup Anonymously</string>
+    <string name="social_login">Social Login</string>
     <string name="or">Or</string>
     <string name="change_password">Change Password</string>
     <string name="old_password">Old Password</string>
