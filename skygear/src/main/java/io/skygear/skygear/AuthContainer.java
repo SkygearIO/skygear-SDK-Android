@@ -26,8 +26,8 @@ import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import io.skygear.skygear.sso.CustomTokenLoginRequest;
-import io.skygear.skygear.sso.OAuthManager;
+import io.skygear.skygear.internal.sso.CustomTokenLoginRequest;
+import io.skygear.skygear.internal.sso.OAuthManager;
 
 /**
  * Auth Container for Skygear.

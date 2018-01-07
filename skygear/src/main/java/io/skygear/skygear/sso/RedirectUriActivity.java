@@ -20,6 +20,8 @@ package io.skygear.skygear.sso;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import io.skygear.skygear.internal.sso.AuthenticationActivity;
+
 public class RedirectUriActivity extends AppCompatActivity {
 
     @Override

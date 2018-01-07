@@ -15,7 +15,7 @@
  *
  */
 
-package io.skygear.skygear.sso;
+package io.skygear.skygear.internal.sso;
 
 import org.json.JSONObject;
 

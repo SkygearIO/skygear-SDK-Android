@@ -15,7 +15,7 @@
  *
  */
 
-package io.skygear.skygear.sso;
+package io.skygear.skygear.internal.sso;
 
 import android.app.Activity;
 import android.content.Intent;

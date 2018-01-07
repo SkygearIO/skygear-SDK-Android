@@ -27,7 +27,7 @@
         android:supportsRtl="true">
 
         <activity
-            android:name=".sso.AuthenticationActivity"
+            android:name=".internal.sso.AuthenticationActivity"
             android:exported="false"
             android:launchMode="singleTask"></activity>
 
