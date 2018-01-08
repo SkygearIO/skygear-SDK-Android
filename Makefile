@@ -15,6 +15,10 @@ build:
 clean:
 	-rm skygear/build
 
+.PHONY: release-commit
+release-commit:
+	./scripts/release-commit.sh
+
 .PHONY: update-version
 update-version:
 	sed -i "" "s/def skygearVersion = \".*\"/def skygearVersion = \"$(VERSION)\"/" skygear/build.gradle
