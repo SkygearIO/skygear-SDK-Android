@@ -21,7 +21,7 @@ release-commit:
 
 .PHONY: update-version
 update-version:
-sed -i "" "s/def skygearVersion = \".*\"/def skygearVersion = \"$(VERSION)\"/" skygear/build.gradle
+	sed -i "" "s/def skygearVersion = \".*\"/def skygearVersion = \"$(VERSION)\"/" skygear/build.gradle
 
 .PHONY: doc-upload
 doc-upload:
