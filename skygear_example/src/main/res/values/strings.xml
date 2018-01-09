@@ -21,6 +21,7 @@
     <string name="user_name">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+    <string name="link">Link</string>
     <string name="signup">Signup</string>
     <string name="endpoint_indicator">Endpoint:</string>
     <string name="api_key_indicator">API Key:</string>

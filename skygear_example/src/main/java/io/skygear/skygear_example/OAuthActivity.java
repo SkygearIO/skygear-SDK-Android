@@ -32,6 +32,7 @@ import io.skygear.skygear.Configuration;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
 import io.skygear.skygear.Record;
+import io.skygear.skygear.sso.LinkProviderResponseHandler;
 
 public class OAuthActivity extends AppCompatActivity {
     private static String LOG_TAG = OAuthActivity.class.getSimpleName();
@@ -95,6 +96,53 @@ public class OAuthActivity extends AppCompatActivity {
 
                     @Override
                     public void onAuthFail(Error error) {
+                        loading.dismiss();
+
+                        failDialog.setMessage("Fail with reason: \n" + error.getDetailMessage());
+                        failDialog.show();
+                    }
+                });
+
+    }
+
+    public void doLinkWithWebFlow(View view) {
+        final ProgressDialog loading = new ProgressDialog(this);
+        loading.setTitle("Loading");
+        loading.setMessage("Logging in...");
+        loading.show();
+
+        final AlertDialog successDialog = new AlertDialog.Builder(this)
+                .setTitle("Link success")
+                .setMessage("")
+                .setPositiveButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .create();
+
+        final AlertDialog failDialog = new AlertDialog.Builder(this)
+                .setTitle("Link failed")
+                .setMessage("")
+                .setNeutralButton("Dismiss", null)
+                .create();
+
+        this.skygear.getAuth().linkOAuthProvider(
+                selectedProvider,
+                new HashMap<String, Object>() {{
+                    put("scheme", "skygearexample");
+                }}, this, new LinkProviderResponseHandler() {
+                    @Override
+                    public void onSuccess() {
+                        loading.dismiss();
+
+                        successDialog.setMessage("Link provider success");
+                        successDialog.show();
+                    }
+
+                    @Override
+                    public void onFail(Error error) {
                         loading.dismiss();
 
                         failDialog.setMessage("Fail with reason: \n" + error.getDetailMessage());

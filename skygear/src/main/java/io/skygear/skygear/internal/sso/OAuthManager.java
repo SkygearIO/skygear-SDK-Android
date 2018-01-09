@@ -32,6 +32,7 @@ import io.skygear.skygear.Error;
 import io.skygear.skygear.LambdaResponseHandler;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordSerializer;
+import io.skygear.skygear.sso.LinkProviderResponseHandler;
 
 public class OAuthManager {
     private static String LOG_TAG = OAuthManager.class.getSimpleName();
@@ -51,10 +52,37 @@ public class OAuthManager {
      * @param providerID    the provider id, e.g. google, facebook
      * @param options       the options
      * @param activity      a valid activity context
-     * @param handler       the response handler
+     * @param handler       the auth response handler
      */
     public void loginProvider(AuthContainer authContainer, String providerID, Map<String, Object> options, final Activity activity, final AuthResponseHandler handler) {
         this.oauthFlowWithProvider(OAuthActionType.LOGIN, authContainer, providerID, options, activity, loginWebOAuthHandler(authContainer, handler));
+    }
+
+    /**
+     * Link oauth provider by web oauth flow.
+     *
+     * @param authContainer the auth container
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param options       the options
+     * @param activity      a valid activity context
+     * @param handler       the link provider response handler
+     */
+    public void linkProvider(AuthContainer authContainer, String providerID, Map<String, Object> options, final Activity activity, final LinkProviderResponseHandler handler) {
+        this.oauthFlowWithProvider(OAuthActionType.LINK, authContainer, providerID, options, activity, new WebOAuthHandler() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                if (handler != null) {
+                    handleLinkReponse(result, handler);
+                }
+            }
+
+            @Override
+            public void onFail(Error error) {
+                if (handler != null) {
+                    handler.onFail(error);
+                }
+            }
+        });
     }
 
     private void oauthFlowWithProvider(OAuthActionType actionType, AuthContainer authContainer, String providerID, Map<String, Object> options, final Activity activity, final WebOAuthHandler handler) {
@@ -84,11 +112,24 @@ public class OAuthManager {
                 });
     }
 
+    private void handleLinkReponse(JSONObject result, LinkProviderResponseHandler handler) {
+        try {
+            if (result.has("error")) {
+                handler.onFail(new Error(result.getJSONObject("error")));
+            } else {
+                handler.onSuccess();
+            }
+        } catch (JSONException e) {
+            handler.onFail(new Error("Malformed server response"));
+        }
+    }
+
     private WebOAuthHandler loginWebOAuthHandler(final AuthContainer authContainer, final AuthResponseHandler handler) {
         return new WebOAuthHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onSuccess(JSONObject response) {
                 try {
+                    JSONObject result = response.optJSONObject("result");
                     JSONObject profile = result.optJSONObject("profile");
                     String accessToken = result.getString("access_token");
                     Record authUser = RecordSerializer.deserialize(profile);

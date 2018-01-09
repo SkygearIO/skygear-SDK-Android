@@ -30,7 +30,7 @@ import io.skygear.skygear.Error;
 
 public class WebOAuth {
     private static String LOG_TAG = WebOAuth.class.getSimpleName();
-    private static WebOAuthHandler callback;
+    static WebOAuthHandler callback;
 
     public static void start(Activity activity, String authURL, WebOAuthHandler completionHandler) {
         callback = completionHandler;
@@ -51,7 +51,7 @@ public class WebOAuth {
             if (jsonObject.has("error")) {
                 callback.onFail(new Error(jsonObject.getJSONObject("error")));
             } else {
-                callback.onSuccess(jsonObject.getJSONObject("result"));
+                callback.onSuccess(jsonObject);
             }
         } catch (JSONException e) {
             callback.onFail(new Error("Malformed server response"));

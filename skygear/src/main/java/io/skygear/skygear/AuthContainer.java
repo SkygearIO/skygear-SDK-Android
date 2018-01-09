@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import io.skygear.skygear.internal.sso.CustomTokenLoginRequest;
 import io.skygear.skygear.internal.sso.OAuthManager;
+import io.skygear.skygear.sso.LinkProviderResponseHandler;
 
 /**
  * Auth Container for Skygear.
@@ -232,6 +233,18 @@ public class AuthContainer implements AuthResolver {
      */
     public void loginOAuthProvider(String providerID, Map<String, Object> options, final Activity activity, final AuthResponseHandler handler) {
         new OAuthManager().loginProvider(this, providerID, options, activity, handler);
+    }
+
+    /**
+     * Link oauth provider by web oauth flow.
+     *
+     * @param providerID the provider id, e.g. google, facebook
+     * @param options    the options
+     * @param activity   a valid activity context
+     * @param handler    the link provider response handler
+     */
+    public void linkOAuthProvider(String providerID, Map<String, Object> options, final Activity activity, final LinkProviderResponseHandler handler) {
+        new OAuthManager().linkProvider(this, providerID, options, activity, handler);
     }
 
     /**
