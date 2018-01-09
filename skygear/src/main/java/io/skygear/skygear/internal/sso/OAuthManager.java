@@ -33,6 +33,7 @@ import io.skygear.skygear.LambdaResponseHandler;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordSerializer;
 import io.skygear.skygear.sso.LinkProviderResponseHandler;
+import io.skygear.skygear.sso.OAuthOption;
 
 public class OAuthManager {
     private static String LOG_TAG = OAuthManager.class.getSimpleName();
@@ -54,7 +55,7 @@ public class OAuthManager {
      * @param activity      a valid activity context
      * @param handler       the auth response handler
      */
-    public void loginProvider(AuthContainer authContainer, String providerID, Map<String, Object> options, final Activity activity, final AuthResponseHandler handler) {
+    public void loginProvider(AuthContainer authContainer, String providerID, OAuthOption options, final Activity activity, final AuthResponseHandler handler) {
         this.oauthFlowWithProvider(OAuthActionType.LOGIN, authContainer, providerID, options, activity, loginWebOAuthHandler(authContainer, handler));
     }
 
@@ -67,7 +68,7 @@ public class OAuthManager {
      * @param activity      a valid activity context
      * @param handler       the link provider response handler
      */
-    public void linkProvider(AuthContainer authContainer, String providerID, Map<String, Object> options, final Activity activity, final LinkProviderResponseHandler handler) {
+    public void linkProvider(AuthContainer authContainer, String providerID, OAuthOption options, final Activity activity, final LinkProviderResponseHandler handler) {
         this.oauthFlowWithProvider(OAuthActionType.LINK, authContainer, providerID, options, activity, new WebOAuthHandler() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -85,9 +86,21 @@ public class OAuthManager {
         });
     }
 
-    private void oauthFlowWithProvider(OAuthActionType actionType, AuthContainer authContainer, String providerID, Map<String, Object> options, final Activity activity, final WebOAuthHandler handler) {
+    private void oauthFlowWithProvider(OAuthActionType actionType, AuthContainer authContainer, String providerID, OAuthOption options, final Activity activity, final WebOAuthHandler handler) {
+        try {
+            if (options == null) {
+                throw new InvalidParameterException("Options should not be null");
+            }
+            options.validate();
+        } catch (Exception e) {
+            if (handler != null) {
+                handler.onFail(new Error(e.getMessage()));
+            }
+            return;
+        }
+
         authContainer.getContainer().callLambdaFunction(authURLWithAction(actionType, providerID),
-                genAuthURLParams(options), new LambdaResponseHandler() {
+                options.toLambdaArgs(), new LambdaResponseHandler() {
                     @Override
                     public void onLambdaSuccess(JSONObject result) {
                         try {
@@ -162,35 +175,5 @@ public class OAuthManager {
             default:
                 throw new InvalidParameterException("Invalid oauth flow action");
         }
-    }
-
-    private Map<String, Object> genAuthURLParams(Map<String, Object> options) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("ux_mode", "android");
-        params.put("callback_url", genCallbackURL(options));
-
-        if (options.containsKey("scope")) {
-            params.put("scope", options.get("scope"));
-        }
-
-        if (options.containsKey("options")) {
-            params.put("options", options.get("options"));
-        }
-
-        return params;
-    }
-
-    private String genCallbackURL(Map<String, Object> options) {
-        String scheme = DEFAULT_CALLBACK_SCHEME;
-        if (options.get("scheme") instanceof String) {
-            scheme = (String)options.get("scheme");
-        }
-
-        String domain = DEFAULT_CALLBACK_DOMAIN;
-        if (options.get("domain") instanceof String) {
-            scheme = (String)options.get("scheme");
-        }
-
-        return String.format("%s://%s/auth_handler", scheme, domain);
     }
 }

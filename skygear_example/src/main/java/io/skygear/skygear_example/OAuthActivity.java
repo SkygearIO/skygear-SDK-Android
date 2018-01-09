@@ -25,7 +25,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Configuration;
@@ -33,6 +36,7 @@ import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.sso.LinkProviderResponseHandler;
+import io.skygear.skygear.sso.OAuthOptionBuilder;
 
 public class OAuthActivity extends AppCompatActivity {
     private static String LOG_TAG = OAuthActivity.class.getSimpleName();
@@ -79,12 +83,11 @@ public class OAuthActivity extends AppCompatActivity {
                 .setMessage("")
                 .setNeutralButton("Dismiss", null)
                 .create();
-
+        
         this.skygear.getAuth().loginOAuthProvider(
                 selectedProvider,
-                new HashMap<String, Object>() {{
-                    put("scheme", "skygearexample");
-                }}, this, new AuthResponseHandler() {
+                new OAuthOptionBuilder().setScheme("skygearexample").getOption(),
+                this, new AuthResponseHandler() {
                     @Override
                     public void onAuthSuccess(Record user) {
                         Log.d(LOG_TAG, "onAuthSuccess");
@@ -130,9 +133,8 @@ public class OAuthActivity extends AppCompatActivity {
 
         this.skygear.getAuth().linkOAuthProvider(
                 selectedProvider,
-                new HashMap<String, Object>() {{
-                    put("scheme", "skygearexample");
-                }}, this, new LinkProviderResponseHandler() {
+                new OAuthOptionBuilder().setScheme("skygearexample").getOption(),
+                this, new LinkProviderResponseHandler() {
                     @Override
                     public void onSuccess() {
                         loading.dismiss();
