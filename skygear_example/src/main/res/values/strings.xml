@@ -26,6 +26,7 @@
     <string name="link_with_browser">Link with browser</string>
     <string name="login_with_access_token">Login with access token</string>
     <string name="link_with_access_token">Link with access token</string>
+    <string name="unlink_provider">Unlink provider</string>
     <string name="access_token_hint">Access token from provider</string>
     <string name="endpoint_indicator">Endpoint:</string>
     <string name="api_key_indicator">API Key:</string>

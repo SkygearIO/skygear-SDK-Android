@@ -33,6 +33,7 @@ import io.skygear.skygear.Error;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.sso.LinkProviderResponseHandler;
 import io.skygear.skygear.sso.OAuthOptionBuilder;
+import io.skygear.skygear.sso.UnlinkProviderResponseHandler;
 
 public class OAuthActivity extends AppCompatActivity {
     private static String LOG_TAG = OAuthActivity.class.getSimpleName();
@@ -126,6 +127,27 @@ public class OAuthActivity extends AppCompatActivity {
                     public void onSuccess() {
                         hideLoading();
                         showSuccessAlert("Link provider successfully");
+
+                    }
+
+                    @Override
+                    public void onFail(Error error) {
+                        hideLoading();
+                        showErrorAlert("Fail with reason: \n" + error.getDetailMessage());
+                    }
+                });
+    }
+
+    public void doUnlinkWithAccessToken(View view) {
+        showLoading("Unlinking...");
+
+        this.skygear.getAuth().unlinkOAuthProviderWithAccessToken(
+                selectedProvider,
+                new UnlinkProviderResponseHandler() {
+                    @Override
+                    public void onSuccess() {
+                        hideLoading();
+                        showSuccessAlert("Unlink provider successfully");
 
                     }
 

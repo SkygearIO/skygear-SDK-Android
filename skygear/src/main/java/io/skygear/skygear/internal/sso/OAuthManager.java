@@ -24,7 +24,6 @@ import org.json.JSONObject;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
-import java.util.Map;
 
 import io.skygear.skygear.AuthContainer;
 import io.skygear.skygear.AuthResponseHandler;
@@ -34,6 +33,7 @@ import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordSerializer;
 import io.skygear.skygear.sso.LinkProviderResponseHandler;
 import io.skygear.skygear.sso.OAuthOption;
+import io.skygear.skygear.sso.UnlinkProviderResponseHandler;
 
 public class OAuthManager {
     private static String LOG_TAG = OAuthManager.class.getSimpleName();
@@ -141,6 +141,33 @@ public class OAuthManager {
                 new HashMap<String, Object>() {{
                     put("access_token", accessToken);
                 }}, new LambdaResponseHandler() {
+                    @Override
+                    public void onLambdaSuccess(JSONObject result) {
+                        if (handler != null) {
+                            handler.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onLambdaFail(Error error) {
+                        if (handler != null) {
+                            handler.onFail(error);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Unlink oauth provider.
+     *
+     * @param authContainer the auth container
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param handler       the link provider response handler
+     */
+    public void unlinkProviderWithAccessToken(AuthContainer authContainer, String providerID, final UnlinkProviderResponseHandler handler) {
+        authContainer.getContainer().callLambdaFunction(
+                String.format("sso/%s/unlink", providerID),
+                new LambdaResponseHandler() {
                     @Override
                     public void onLambdaSuccess(JSONObject result) {
                         if (handler != null) {
