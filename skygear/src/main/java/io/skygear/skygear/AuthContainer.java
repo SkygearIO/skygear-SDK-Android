@@ -237,7 +237,7 @@ public class AuthContainer implements AuthResolver {
     }
 
     /**
-     * Link oauth provider by web oauth flow.
+     * Link oauth provider by web oauth flow after login.
      *
      * @param providerID the provider id, e.g. google, facebook
      * @param options    the oauth options, can be created through OAuthOptionBuilder, scheme is required
@@ -248,7 +248,27 @@ public class AuthContainer implements AuthResolver {
         new OAuthManager().linkProvider(this, providerID, options, activity, handler);
     }
 
+    /**
+     * Login oauth provider with provider access token.
+     *
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param accessToken   access token from provider
+     * @param handler       the auth response handler
+     */
+    public void loginOAuthProviderWithAccessToken(String providerID, String accessToken, AuthResponseHandler handler) {
+        new OAuthManager().loginProviderWithAccessToken(this, providerID, accessToken, handler);
+    }
 
+    /**
+     * Link oauth provider with provider access token after login.
+     *
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param accessToken   access token from provider
+     * @param handler       the auth response handler
+     */
+    public void linkOAuthProviderWithAccessToken(String providerID, String accessToken, LinkProviderResponseHandler handler) {
+        new OAuthManager().linkProviderWithAccessToken(this, providerID, accessToken, handler);
+    }
 
     /**
      * Logout.

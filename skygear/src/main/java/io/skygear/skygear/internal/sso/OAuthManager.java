@@ -98,6 +98,65 @@ public class OAuthManager {
         });
     }
 
+    /**
+     * Login oauth provider with provider access token.
+     *
+     * @param authContainer the auth container
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param accessToken   access token from provider
+     * @param handler       the auth response handler
+     */
+    public void loginProviderWithAccessToken(final AuthContainer authContainer, String providerID, final String accessToken, final AuthResponseHandler handler) {
+        authContainer.getContainer().callLambdaFunction(
+                authURLWithAccessToken(OAuthActionType.LOGIN, providerID),
+                new HashMap<String, Object>() {{
+                    put("access_token", accessToken);
+                }}, new LambdaResponseHandler() {
+                    @Override
+                    public void onLambdaSuccess(JSONObject result) {
+                        handleLoginResponse(authContainer, result, handler);
+                    }
+
+                    @Override
+                    public void onLambdaFail(Error error) {
+                        if (handler != null) {
+                            handler.onFail(error);
+                        }
+                    }
+                });
+
+    }
+
+    /**
+     * Link oauth provider with provider access token.
+     *
+     * @param authContainer the auth container
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param accessToken   access token from provider
+     * @param handler       the link provider response handler
+     */
+    public void linkProviderWithAccessToken(AuthContainer authContainer, String providerID, final String accessToken, final LinkProviderResponseHandler handler) {
+        authContainer.getContainer().callLambdaFunction(
+                authURLWithAccessToken(OAuthActionType.LINK, providerID),
+                new HashMap<String, Object>() {{
+                    put("access_token", accessToken);
+                }}, new LambdaResponseHandler() {
+                    @Override
+                    public void onLambdaSuccess(JSONObject result) {
+                        if (handler != null) {
+                            handler.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onLambdaFail(Error error) {
+                        if (handler != null) {
+                            handler.onFail(error);
+                        }
+                    }
+                });
+    }
+
     private void oauthFlowWithProvider(OAuthActionType actionType, AuthContainer authContainer, String providerID, OAuthOption options, final Activity activity, final WebOAuthHandler handler) {
         try {
             if (options == null) {
@@ -160,6 +219,17 @@ public class OAuthManager {
                 return String.format("sso/%s/login_auth_url", provider);
             case LINK:
                 return String.format("sso/%s/link_auth_url", provider);
+            default:
+                throw new InvalidParameterException("Invalid oauth flow action");
+        }
+    }
+
+    private String authURLWithAccessToken(OAuthActionType action, String provider) {
+        switch (action) {
+            case LOGIN:
+                return String.format("sso/%s/login", provider);
+            case LINK:
+                return String.format("sso/%s/link", provider);
             default:
                 throw new InvalidParameterException("Invalid oauth flow action");
         }
