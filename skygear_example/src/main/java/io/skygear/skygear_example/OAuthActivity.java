@@ -19,16 +19,12 @@ package io.skygear.skygear_example;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import android.widget.EditText;
 
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Configuration;
@@ -43,93 +39,42 @@ public class OAuthActivity extends AppCompatActivity {
 
     private Container skygear;
     private String selectedProvider = "facebook";
+    private EditText accessTokenInput;
+    private ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_oauth);
+
+        this.accessTokenInput = (EditText) findViewById(R.id.access_token_input);
+
         this.skygear = Container.defaultContainer(this);
-        this.restoreServerConfiguration();
-    }
-
-    private void restoreServerConfiguration() {
-        ServerConfigurationPreference pref = new ServerConfigurationPreference(this);
-        Configuration config = pref.get();
-
-        if (config != null) {
-            this.skygear.configure(config);
-        }
     }
 
     public void doLoginWithWebFlow(View view) {
-        final ProgressDialog loading = new ProgressDialog(this);
-        loading.setTitle("Loading");
-        loading.setMessage("Logging in...");
-        loading.show();
+        showLoading("Logging in...");
 
-        final AlertDialog successDialog = new AlertDialog.Builder(this)
-                .setTitle("Login success")
-                .setMessage("")
-                .setPositiveButton("Back", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                })
-                .create();
-
-        final AlertDialog failDialog = new AlertDialog.Builder(this)
-                .setTitle("Login failed")
-                .setMessage("")
-                .setNeutralButton("Dismiss", null)
-                .create();
-        
         this.skygear.getAuth().loginOAuthProvider(
                 selectedProvider,
                 new OAuthOptionBuilder().setScheme("skygearexample").getOption(),
                 this, new AuthResponseHandler() {
                     @Override
                     public void onAuthSuccess(Record user) {
-                        Log.d(LOG_TAG, "onAuthSuccess");
-                        loading.dismiss();
-
-                        successDialog.setMessage("Success with user_id:\n" + user.getId());
-                        successDialog.show();
+                        hideLoading();
+                        showSuccessAlert("Login success with user_id:\n" + user.getId());
                     }
 
                     @Override
                     public void onAuthFail(Error error) {
-                        loading.dismiss();
-
-                        failDialog.setMessage("Fail with reason: \n" + error.getDetailMessage());
-                        failDialog.show();
+                        hideLoading();
+                        showSuccessAlert("Fail with reason: \n" + error.getDetailMessage());
                     }
                 });
-
     }
 
     public void doLinkWithWebFlow(View view) {
-        final ProgressDialog loading = new ProgressDialog(this);
-        loading.setTitle("Loading");
-        loading.setMessage("Logging in...");
-        loading.show();
-
-        final AlertDialog successDialog = new AlertDialog.Builder(this)
-                .setTitle("Link success")
-                .setMessage("")
-                .setPositiveButton("Back", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                })
-                .create();
-
-        final AlertDialog failDialog = new AlertDialog.Builder(this)
-                .setTitle("Link failed")
-                .setMessage("")
-                .setNeutralButton("Dismiss", null)
-                .create();
+        showLoading("Linking...");
 
         this.skygear.getAuth().linkOAuthProvider(
                 selectedProvider,
@@ -137,20 +82,94 @@ public class OAuthActivity extends AppCompatActivity {
                 this, new LinkProviderResponseHandler() {
                     @Override
                     public void onSuccess() {
-                        loading.dismiss();
-
-                        successDialog.setMessage("Link provider success");
-                        successDialog.show();
+                        hideLoading();
+                        showSuccessAlert("Link provider success");
                     }
 
                     @Override
                     public void onFail(Error error) {
-                        loading.dismiss();
-
-                        failDialog.setMessage("Fail with reason: \n" + error.getDetailMessage());
-                        failDialog.show();
+                        hideLoading();
+                        showSuccessAlert("Fail with reason: \n" + error.getDetailMessage());
                     }
                 });
+    }
 
+    public void doLoginWithAccessToken(View view) {
+        showLoading("Logging in...");
+
+        this.skygear.getAuth().loginOAuthProviderWithAccessToken(
+                selectedProvider,
+                accessTokenInput.getText().toString(),
+                new AuthResponseHandler() {
+                    @Override
+                    public void onAuthSuccess(Record user) {
+                        hideLoading();
+                        showSuccessAlert("Login success with user_id:\n" + user.getId());
+                    }
+
+                    @Override
+                    public void onAuthFail(Error error) {
+                        hideLoading();
+                        showErrorAlert("Fail with reason: \n" + error.getDetailMessage());
+                    }
+                });
+    }
+
+    public void doLinkWithAccessToken(View view) {
+        showLoading("Linking...");
+
+        this.skygear.getAuth().linkOAuthProviderWithAccessToken(
+                selectedProvider,
+                accessTokenInput.getText().toString(),
+                new LinkProviderResponseHandler() {
+                    @Override
+                    public void onSuccess() {
+                        hideLoading();
+                        showSuccessAlert("Link provider successfully");
+
+                    }
+
+                    @Override
+                    public void onFail(Error error) {
+                        hideLoading();
+                        showErrorAlert("Fail with reason: \n" + error.getDetailMessage());
+                    }
+                });
+    }
+
+    private void showSuccessAlert(String message) {
+        AlertDialog successDialog = new AlertDialog.Builder(this)
+                .setTitle("Success")
+                .setMessage(message)
+                .setNeutralButton("Dismiss", null)
+                .create();
+
+        successDialog.show();
+    }
+
+    private void showErrorAlert(String message) {
+        AlertDialog successDialog = new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage(message)
+                .setNeutralButton("Dismiss", null)
+                .create();
+
+        successDialog.show();
+    }
+
+    private void showLoading(String message) {
+        hideLoading();
+
+        loadingDialog = new ProgressDialog(this);
+        loadingDialog.setTitle("Loading");
+        loadingDialog.setMessage(message);
+        loadingDialog.show();
+    }
+
+    private void hideLoading() {
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+            loadingDialog = null;
+        }
     }
 }
