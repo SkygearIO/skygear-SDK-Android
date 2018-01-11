@@ -55,8 +55,20 @@ public class OAuthManager {
      * @param activity      a valid activity context
      * @param handler       the auth response handler
      */
-    public void loginProvider(AuthContainer authContainer, String providerID, OAuthOption options, final Activity activity, final AuthResponseHandler handler) {
-        this.oauthFlowWithProvider(OAuthActionType.LOGIN, authContainer, providerID, options, activity, loginWebOAuthHandler(authContainer, handler));
+    public void loginProvider(final AuthContainer authContainer, String providerID, OAuthOption options, final Activity activity, final AuthResponseHandler handler) {
+        this.oauthFlowWithProvider(OAuthActionType.LOGIN, authContainer, providerID, options, activity, new WebOAuthHandler() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                handleLoginResponse(authContainer, result, handler);
+            }
+
+            @Override
+            public void onFail(Error error) {
+                if (handler != null) {
+                    handler.onAuthFail(error);
+                }
+            }
+        });
     }
 
     /**
@@ -73,7 +85,7 @@ public class OAuthManager {
             @Override
             public void onSuccess(JSONObject result) {
                 if (handler != null) {
-                    handleLinkReponse(result, handler);
+                    handler.onSuccess();
                 }
             }
 
@@ -99,7 +111,7 @@ public class OAuthManager {
             return;
         }
 
-        authContainer.getContainer().callLambdaFunction(authURLWithAction(actionType, providerID),
+        authContainer.getContainer().callLambdaFunction(authURL(actionType, providerID),
                 options.toLambdaArgs(), new LambdaResponseHandler() {
                     @Override
                     public void onLambdaSuccess(JSONObject result) {
@@ -125,48 +137,24 @@ public class OAuthManager {
                 });
     }
 
-    private void handleLinkReponse(JSONObject result, LinkProviderResponseHandler handler) {
+    private void handleLoginResponse(AuthContainer authContainer, JSONObject response, AuthResponseHandler handler) {
         try {
-            if (result.has("error")) {
-                handler.onFail(new Error(result.getJSONObject("error")));
-            } else {
-                handler.onSuccess();
+            JSONObject result = response.getJSONObject("result");
+            JSONObject profile = result.getJSONObject("profile");
+            String accessToken = result.getString("access_token");
+            Record authUser = RecordSerializer.deserialize(profile);
+            authContainer.resolveAuthUser(authUser, accessToken);
+            if (handler != null) {
+                handler.onAuthSuccess(authUser);
             }
         } catch (JSONException e) {
-            handler.onFail(new Error("Malformed server response"));
+            if (handler != null) {
+                handler.onFail(new Error("Malformed server response"));
+            }
         }
     }
 
-    private WebOAuthHandler loginWebOAuthHandler(final AuthContainer authContainer, final AuthResponseHandler handler) {
-        return new WebOAuthHandler() {
-            @Override
-            public void onSuccess(JSONObject response) {
-                try {
-                    JSONObject result = response.optJSONObject("result");
-                    JSONObject profile = result.optJSONObject("profile");
-                    String accessToken = result.getString("access_token");
-                    Record authUser = RecordSerializer.deserialize(profile);
-                    authContainer.resolveAuthUser(authUser, accessToken);
-                    if (handler != null) {
-                        handler.onAuthSuccess(authUser);
-                    }
-                } catch (JSONException e) {
-                    if (handler != null) {
-                        handler.onFail(new Error("Malformed server response"));
-                    }
-                }
-            }
-
-            @Override
-            public void onFail(Error error) {
-                if (handler != null) {
-                    handler.onAuthFail(error);
-                }
-            }
-        };
-    }
-
-    private String authURLWithAction(OAuthActionType action, String provider) {
+    private String authURL(OAuthActionType action, String provider) {
         switch (action) {
             case LOGIN:
                 return String.format("sso/%s/login_auth_url", provider);

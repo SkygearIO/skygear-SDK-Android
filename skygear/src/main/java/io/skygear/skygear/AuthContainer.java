@@ -248,6 +248,8 @@ public class AuthContainer implements AuthResolver {
         new OAuthManager().linkProvider(this, providerID, options, activity, handler);
     }
 
+
+
     /**
      * Logout.
      *
