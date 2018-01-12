@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import io.skygear.skygear.internal.sso.CustomTokenLoginRequest;
 import io.skygear.skygear.internal.sso.OAuthManager;
+import io.skygear.skygear.sso.GetOAuthProviderProfilesResponseHandler;
 import io.skygear.skygear.sso.LinkProviderResponseHandler;
 import io.skygear.skygear.sso.OAuthOption;
 import io.skygear.skygear.sso.UnlinkProviderResponseHandler;
@@ -279,6 +280,16 @@ public class AuthContainer implements AuthResolver {
      */
     public void unlinkOAuthProviderWithAccessToken(String providerID, UnlinkProviderResponseHandler handler) {
         new OAuthManager().unlinkProviderWithAccessToken(this, providerID, handler);
+    }
+
+    /**
+     * Get oauth provider profiles.
+     *
+     * @param handler       return JSONObject that contains provider's user profiles
+     *                      key is the provider id, value is the JSONObject of provider's profile response
+     */
+    public void getOAuthProviderProfiles(GetOAuthProviderProfilesResponseHandler handler) {
+        new OAuthManager().getProviderProfiles(this, handler);
     }
 
     /**

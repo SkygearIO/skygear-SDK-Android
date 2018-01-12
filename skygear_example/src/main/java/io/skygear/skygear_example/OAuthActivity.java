@@ -26,11 +26,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import org.json.JSONObject;
+
 import io.skygear.skygear.AuthResponseHandler;
 import io.skygear.skygear.Configuration;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
 import io.skygear.skygear.Record;
+import io.skygear.skygear.sso.GetOAuthProviderProfilesResponseHandler;
 import io.skygear.skygear.sso.LinkProviderResponseHandler;
 import io.skygear.skygear.sso.OAuthOptionBuilder;
 import io.skygear.skygear.sso.UnlinkProviderResponseHandler;
@@ -148,6 +151,26 @@ public class OAuthActivity extends AppCompatActivity {
                     public void onSuccess() {
                         hideLoading();
                         showSuccessAlert("Unlink provider successfully");
+
+                    }
+
+                    @Override
+                    public void onFail(Error error) {
+                        hideLoading();
+                        showErrorAlert("Fail with reason: \n" + error.getDetailMessage());
+                    }
+                });
+    }
+
+    public void doGetProviderProfiles(View view) {
+        showLoading("Getting provider profiles...");
+
+        this.skygear.getAuth().getOAuthProviderProfiles(
+                new GetOAuthProviderProfilesResponseHandler() {
+                    @Override
+                    public void onSuccess(JSONObject result) {
+                        hideLoading();
+                        showSuccessAlert("Provider profiles data: \n" + result.toString());
 
                     }
 

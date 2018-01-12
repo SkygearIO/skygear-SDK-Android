@@ -78,4 +78,15 @@
         android:onClick="doUnlinkWithAccessToken"
         android:text="@string/unlink_provider" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"></LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="doGetProviderProfiles"
+        android:text="@string/get_provider_profiles" />
+
 </LinearLayout>
