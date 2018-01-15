@@ -70,9 +70,7 @@ public abstract class RecordDeleteResponseHandler implements ResponseHandler {
                         successList.add(perResultId);
                         break;
                     case "error": {
-                        int errorCodeValue = perResult.optInt("code", 0);
-                        String errorMessage = perResult.getString("message");
-                        errorMap.put(perResultId, new Error(errorCodeValue, errorMessage));
+                        errorMap.put(perResultId, ErrorSerializer.deserialize(perResult));
                         break;
                     }
                     default: {
