@@ -24,7 +24,6 @@ import org.json.JSONObject;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
-import java.util.Map;
 
 import io.skygear.skygear.AuthContainer;
 import io.skygear.skygear.AuthResponseHandler;
@@ -32,8 +31,10 @@ import io.skygear.skygear.Error;
 import io.skygear.skygear.LambdaResponseHandler;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.RecordSerializer;
+import io.skygear.skygear.sso.GetOAuthProviderProfilesResponseHandler;
 import io.skygear.skygear.sso.LinkProviderResponseHandler;
 import io.skygear.skygear.sso.OAuthOption;
+import io.skygear.skygear.sso.UnlinkProviderResponseHandler;
 
 public class OAuthManager {
     private static String LOG_TAG = OAuthManager.class.getSimpleName();
@@ -85,7 +86,7 @@ public class OAuthManager {
             @Override
             public void onSuccess(JSONObject result) {
                 if (handler != null) {
-                    handleLinkReponse(result, handler);
+                    handler.onSuccess();
                 }
             }
 
@@ -144,6 +145,63 @@ public class OAuthManager {
                     @Override
                     public void onLambdaSuccess(JSONObject result) {
                         handleLinkReponse(result, handler);
+                        if (handler != null) {
+                            handler.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onLambdaFail(Error error) {
+                        if (handler != null) {
+                            handler.onFail(error);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Unlink oauth provider.
+     *
+     * @param authContainer the auth container
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param handler       the link provider response handler
+     */
+    public void unlinkProviderWithAccessToken(AuthContainer authContainer, String providerID, final UnlinkProviderResponseHandler handler) {
+        authContainer.getContainer().callLambdaFunction(
+                String.format("sso/%s/unlink", providerID),
+                new LambdaResponseHandler() {
+                    @Override
+                    public void onLambdaSuccess(JSONObject result) {
+                        if (handler != null) {
+                            handler.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onLambdaFail(Error error) {
+                        if (handler != null) {
+                            handler.onFail(error);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Get oauth provider profiles.
+     *
+     * @param authContainer the auth container
+     * @param handler       return JSONObject that contains provider's user profiles
+     *                      key is the provider id, value is the JSONObject of provider's profile response
+     */
+    public void getProviderProfiles(AuthContainer authContainer, final GetOAuthProviderProfilesResponseHandler handler) {
+        authContainer.getContainer().callLambdaFunction(
+                "sso/provider_profiles",
+                new LambdaResponseHandler() {
+                    @Override
+                    public void onLambdaSuccess(JSONObject result) {
+                        if (handler != null) {
+                            handler.onSuccess(result);
+                        }
                     }
 
                     @Override
