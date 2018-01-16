@@ -26,6 +26,27 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <activity
+            android:name=".internal.sso.AuthenticationActivity"
+            android:exported="false"
+            android:launchMode="singleTask"></activity>
+
+        <activity
+            android:name=".sso.RedirectUriActivity"
+            android:exported="true">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="@string/skygear_scheme"
+                    android:host="@string/skygear_domain"
+                    android:path="/auth_handler" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

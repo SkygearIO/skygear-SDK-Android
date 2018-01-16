@@ -15,7 +15,7 @@
  *
  */
 
-package io.skygear.skygear.sso;
+package io.skygear.skygear.internal.sso;
 
 import android.support.test.runner.AndroidJUnit4;
 
@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
-import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;

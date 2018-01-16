@@ -229,6 +229,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, LambdaWithMapActivity.class));
     }
 
+    public void goOAuth(View view) {
+        startActivity(new Intent(this, OAuthActivity.class));
+    }
+
     public void goServerConfiguration(View view) {
         startActivity(new Intent(this, ServerConfigurationActivity.class));
     }

@@ -18,6 +18,7 @@
 package io.skygear.skygear;
 
 
+import android.app.Activity;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -25,7 +26,12 @@ import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import io.skygear.skygear.sso.CustomTokenLoginRequest;
+import io.skygear.skygear.internal.sso.CustomTokenLoginRequest;
+import io.skygear.skygear.internal.sso.OAuthManager;
+import io.skygear.skygear.sso.GetOAuthProviderProfilesResponseHandler;
+import io.skygear.skygear.sso.LinkProviderResponseHandler;
+import io.skygear.skygear.sso.OAuthOption;
+import io.skygear.skygear.sso.UnlinkProviderResponseHandler;
 
 /**
  * Auth Container for Skygear.
@@ -221,6 +227,72 @@ public class AuthContainer implements AuthResolver {
     }
 
     /**
+     * Login oauth provider by web oauth flow.
+     *
+     * @param providerID the provider id, e.g. google, facebook
+     * @param options    the oauth options, can be created through OAuthOptionBuilder, scheme is required
+     * @param activity   a valid activity context
+     * @param handler    the response handler
+     */
+    public void loginOAuthProvider(String providerID, OAuthOption options, final Activity activity, final AuthResponseHandler handler) {
+        new OAuthManager().loginProvider(this, providerID, options, activity, handler);
+    }
+
+    /**
+     * Link oauth provider by web oauth flow after login.
+     *
+     * @param providerID the provider id, e.g. google, facebook
+     * @param options    the oauth options, can be created through OAuthOptionBuilder, scheme is required
+     * @param activity   a valid activity context
+     * @param handler    the link provider response handler
+     */
+    public void linkOAuthProvider(String providerID, OAuthOption options, final Activity activity, final LinkProviderResponseHandler handler) {
+        new OAuthManager().linkProvider(this, providerID, options, activity, handler);
+    }
+
+    /**
+     * Login oauth provider with provider access token.
+     *
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param accessToken   access token from provider
+     * @param handler       the auth response handler
+     */
+    public void loginOAuthProviderWithAccessToken(String providerID, String accessToken, AuthResponseHandler handler) {
+        new OAuthManager().loginProviderWithAccessToken(this, providerID, accessToken, handler);
+    }
+
+    /**
+     * Link oauth provider with provider access token after login.
+     *
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param accessToken   access token from provider
+     * @param handler       the auth response handler
+     */
+    public void linkOAuthProviderWithAccessToken(String providerID, String accessToken, LinkProviderResponseHandler handler) {
+        new OAuthManager().linkProviderWithAccessToken(this, providerID, accessToken, handler);
+    }
+
+    /**
+     * Unlink oauth provider.
+     *
+     * @param providerID    the provider id, e.g. google, facebook
+     * @param handler       the auth response handler
+     */
+    public void unlinkOAuthProviderWithAccessToken(String providerID, UnlinkProviderResponseHandler handler) {
+        new OAuthManager().unlinkProviderWithAccessToken(this, providerID, handler);
+    }
+
+    /**
+     * Get oauth provider profiles.
+     *
+     * @param handler       return JSONObject that contains provider's user profiles
+     *                      key is the provider id, value is the JSONObject of provider's profile response
+     */
+    public void getOAuthProviderProfiles(GetOAuthProviderProfilesResponseHandler handler) {
+        new OAuthManager().getProviderProfiles(this, handler);
+    }
+
+    /**
      * Logout.
      *
      * @param handler the response handler
@@ -295,7 +367,7 @@ public class AuthContainer implements AuthResolver {
      * @param code        the code user received for forgot password
      * @param expireAt    when should the reset password url expire
      * @param newPassword the new password after resetting
-     * @param handler the response handler
+     * @param handler     the response handler
      */
     public void resetPassword(String userID, String code, Date expireAt, String newPassword, LambdaResponseHandler handler) {
         Object[] argv = new Object[]{userID, code, expireAt, newPassword};
@@ -323,7 +395,7 @@ public class AuthContainer implements AuthResolver {
      * @param handler the handler
      */
     public void setAdminRole(Role role, SetRoleResponseHandler handler) {
-        this.setAdminRole(new Role[] { role }, handler);
+        this.setAdminRole(new Role[]{role}, handler);
     }
 
     /**
@@ -347,7 +419,7 @@ public class AuthContainer implements AuthResolver {
      * @param handler the handler
      */
     public void setDefaultRole(Role role, SetRoleResponseHandler handler) {
-        this.setDefaultRole(new Role[] { role }, handler);
+        this.setDefaultRole(new Role[]{role}, handler);
     }
 
     /**

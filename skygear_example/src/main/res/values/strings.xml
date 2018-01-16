@@ -17,10 +17,18 @@
 
 <resources>
     <string name="app_name">SkygearExample</string>
+    <string name="skygear_scheme">skygearexample</string>
     <string name="user_name">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="signup">Signup</string>
+    <string name="login_with_browser">Login with browser</string>
+    <string name="link_with_browser">Link with browser</string>
+    <string name="login_with_access_token">Login with access token</string>
+    <string name="link_with_access_token">Link with access token</string>
+    <string name="unlink_provider">Unlink provider</string>
+    <string name="access_token_hint">Access token from provider</string>
+    <string name="get_provider_profiles">Get provider profiles</string>
     <string name="endpoint_indicator">Endpoint:</string>
     <string name="api_key_indicator">API Key:</string>
     <string name="Unknown">Unknown</string>
@@ -73,6 +81,7 @@
     <string name="gcm_sender_id">GCM Sender ID</string>
     <string name="signup_with_email">Signup With Email</string>
     <string name="signup_anonymously">Signup Anonymously</string>
+    <string name="social_login">Social Login</string>
     <string name="or">Or</string>
     <string name="change_password">Change Password</string>
     <string name="old_password">Old Password</string>
