@@ -59,9 +59,9 @@ public class ErrorSerializer {
      * @throws JSONException the json exception
      */
     public static Error deserialize(JSONObject jsonObject) throws JSONException {
-        String errorString = jsonObject.getString("message");
+        String errorString = jsonObject.optString("message");
         int errorCodeValue = jsonObject.getInt("code");
-        String errorName = jsonObject.getString("name");
+        String errorName = jsonObject.optString("name");
         JSONObject errorInfo = jsonObject.optJSONObject("info");
 
         return new Error(errorCodeValue, errorName, errorString, errorInfo);
