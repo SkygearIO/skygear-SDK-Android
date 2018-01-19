@@ -30,14 +30,24 @@ public class ErrorSerializerUnitTest {
     @Test
     public void testErrorSerializationNormalFlow() throws Exception {
         Error error = new Error(102,
-                            "PermissionDenied",
-                            "write is not allowed",
-                            new JSONObject().put("foo", "bar"));
+                "PermissionDenied",
+                "write is not allowed",
+                new JSONObject().put("foo", "bar"));
         JSONObject jsonObject = ErrorSerializer.serialize(error);
         assertEquals(jsonObject.getInt("code"), 102);
         assertEquals(jsonObject.getString("name"), "PermissionDenied");
         assertEquals(jsonObject.getString("message"), "write is not allowed");
         assertEquals(jsonObject.getJSONObject("info").getString("foo"), "bar");
+    }
+
+    @Test
+    public void testErrorSerializationCodeOnly() throws Exception {
+        Error error = new Error(0,
+                "",
+                "",
+                null);
+        JSONObject jsonObject = ErrorSerializer.serialize(error);
+        assertEquals(jsonObject.getInt("code"), 0);
     }
 
     @Test
@@ -53,5 +63,17 @@ public class ErrorSerializerUnitTest {
         assertEquals(error.getName(), "PermissionDenied");
         assertEquals(error.getDetailMessage(), "write is not allowed");
         assertEquals(error.getInfo().getString("foo"), "bar");
+    }
+
+    @Test
+    public void testErrorDeserializationNormalFlowCodeOnly() throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", 0);
+
+        Error error = ErrorSerializer.deserialize(jsonObject);
+        assertEquals(error.getCodeValue(), 0);
+        assertEquals(error.getName(), "");
+        assertEquals(error.getDetailMessage(), "");
+        assertEquals(error.getInfo(), null);
     }
 }
