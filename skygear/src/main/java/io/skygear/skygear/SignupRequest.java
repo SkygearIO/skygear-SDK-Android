@@ -44,7 +44,7 @@ public class SignupRequest extends Request {
         this.data.put("password", password);
 
         if (profile != null) {
-            this.data.put("profile", profile);
+            this.data.put("profile", RecordSerializer.serialize(profile));
         }
     }
 
