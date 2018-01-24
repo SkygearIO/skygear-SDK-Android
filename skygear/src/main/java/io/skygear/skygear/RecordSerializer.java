@@ -129,6 +129,28 @@ public class RecordSerializer {
         return CompatibleValueClasses.contains(valueClass);
     }
 
+    public static JSONObject serialize(Map<String, Object> data) {
+        HashMap<String, Object> recordData = new HashMap<>(data);
+
+        for (String perKey : recordData.keySet()) {
+            Object perValue = recordData.get(perKey);
+
+            if (perValue instanceof Date) {
+                recordData.put(perKey, DateSerializer.serialize((Date) perValue));
+            } else if (perValue instanceof Asset) {
+                recordData.put(perKey, AssetSerializer.serialize((Asset) perValue));
+            } else if (perValue instanceof Location) {
+                recordData.put(perKey, LocationSerializer.serialize((Location) perValue));
+            } else if (perValue instanceof Reference) {
+                recordData.put(perKey, ReferenceSerializer.serialize((Reference) perValue));
+            } else if (perValue instanceof UnknownValue) {
+                recordData.put(perKey, UnknownValueSerializer.serialize((UnknownValue) perValue));
+            }
+        }
+
+        return new JSONObject(recordData);
+    }
+
     /**
      * Serializes a Skygear Record
      *
@@ -137,25 +159,8 @@ public class RecordSerializer {
      */
     public static JSONObject serialize(Record record) {
         try {
-            HashMap<String, Object> recordData = new HashMap<>(record.data);
+            JSONObject jsonObject = RecordSerializer.serialize(record.data);
 
-            for (String perKey : recordData.keySet()) {
-                Object perValue = recordData.get(perKey);
-
-                if (perValue instanceof Date) {
-                    recordData.put(perKey, DateSerializer.serialize((Date) perValue));
-                } else if (perValue instanceof Asset) {
-                    recordData.put(perKey, AssetSerializer.serialize((Asset) perValue));
-                } else if (perValue instanceof Location) {
-                    recordData.put(perKey, LocationSerializer.serialize((Location) perValue));
-                } else if (perValue instanceof Reference) {
-                    recordData.put(perKey, ReferenceSerializer.serialize((Reference) perValue));
-                } else if (perValue instanceof UnknownValue) {
-                    recordData.put(perKey, UnknownValueSerializer.serialize((UnknownValue) perValue));
-                }
-            }
-
-            JSONObject jsonObject = new JSONObject(recordData);
             jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
             if (record.createdAt != null) {
                 jsonObject.put("_created_at", DateSerializer.stringFromDate(record.createdAt));
