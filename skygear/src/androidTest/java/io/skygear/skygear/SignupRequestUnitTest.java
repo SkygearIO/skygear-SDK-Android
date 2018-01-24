@@ -19,13 +19,15 @@ package io.skygear.skygear;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -40,6 +42,7 @@ public class SignupRequestUnitTest {
 
         Map<String, Object> profile = new HashMap<>();
         profile.put("nickname", "iamyourfather");
+        profile.put("date", new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate());
 
         SignupRequest req = new SignupRequest(authData, "123456", profile);
         Map<String, Object> data = req.data;
@@ -50,9 +53,13 @@ public class SignupRequestUnitTest {
         assertEquals("user123@skygear.dev", payloadAuthData.get("email"));
         assertEquals("123456", data.get("password"));
 
-        Map<String, Object> payloadProfile = (Map<String, Object>) data.get("profile");
+        JSONObject payloadProfile = (JSONObject) data.get("profile");
 
         assertEquals("iamyourfather", payloadProfile.get("nickname"));
+
+        JSONObject publishDateObject = payloadProfile.getJSONObject("date");
+        assertEquals("date", publishDateObject.getString("$type"));
+        assertEquals("2016-06-15T07:55:34.342Z", publishDateObject.getString("$date"));
     }
 
     @Test
