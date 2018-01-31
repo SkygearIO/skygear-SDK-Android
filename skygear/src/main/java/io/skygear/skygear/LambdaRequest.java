@@ -18,12 +18,15 @@
 package io.skygear.skygear;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,8 +45,7 @@ public class LambdaRequest extends Request {
             Long.class,
             Short.class,
             String.class,
-            JSONObject.class,
-            JSONArray.class
+            Map.class
     ));
 
     /**
@@ -94,7 +96,92 @@ public class LambdaRequest extends Request {
         }
     }
 
+    private boolean isCompatibleArgument(Object[] array) {
+        boolean result = true;
+        int l = array.length;
+        for (int i = 0; i < l && result; i++) {
+            result &= isCompatibleArgument(array[i]);
+        }
+        return result;
+    }
+
+    private boolean isCompatibleArgument(List array) {
+        boolean result = true;
+        int l = array.size();
+        for (int i = 0; i < l && result; i++) {
+            result &= isCompatibleArgument(array.get(i));
+        }
+        return result;
+    }
+
+    private boolean isCompatibleArgument(Map<String, Object> map) {
+        boolean result = true;
+        for (Object obj: map.values()) {
+            result &= isCompatibleArgument(obj);
+        }
+        return result;
+    }
+
+    private boolean isCompatibleArgument(JSONObject object) {
+        boolean result = true;
+        Iterator<String> iter = object.keys();
+        while (result && iter.hasNext()) {
+            try {
+                result &= isCompatibleArgument(object.get(iter.next()));
+            }
+            catch (JSONException e) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    private boolean isCompatibleArgument(JSONArray array) {
+        boolean result = true;
+        int l = array.length();
+        for (int i = 0; i < l && result; i++) {
+            try {
+                result &= isCompatibleArgument(array.get(i));
+            }
+            catch (JSONException e) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
+
     private boolean isCompatibleArgument(Object arg) {
-        return arg == null || LambdaRequest.CompatibleValueClasses.contains(arg.getClass());
+        if (arg == null) {
+            return true;
+        }
+
+        if (arg instanceof JSONArray) {
+            return isCompatibleArgument((JSONArray) arg);
+        }
+
+        if (arg instanceof JSONObject) {
+            return isCompatibleArgument((JSONObject) arg);
+        }
+
+        if (arg instanceof Object[]) {
+            return isCompatibleArgument((Object[])arg);
+        }
+
+        if (arg instanceof List) {
+            return isCompatibleArgument((List) arg);
+        }
+
+        if (arg instanceof Map) {
+            return isCompatibleArgument((Map<String, Object>) arg);
+        }
+
+        for (Class cls: LambdaRequest.CompatibleValueClasses) {
+            if (cls.isInstance(arg)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
