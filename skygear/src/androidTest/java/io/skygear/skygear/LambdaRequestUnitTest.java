@@ -20,16 +20,21 @@ package io.skygear.skygear;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -153,5 +158,84 @@ public class LambdaRequestUnitTest {
         }});
     }
 
+    @Test(expected = InvalidParameterException.class)
+    public void testLambdaRequestIncompatibleNestedValueWithMapValidation() throws Exception {
+        new LambdaRequest("test:op1", new HashMap<String, Object>() {{
+            put("key1", new HashMap<String, Object>() {{
+                put("key2", new Date());
+            }});
+        }});
+    }
 
+    @Test(expected = InvalidParameterException.class)
+    public void testLambdaRequestIncompatibleNestedValueWithMapValidation2() throws Exception {
+        final JSONObject object = new JSONObject();
+        final JSONObject object2 = new JSONObject();
+        object2.put("key2", new Date());
+        object.put("key3", object2);
+        new LambdaRequest("test:op1", new HashMap<String, Object>() {{
+            put("key1", object);
+        }});
+    }
+
+
+    @Test(expected = InvalidParameterException.class)
+    public void testLambdaRequestIncompatibleNestedValueWithMapValidation3() throws Exception {
+        final JSONArray object = new JSONArray();
+        final JSONObject object2 = new JSONObject();
+        object2.put("key2", new Date());
+        object.put(object2);
+        new LambdaRequest("test:op1", new HashMap<String, Object>() {{
+            put("key1", object);
+        }});
+    }
+
+
+    @Test
+    public void testLambdaRequestNestedDictionary() throws JSONException {
+        final JSONArray jsonArray = new JSONArray() {{
+            put("h");
+            put("i");
+            put("j");
+        }};
+
+        final JSONObject jsonObject = new JSONObject() {{
+           put("key9", "ok");
+        }};
+        final HashMap<String, Object> map = new HashMap<String, Object>(){{
+            put("key1", new HashMap<String, Object>(){{
+                put("key2", new HashMap<String, Object>(){{
+                    put("key3", new HashMap<String, Object>(){{
+                        put("key4", "Hello");
+                        put("key5", new String[]{ "a", "b", "c"});
+                        put("key6", Arrays.asList("d", "e", "f"));
+                        put("key7", jsonArray);
+                        put("key8", jsonObject);
+                    }});
+                }});
+            }});
+        }};
+
+        LambdaRequest request = new LambdaRequest("test:op1", map);
+        Map<String, Object> data = request.getData();
+        JSONObject args = (JSONObject) data.get("args");
+        JSONObject value1 = (JSONObject) args.get("key1");
+        JSONObject value2 = (JSONObject) value1.get("key2");
+        JSONObject value3 = (JSONObject) value2.get("key3");
+        assertEquals("Hello", value3.get("key4"));
+        JSONArray value5 = (JSONArray) value3.get("key5");
+        JSONArray value6 = (JSONArray) value3.get("key6");
+        assertEquals("a", value5.get(0));
+        assertEquals("b", value5.get(1));
+        assertEquals("c", value5.get(2));
+        assertEquals("d", value6.get(0));
+        assertEquals("e", value6.get(1));
+        assertEquals("f", value6.get(2));
+        JSONArray value7 = (JSONArray) value3.get("key7");
+        assertEquals("h", value7.get(0));
+        assertEquals("i", value7.get(1));
+        assertEquals("j", value7.get(2));
+        JSONObject value8 = (JSONObject) value3.get("key8");
+        assertEquals("ok", value8.get("key9"));
+    }
 }
