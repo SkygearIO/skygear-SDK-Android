@@ -1,3 +1,19 @@
+## 1.3.1 (2018-02-01)
+
+### Features
+
+- Add ErrorSerializer
+- Add SSO Plugin
+    - Initial loginOAuthProvider (#150)
+    - Link oauth provider (#168)
+    - Unlink provider (#169)
+    - Login and link with access token (#167)
+
+### Bug Fixes
+
+- Fix maybe null pointer exeception
+- Serialise profile when signup
+
 ## 1.3.0 (2018-01-04)
 
 ### Features
