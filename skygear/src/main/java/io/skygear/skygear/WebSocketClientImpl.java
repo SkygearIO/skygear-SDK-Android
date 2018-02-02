@@ -122,7 +122,7 @@ class WebSocketClientImpl
     public void onClose(int code, String reason, boolean remote) {
         EventHandler eventHandler = this.getEventHandler();
         if (eventHandler != null) {
-            this.getEventHandler().onClose(reason);
+            eventHandler.onClose(reason);
         }
     }
 
@@ -131,7 +131,7 @@ class WebSocketClientImpl
         EventHandler eventHandler = this.getEventHandler();
         if (eventHandler != null) {
             Exception exception = new Exception(ex.getMessage());
-            this.getEventHandler().onError(exception);
+            eventHandler.onError(exception);
         }
     }
 
