@@ -49,8 +49,8 @@ public final class Container {
     public Container(Context context, Configuration config) {
         this.context = context.getApplicationContext();
         this.config = config;
-        this.requestManager = new RequestManager(context, config);
-        this.persistentStore = new PersistentStore(context);
+        this.requestManager = new RequestManager(this.context, this.config);
+        this.persistentStore = new PersistentStore(this.context);
 
         this.auth = new AuthContainer(this);
         this.pubsub = new PubsubContainer(this);
