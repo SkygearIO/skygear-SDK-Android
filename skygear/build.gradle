@@ -62,24 +62,28 @@ android {
 
 dependencies {
 
-    compile 'com.google.android.gms:play-services-base:11.4.2'
-    compile 'com.google.android.gms:play-services-gcm:11.4.2'
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.google.android.gms:play-services-base:11.8.0'
+    implementation 'com.google.android.gms:play-services-gcm:11.8.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
 
-    compile 'com.android.volley:volley:1.0.0'
-    compile ('io.skygear:volleyEx:0.0.1') {
+    implementation 'com.android.volley:volley:1.0.0'
+
+    implementation 'joda-time:joda-time:2.9.4'
+    implementation 'org.java-websocket:Java-WebSocket:1.3.5'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // use `api` instead of `implementation` to avoid conflicting class
+    // ref. https://medium.com/mindorks/implementation-vs-api-in-gradle-3-0-494c817a6fa
+    api ('io.skygear:volleyEx:0.0.1') {
         exclude group: 'com.android.support'
     }
-    compile 'joda-time:joda-time:2.9.4'
-    compile 'org.java-websocket:Java-WebSocket:1.3.5'
 
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
 
-    testCompile 'junit:junit:4.12'
-
-    androidTestCompile 'com.android.support:support-annotations:26.1.0'
-    androidTestCompile 'com.android.support.test:runner:1.0.1'
-    androidTestCompile 'com.android.support.test:rules:1.0.1'
+    androidTestImplementation 'com.android.support:support-annotations:27.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test:rules:1.0.1'
 }
 
 task generateSourcesJar(type: Jar) {
