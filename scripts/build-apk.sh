@@ -5,5 +5,5 @@
 VERSION=$(git describe --always --tags)
 
 mkdir -p build/apk
-cp skygear_example/build/outputs/apk/skygear_example-release.apk build/apk/skygear-example-latest.apk
-cp skygear_example/build/outputs/apk/skygear_example-release.apk build/apk/skygear-example-$VERSION.apk
+cp skygear_example/build/outputs/apk/release/skygear_example-release.apk build/apk/skygear-example-latest.apk
+cp skygear_example/build/outputs/apk/release/skygear_example-release.apk build/apk/skygear-example-$VERSION.apk
