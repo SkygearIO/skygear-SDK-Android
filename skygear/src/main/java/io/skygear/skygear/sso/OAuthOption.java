@@ -40,14 +40,14 @@ public class OAuthOption {
     /**
      * OAuth scope
      */
-    List<String> scope;
+    String[] scope;
 
     /**
      * Extra options for genterating the oauth url
      */
     Map<String, Object> options;
 
-    public OAuthOption(String scheme, String domain, List<String> scope, Map<String, Object> options) {
+    public OAuthOption(String scheme, String domain, String[] scope, Map<String, Object> options) {
         this.scheme = scheme;
         this.domain = domain;
         this.scope = scope;
@@ -66,11 +66,11 @@ public class OAuthOption {
         params.put("callback_url", genCallbackURL());
 
         if (this.scope != null) {
-            params.put("scope", new JSONArray(this.scope));
+            params.put("scope", this.scope);
         }
 
         if (this.options != null) {
-            params.put("options", new JSONObject(this.options));
+            params.put("options", this.options);
         }
         return params;
     }
