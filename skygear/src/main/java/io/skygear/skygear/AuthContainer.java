@@ -278,8 +278,8 @@ public class AuthContainer implements AuthResolver {
      * @param providerID    the provider id, e.g. google, facebook
      * @param handler       the auth response handler
      */
-    public void unlinkOAuthProviderWithAccessToken(String providerID, UnlinkProviderResponseHandler handler) {
-        new OAuthManager().unlinkProviderWithAccessToken(this, providerID, handler);
+    public void unlinkOAuthProvider(String providerID, UnlinkProviderResponseHandler handler) {
+        new OAuthManager().unlinkProvider(this, providerID, handler);
     }
 
     /**

@@ -141,7 +141,7 @@ public class OAuthActivity extends AppCompatActivity {
     public void doUnlinkWithAccessToken(View view) {
         showLoading("Unlinking...");
 
-        this.skygear.getAuth().unlinkOAuthProviderWithAccessToken(
+        this.skygear.getAuth().unlinkOAuthProvider(
                 selectedProvider,
                 new UnlinkProviderResponseHandler() {
                     @Override
