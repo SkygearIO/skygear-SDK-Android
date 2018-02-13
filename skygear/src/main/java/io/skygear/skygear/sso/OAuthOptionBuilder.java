@@ -23,7 +23,7 @@ import java.util.Map;
 public class OAuthOptionBuilder {
     private String scheme;
     private String domain = "skygeario.com";
-    private List<String> scope;
+    private String[] scope;
     private Map<String, Object> options;
 
     public OAuthOptionBuilder setScheme(String scheme) {
@@ -36,7 +36,7 @@ public class OAuthOptionBuilder {
         return this;
     }
 
-    public OAuthOptionBuilder setScope(List<String> scope) {
+    public OAuthOptionBuilder setScope(String[] scope) {
         this.scope = scope;
         return this;
     }

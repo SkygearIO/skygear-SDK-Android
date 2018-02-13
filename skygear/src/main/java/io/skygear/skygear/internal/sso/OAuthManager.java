@@ -166,7 +166,7 @@ public class OAuthManager {
      * @param providerID    the provider id, e.g. google, facebook
      * @param handler       the link provider response handler
      */
-    public void unlinkProviderWithAccessToken(AuthContainer authContainer, String providerID, final UnlinkProviderResponseHandler handler) {
+    public void unlinkProvider(AuthContainer authContainer, String providerID, final UnlinkProviderResponseHandler handler) {
         authContainer.getContainer().callLambdaFunction(
                 String.format("sso/%s/unlink", providerID),
                 new LambdaResponseHandler() {
