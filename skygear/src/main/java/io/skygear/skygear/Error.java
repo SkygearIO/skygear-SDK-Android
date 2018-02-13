@@ -180,7 +180,30 @@ public class Error extends Exception {
          * Plugin initializing error.
          */
         PLUGIN_INITIALIZING(121),
-
+        /**
+         * Response timeout error.
+         */
+        RESPONSE_TIMEOUT(122),
+        /**
+         * Denied argument error.
+         */
+        DENIED_ARGUMENT(123),
+        /**
+         * Record query denied error.
+         */
+        RECORD_QUERY_DENIED(124),
+        /**
+         * Not configured error.
+         */
+        NOT_CONFIGURED(125),
+        /**
+         * Password policy violated error.
+         */
+        PASSWORD_POLICY_VIOLATED(126),
+        /**
+         * User disabled error.
+         */
+        USER_DISABLED(127),
         /**
          * Unexpected error.
          */
@@ -255,7 +278,19 @@ public class Error extends Exception {
                 case PLUGIN_TIMEOUT:
                     return "The server took too long to process.";
                 case RECORD_QUERY_INVALID:
-                    return "A problem occurred while processing this request.";
+                    return "The server is unable to process the query.";
+                case RESPONSE_TIMEOUT:
+                    return "The server timed out while processing the request.";
+                case DENIED_ARGUMENT:
+                    return "The server is unable to process the data.";
+                case RECORD_QUERY_DENIED:
+                    return "You are not allowed to perform this operation.";
+                case NOT_CONFIGURED:
+                    return "The server is not configured for this operation.";
+                case PASSWORD_POLICY_VIOLATED:
+                    return "The password does not meet policy requirement.";
+                case USER_DISABLED:
+                    return "The user is disabled.";
                 case UNEXPECTED_ERROR:
                     return "An unexpected error has occurred.";
             }
