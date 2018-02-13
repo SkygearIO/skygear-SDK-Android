@@ -19,6 +19,8 @@ package io.skygear.skygear;
 
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -492,6 +494,44 @@ public class AuthContainer implements AuthResolver {
      */
     public void revokeUserRole(String[] userIDs, String[] roleNames, SetUserRoleResponseHandler handler) {
         RevokeUserRoleRequest request = new RevokeUserRoleRequest(userIDs, roleNames);
+        request.responseHandler = handler;
+
+        RequestManager requestManager = this.getContainer().requestManager;
+        requestManager.sendRequest(request);
+    }
+
+    /**
+     * Enable user
+     *
+     * @param userID   the user id
+     * @param handler   the handler
+     */
+    public void enableUser(@NonNull String userID, @Nullable SetDisableUserResponseHandler handler) {
+        SetDisableUserRequest request = SetDisableUserRequest.enableUserRequest(userID);
+        request.responseHandler = handler;
+
+        RequestManager requestManager = this.getContainer().requestManager;
+        requestManager.sendRequest(request);
+    }
+
+    /**
+     * Disable user
+     *
+     * @param userID   the user id
+     * @param handler   the handler
+     */
+    public void disableUser(@NonNull String userID, @Nullable SetDisableUserResponseHandler handler) {
+        disableUser(userID, null, null, handler);
+    }
+
+    /**
+     * Disable user
+     *
+     * @param userID   the user id
+     * @param handler   the handler
+     */
+    public void disableUser(@NonNull String userID, @Nullable String message, @Nullable Date expiry, @Nullable SetDisableUserResponseHandler handler) {
+        SetDisableUserRequest request = SetDisableUserRequest.disableUserRequest(userID, message, expiry);
         request.responseHandler = handler;
 
         RequestManager requestManager = this.getContainer().requestManager;
