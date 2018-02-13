@@ -33,6 +33,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     public static Intent createStartIntent(Context context, String authURL) {
         Intent intent = new Intent(context, AuthenticationActivity.class);
         intent.putExtra(EXTRA_AUTH_URL, authURL);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return intent;
     }
 
@@ -56,6 +57,12 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onResume();
 
         if (!mAuthStarted) {
+            if (getIntent().getExtras() == null) {
+                // Started the activity unexpectedly
+                // This will happen if browser redirect back to application twice in one login flow
+                finish();
+                return;
+            }
             mAuthStarted = true;
             launchAuthIntent();
             return;
