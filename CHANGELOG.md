@@ -1,3 +1,21 @@
+## 1.4.0 (2018-03-07)
+
+### Features
+
+- Support enable/disable user account
+
+### Bug Fixes
+
+- Fix potential memory leak
+
+### Other Notes
+
+- Update error code list
+- Change func name and args for consistency for sso unlinkOAuthProvider api
+- Upgrade gradle to version 4
+- Supports various argument classes for callLambdaFunction
+- Add checkstyle lint checking
+
 ## 1.3.1 (2018-02-01)
 
 ### Features
