@@ -371,7 +371,7 @@ public class AuthContainer implements AuthResolver {
      * @param newPassword the new password after resetting
      * @param handler     the response handler
      */
-    public void resetPassword(String userID, String code, Date expireAt, String newPassword, LambdaResponseHandler handler) {
+    public void resetPassword(String userID, String code, long expireAt, String newPassword, LambdaResponseHandler handler) {
         Object[] argv = new Object[]{userID, code, expireAt, newPassword};
         this.getContainer().callLambdaFunction("user:reset-password", argv, handler);
     }

@@ -84,6 +84,10 @@
     <string name="social_login">Social Login</string>
     <string name="or">Or</string>
     <string name="change_password">Change Password</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="reset_password_code">Code</string>
+    <string name="reset_password_expire_at">Expire At</string>
     <string name="old_password">Old Password</string>
     <string name="new_password">New Password</string>
     <string name="confirm_password">Confirm Password</string>

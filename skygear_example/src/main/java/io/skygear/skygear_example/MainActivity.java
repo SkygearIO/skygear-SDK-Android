@@ -193,6 +193,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, ChangePasswordActivity.class));
     }
 
+    public void goResetPassword(View v) {
+        startActivity(new Intent(this, ResetPasswordActivity.class));
+    }
+
     public void goSignup(View v) {
         startActivity(new Intent(this, SignupActivity.class));
     }
