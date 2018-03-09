@@ -20,7 +20,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
-def skygearVersion = "1.4.0"
+def skygearVersion = "1.4.1"
 
 group = 'io.skygear'
 version = skygearVersion

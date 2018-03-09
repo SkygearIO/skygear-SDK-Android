@@ -1,3 +1,9 @@
+## 1.4.1 (2018-03-09)
+
+### Other Notes
+
+- Revert "Upgrade gradle to version 4" for fixing missing dependencies
+
 ## 1.4.0 (2018-03-07)
 
 ### Features
