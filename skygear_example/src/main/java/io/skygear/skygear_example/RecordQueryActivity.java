@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -48,6 +49,7 @@ public class RecordQueryActivity extends AppCompatActivity {
     private EditText[] recordValueFields;
     private Spinner[] operatorSpinners;
     private EditText transientIncludeEditText;
+    private CheckBox overallCountCheckBox;
 
     private TextView display;
     private Button deleteButton;
@@ -81,6 +83,7 @@ public class RecordQueryActivity extends AppCompatActivity {
 
         this.deleteButton = (Button) findViewById(R.id.delete_button);
         this.display = (TextView) findViewById(R.id.record_display);
+        this.overallCountCheckBox = findViewById(R.id.overall_count);
 
         this.updateRecordDisplay();
     }
@@ -138,6 +141,7 @@ public class RecordQueryActivity extends AppCompatActivity {
         this.dismissKeyboard();
 
         Query query = new Query("Demo");
+        query.setOverallCount(this.overallCountCheckBox.isChecked());
         for (int idx = 0; idx < this.recordKeyFields.length; idx++) {
             String keyString = this.recordKeyFields[idx].getText().toString();
             String valueString = this.recordValueFields[idx].getText().toString();

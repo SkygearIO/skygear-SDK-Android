@@ -43,6 +43,7 @@ public class Query {
     private int offset;
 
     private boolean negation;
+    private boolean overallCount;
 
     /**
      * Instantiates a new Query.
@@ -56,7 +57,7 @@ public class Query {
         this.predicates = new LinkedList<>();
         this.sortPredicate = new JSONArray();
         this.transientPredicate = new JSONObject();
-
+        this.overallCount = false;
         this.limit = Query.DEFAULT_LIMIT;
         this.offset = 0;
     }
@@ -818,5 +819,23 @@ public class Query {
      */
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    /**
+     * Gets the overallCount.
+     *
+     * @return the overallCount
+     */
+    public boolean getOverallCount() {
+        return overallCount;
+    }
+
+    /**
+     * Sets the overallCount.
+     *
+     * @param overallCount the overallCount. Query includes overall count if overallCount is true.
+     */
+    public void setOverallCount(boolean overallCount) {
+        this.overallCount = overallCount;
     }
 }
