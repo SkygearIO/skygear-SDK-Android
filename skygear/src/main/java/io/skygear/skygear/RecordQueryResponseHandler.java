@@ -57,17 +57,17 @@ public abstract class RecordQueryResponseHandler implements ResponseHandler {
                 records[idx] = Record.fromJson(perResult);
             }
 
+            QueryInfo queryInfo = null;
             if (result.has("info")) {
                 JSONObject infoJson = result.getJSONObject("info");
                 Integer overallCount = null;
                 if (infoJson.has("count")) {
                     overallCount = infoJson.getInt("count");
                 }
-                QueryInfo queryInfo = new QueryInfo(overallCount);
-                this.onQuerySuccess(records, queryInfo);
-            } else {
-                this.onQuerySuccess(records);
+                queryInfo = new QueryInfo(overallCount);
             }
+            this.onQuerySuccess(records);
+            this.onQuerySuccess(records, queryInfo);
         } catch (JSONException e) {
             this.onQueryError(new Error("Malformed server response"));
         }
