@@ -46,7 +46,7 @@ public class SignupRequestUnitTest {
 
         SignupRequest req = new SignupRequest(authData, "123456", profile);
         Map<String, Object> data = req.data;
-        Map<String, Object> payloadAuthData = (Map<String, Object>) data.get("auth_data");
+        JSONObject payloadAuthData = (JSONObject) data.get("auth_data");
 
         assertEquals("auth:signup", req.action);
         assertEquals("user123", payloadAuthData.get("username"));
