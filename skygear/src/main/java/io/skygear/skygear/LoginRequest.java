@@ -38,7 +38,7 @@ public class LoginRequest extends Request {
 
         this.data = new HashMap<>();
 
-        this.data.put("auth_data", new JSONObject(authData));
+        this.data.put("auth_data", authData != null ? new JSONObject(authData) : null);
         this.data.put("password", password);
     }
 

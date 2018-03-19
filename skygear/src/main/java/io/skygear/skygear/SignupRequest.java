@@ -42,7 +42,7 @@ public class SignupRequest extends Request {
         this.anonymous = false;
         this.data = new HashMap<>();
 
-        this.data.put("auth_data", new JSONObject(authData));
+        this.data.put("auth_data", authData != null ? new JSONObject(authData) : null);
         this.data.put("password", password);
 
         if (profile != null) {
