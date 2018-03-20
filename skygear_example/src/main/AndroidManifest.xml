@@ -60,6 +60,9 @@
             android:name=".ResetPasswordActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".VerifyUserDataActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".RecordCreateActivity"
             android:screenOrientation="portrait" />
         <activity
