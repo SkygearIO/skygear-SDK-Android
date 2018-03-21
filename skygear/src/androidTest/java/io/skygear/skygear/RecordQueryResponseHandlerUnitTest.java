@@ -65,8 +65,12 @@ public class RecordQueryResponseHandlerUnitTest {
         result.put(jsonObject1);
         result.put(jsonObject2);
 
+        JSONObject info = new JSONObject();
+        info.put("count", 3);
+
         JSONObject responseObject = new JSONObject();
         responseObject.put("result", result);
+        responseObject.put("info", info);
 
         final boolean[] checkpoints = new boolean[]{ false };
         RecordQueryResponseHandler handler = new RecordQueryResponseHandler() {
@@ -114,6 +118,12 @@ public class RecordQueryResponseHandlerUnitTest {
             }
 
             @Override
+            public void onQuerySuccess(Record[] records, QueryInfo info) {
+                assertEquals(3, info.getOverallCount().intValue());
+                checkpoints[0] = true;
+            }
+
+            @Override
             public void onQueryError(Error error) {
                 fail("Should not get error callback");
             }
@@ -127,6 +137,11 @@ public class RecordQueryResponseHandlerUnitTest {
     public void testRecordQueryResponseHandlerFailFlow() throws Exception {
         final boolean[] checkpoints = new boolean[]{ false };
         RecordQueryResponseHandler handler = new RecordQueryResponseHandler() {
+            @Override
+            public void onQuerySuccess(Record[] records, QueryInfo info) {
+                fail("Should not get success callback");
+            }
+
             @Override
             public void onQuerySuccess(Record[] records) {
                 fail("Should not get success callback");
