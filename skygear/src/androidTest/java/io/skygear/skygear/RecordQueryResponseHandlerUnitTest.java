@@ -72,7 +72,7 @@ public class RecordQueryResponseHandlerUnitTest {
         responseObject.put("result", result);
         responseObject.put("info", info);
 
-        final boolean[] checkpoints = new boolean[]{ false };
+        final boolean[] checkpoints = new boolean[]{ false, false };
         RecordQueryResponseHandler handler = new RecordQueryResponseHandler() {
             @Override
             public void onQuerySuccess(Record[] records) {
@@ -120,7 +120,7 @@ public class RecordQueryResponseHandlerUnitTest {
             @Override
             public void onQuerySuccess(Record[] records, QueryInfo info) {
                 assertEquals(3, info.getOverallCount().intValue());
-                checkpoints[0] = true;
+                checkpoints[1] = true;
             }
 
             @Override
@@ -131,6 +131,7 @@ public class RecordQueryResponseHandlerUnitTest {
 
         handler.onSuccess(responseObject);
         assertTrue(checkpoints[0]);
+        assertTrue(checkpoints[1]);
     }
 
     @Test
