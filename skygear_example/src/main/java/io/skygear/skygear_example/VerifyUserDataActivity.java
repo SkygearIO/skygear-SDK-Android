@@ -155,7 +155,11 @@ public class VerifyUserDataActivity extends AppCompatActivity {
             public void onAuthFail(Error error) {
                 loading.dismiss();
 
-                failDialog.setMessage("Fail with reason: \n" + error.getMessage());
+                if (error.getCode() == Error.Code.INVALID_ARGUMENT) {
+                    failDialog.setMessage("Your code is invalid. You can try requesting another code.");
+                } else {
+                    failDialog.setMessage("Fail with reason: \n" + error.getMessage());
+                }
                 failDialog.show();
             }
         });
