@@ -34,6 +34,7 @@ import io.skygear.skygear.sso.GetOAuthProviderProfilesResponseHandler;
 import io.skygear.skygear.sso.LinkProviderResponseHandler;
 import io.skygear.skygear.sso.OAuthOption;
 import io.skygear.skygear.sso.UnlinkProviderResponseHandler;
+import org.json.JSONObject;
 
 /**
  * Auth Container for Skygear.
@@ -536,6 +537,43 @@ public class AuthContainer implements AuthResolver {
 
         RequestManager requestManager = this.getContainer().requestManager;
         requestManager.sendRequest(request);
+    }
+
+    /**
+     * Request verification to be sent to the user using data on user record.
+     *
+     * @param recordKey the record field storing the user data to be verified
+     * @param handler the response handler
+     */
+    public void requestVerification(String recordKey, LambdaResponseHandler handler) {
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("record_key", recordKey);
+        this.getContainer().callLambdaFunction("user:verify_request", args, handler);
+    }
+
+    /**
+     * Verify user data of the current user by using a verification code.
+     *
+     * @param code verification code
+     * @param handler the response handler
+     */
+    public void verifyUserWithCode(String code, final AuthResponseHandler handler) {
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("code", code);
+
+        LambdaResponseHandler lambdaHandler = new LambdaResponseHandler() {
+            @Override
+            public void onLambdaSuccess(JSONObject result) {
+                AuthContainer.this.whoami(handler);
+            }
+
+            @Override
+            public void onLambdaFail(Error error) {
+                handler.onAuthFail(error);
+            }
+        };
+
+        this.getContainer().callLambdaFunction("user:verify_code", args, lambdaHandler);
     }
 
     private String[] getUserIDs(Record[] users) {

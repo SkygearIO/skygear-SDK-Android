@@ -93,4 +93,11 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="login_custom_token">Login with Custom Token</string>
     <string name="custom_token">Custom Token</string>
+    <string name="verify_user_data">Verify User Data</string>
+    <string name="verify_select_data">Select the user data to be verified. This example app only supports email and phone.</string>
+    <string name="verify_email">email</string>
+    <string name="verify_phone">phone</string>
+    <string name="verify_email_missing">email (missing)</string>
+    <string name="verify_phone_missing">phone (missing)</string>
+    <string name="verify_code">Verification Code</string>
 </resources>
