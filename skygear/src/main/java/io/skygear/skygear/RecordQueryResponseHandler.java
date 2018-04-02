@@ -30,7 +30,14 @@ public abstract class RecordQueryResponseHandler implements ResponseHandler {
      *
      * @param records the records
      */
-    public abstract void onQuerySuccess(Record[] records);
+    public void onQuerySuccess(Record[] records) {}
+
+    /**
+     * Query success callback.
+     *
+     * @param records the records
+     */
+    public void onQuerySuccess(Record[] records, QueryInfo queryInfo) {}
 
     /**
      * Query error callback.
@@ -50,7 +57,17 @@ public abstract class RecordQueryResponseHandler implements ResponseHandler {
                 records[idx] = Record.fromJson(perResult);
             }
 
+            QueryInfo queryInfo = null;
+            if (result.has("info")) {
+                JSONObject infoJson = result.getJSONObject("info");
+                Integer overallCount = null;
+                if (infoJson.has("count")) {
+                    overallCount = infoJson.getInt("count");
+                }
+                queryInfo = new QueryInfo(overallCount);
+            }
             this.onQuerySuccess(records);
+            this.onQuerySuccess(records, queryInfo);
         } catch (JSONException e) {
             this.onQueryError(new Error("Malformed server response"));
         }

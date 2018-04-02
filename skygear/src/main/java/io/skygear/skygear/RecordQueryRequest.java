@@ -61,6 +61,7 @@ public class RecordQueryRequest extends Request {
         }
 
         this.data.put("limit",  this.query.getLimit());
+        this.data.put("count",  this.query.getOverallCount());
         this.data.put("offset", this.query.getOffset());
     }
 }

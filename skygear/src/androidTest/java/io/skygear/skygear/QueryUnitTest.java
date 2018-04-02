@@ -583,4 +583,12 @@ public class QueryUnitTest {
 
         assertEquals(20, query.getOffset());
     }
+
+    @Test
+    public void testOverallCount() throws Exception {
+        Query query = new Query("Note");
+        query.setOverallCount(true);
+
+        assertEquals(true, query.getOverallCount());
+    }
 }
