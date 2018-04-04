@@ -17,6 +17,8 @@
 
 package io.skygear.skygear;
 
+import org.json.JSONObject;
+
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,20 +38,20 @@ public class LoginRequest extends Request {
 
         this.data = new HashMap<>();
 
-        this.data.put("auth_data", authData);
+        this.data.put("auth_data", authData != null ? new JSONObject(authData) : null);
         this.data.put("password", password);
     }
 
     @Override
     protected void validate() throws Exception {
-        Map authData = (Map) this.data.get("auth_data");
+        JSONObject authData = (JSONObject) this.data.get("auth_data");
         String password = (String) this.data.get("password");
 
         if (authData == null) {
             throw new InvalidParameterException("Auth data should not be null");
         }
 
-        if (authData.isEmpty()) {
+        if (authData.length() <= 0) {
             throw new InvalidParameterException("Auth data should not be empty");
         }
 

@@ -19,6 +19,7 @@ package io.skygear.skygear;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,7 +39,7 @@ public class LoginRequestUnitTest {
 
         LoginRequest req = new LoginRequest(authData, "123456");
         Map<String, Object> data = req.data;
-        Map<String, Object> payloadAuthData = (Map<String, Object>) data.get("auth_data");
+        JSONObject payloadAuthData = (JSONObject) data.get("auth_data");
 
         assertEquals("auth:login", req.action);
         assertEquals("user123", payloadAuthData.get("username"));
