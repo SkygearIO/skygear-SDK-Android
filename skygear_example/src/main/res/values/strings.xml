@@ -69,9 +69,9 @@
     <string name="server_config">Server Configuration</string>
     <string name="configure">Configure</string>
     <string name="endpoint">Endpoint</string>
-    <string name="endpoint_hint">http://your-end-point.skygeario.com/</string>
+    <string name="endpoint_hint">https://myapp.skygeario.com/</string>
     <string name="api_key">API Key</string>
-    <string name="api_key_hint">your_api_key</string>
+    <string name="api_key_hint">dc0903fa85924776baa77df813901efc</string>
     <string name="who_am_i">Who Am I</string>
     <string name="set_image">Set Image</string>
     <string name="remove_image">Remove Image</string>
@@ -100,4 +100,6 @@
     <string name="verify_email_missing">email (missing)</string>
     <string name="verify_phone_missing">phone (missing)</string>
     <string name="verify_code">Verification Code</string>
+    <string name="enter_app_info">Enter the Skygear Endpoint and API key (you can obtain them from portal).</string>
+    <string name="not_configured">(not configured)</string>
 </resources>
