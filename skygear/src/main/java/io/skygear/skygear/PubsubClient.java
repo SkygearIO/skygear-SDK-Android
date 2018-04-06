@@ -68,6 +68,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
     private WeakReference<PubsubListener> listenerRef;
     private boolean handlerExecutionInBackground;
     private HandlerThread backgroundThread;
+    private boolean connectAutomatically;
 
     /**
      * The WebSocket Client.
@@ -96,6 +97,7 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
         this.pendingMessages = new LinkedList<>();
         this.retryCount = 0;
         this.handlerExecutionInBackground = false;
+        this.connectAutomatically = true;
 
         Configuration config = container.getConfig();
         if (config != null) {
@@ -145,8 +147,11 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
         ));
 
         this.handlerExecutionInBackground = config.isPubsubHandlerExecutionInBackground();
+        this.connectAutomatically = config.isPubsubConnectAutomatically();
 
-        this.connect();
+        if (this.connectAutomatically) {
+            this.connect();
+        }
     }
 
     /**
@@ -534,7 +539,10 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
     public void onClose(String reason) {
 
         Log.i(TAG, "PubsubClient connection close: " + reason);
-        this.delayReconnect(this.getBoundedRetryWaitTime());
+
+        if (this.connectAutomatically) {
+            this.delayReconnect(this.getBoundedRetryWaitTime());
+        }
 
         final PubsubListener listener = listenerRef.get();
 

@@ -46,16 +46,24 @@ public final class Configuration {
      */
     final boolean pubsubHandlerExecutionInBackground;
 
+    /**
+     * Boolean indicating whether PubsubClient is automatically connected upon
+     * configuration.
+     */
+    final boolean pubsubConnectAutomatically;
+
     private Configuration(
             String endpoint,
             String apiKey,
             String gcmSenderId,
-            boolean pubsubHandlerExecutionInBackground
+            boolean pubsubHandlerExecutionInBackground,
+            boolean pubsubConnectAutomatically
     ) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
         this.gcmSenderId = gcmSenderId;
         this.pubsubHandlerExecutionInBackground = pubsubHandlerExecutionInBackground;
+        this.pubsubConnectAutomatically = pubsubConnectAutomatically;
     }
 
     /**
@@ -95,6 +103,15 @@ public final class Configuration {
     }
 
     /**
+     * Is pubsubClient connect automatically boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isPubsubConnectAutomatically() {
+        return pubsubConnectAutomatically;
+    }
+
+    /**
      * Creates an instance of default configuration.
      *
      * This method is deprecated. You should create configuration by
@@ -118,6 +135,7 @@ public final class Configuration {
         return new Builder()
                 .endPoint(TEST_BASE_URL)
                 .apiKey(TEST_API_KEY)
+                .pubsubConnectAutomatically(false)
                 .build();
     }
 
@@ -129,6 +147,14 @@ public final class Configuration {
         private String apiKey;
         private String gcmSenderId;
         private boolean pubsubHandlerExecutionInBackground;
+        private boolean pubsubConnectAutomatically;
+
+        /**
+         * Creates an instance of Builder.
+         */
+        public Builder() {
+            this.pubsubConnectAutomatically = true;
+        }
 
         /**
          * Sets the Skygear endpoint.
@@ -175,6 +201,18 @@ public final class Configuration {
         }
 
         /**
+         * Sets whether PubsubClient connect automatically.
+         *
+         * @param automatic the boolean indicating whether connection is made
+         * automatically.
+         * @return the builder
+         */
+        public Builder pubsubConnectAutomatically(boolean automatic) {
+            this.pubsubConnectAutomatically = automatic;
+            return this;
+        }
+
+        /**
          * Build a configuration.
          *
          * @return the configuration
@@ -192,7 +230,8 @@ public final class Configuration {
                     this.endpoint,
                     this.apiKey,
                     this.gcmSenderId,
-                    this.pubsubHandlerExecutionInBackground
+                    this.pubsubHandlerExecutionInBackground,
+                    this.pubsubConnectAutomatically
             );
         }
     }
