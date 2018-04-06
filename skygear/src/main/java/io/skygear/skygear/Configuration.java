@@ -23,8 +23,8 @@ import java.security.InvalidParameterException;
  * Configuration of Skygear.
  */
 public final class Configuration {
-    private static final String DEFAULT_BASE_URL = "http://skygear.dev/";
-    private static final String DEFAULT_API_KEY = "changeme";
+    private static final String TEST_BASE_URL = "http://skygear.dev/";
+    private static final String TEST_API_KEY = "changeme";
 
     /**
      * Skygear Endpoint.
@@ -95,14 +95,29 @@ public final class Configuration {
     }
 
     /**
-     * Default configuration
+     * Creates an instance of default configuration.
+     *
+     * This method is deprecated. You should create configuration by
+     * providing Endpoint and API key.
      *
      * @return a default configuration
      */
-    static Configuration defaultConfiguration() {
+    @Deprecated static Configuration defaultConfiguration() {
         return new Builder()
-                .endPoint(DEFAULT_BASE_URL)
-                .apiKey(DEFAULT_API_KEY)
+                .endPoint(TEST_BASE_URL)
+                .apiKey(TEST_API_KEY)
+                .build();
+    }
+
+    /**
+     * Creates an instance of test configuration.
+     *
+     * @return a test configuration
+     */
+    static Configuration testConfiguration() {
+        return new Builder()
+                .endPoint(TEST_BASE_URL)
+                .apiKey(TEST_API_KEY)
                 .build();
     }
 

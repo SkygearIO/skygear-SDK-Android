@@ -94,6 +94,16 @@ public class RequestManager {
      * @param config the config
      */
     public void configure(Configuration config) {
+        if (config == null) {
+            if (this.endpoint != null) {
+                // It is okay to set null config if endpoint is not configured.
+                // Once endpoint is configured, setting a null config will
+                // make the RequestManager unusable.
+                throw new IllegalArgumentException("config should not be null");
+            }
+            return;
+        }
+
         this.endpoint = config.endpoint;
         this.apiKey = config.apiKey;
     }
@@ -141,6 +151,10 @@ public class RequestManager {
      * @param request the request
      */
     public void sendRequest(final Request request) {
+        if (this.endpoint == null) {
+            throw new IllegalStateException("Endpoint is not configured.");
+        }
+
         try {
             request.validate();
         } catch (Exception e) {
@@ -172,6 +186,10 @@ public class RequestManager {
     }
 
     public void sendAssetPostRequest(final AssetPostRequest request) {
+        if (this.endpoint == null) {
+            throw new IllegalStateException("Endpoint is not configured.");
+        }
+
         try {
             request.validate();
         } catch (Exception e) {

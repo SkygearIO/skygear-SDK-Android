@@ -41,6 +41,15 @@ public final class Container {
     final Database privateDatabase;
 
     /**
+     * Creates a Container without configuration.
+     *
+     * @param context application context
+     */
+    private Container(Context context) {
+        this(context, (Configuration)null);
+    }
+
+    /**
      * Instantiates a new Container.
      *
      * @param context application context
@@ -73,7 +82,7 @@ public final class Container {
      */
     public static Container defaultContainer(Context context) {
         if (sharedInstance == null) {
-            sharedInstance = new Container(context, Configuration.defaultConfiguration());
+            sharedInstance = new Container(context);
         }
 
         return sharedInstance;

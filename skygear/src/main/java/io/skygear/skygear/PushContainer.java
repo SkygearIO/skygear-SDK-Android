@@ -54,7 +54,11 @@ public class PushContainer {
      * @return the sender id
      */
     public String getGcmSenderId() {
-        return this.getContainer().getConfig().getGcmSenderId();
+        Configuration config = this.getContainer().getConfig();
+        if (config == null) {
+            return null;
+        }
+        return config.getGcmSenderId();
     }
 
     /**

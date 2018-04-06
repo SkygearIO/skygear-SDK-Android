@@ -97,7 +97,10 @@ class PubsubClient implements WebSocketClientImpl.EventHandler {
         this.retryCount = 0;
         this.handlerExecutionInBackground = false;
 
-        this.configure(container.getConfig());
+        Configuration config = container.getConfig();
+        if (config != null) {
+            this.configure(config);
+        }
     }
 
     /**
