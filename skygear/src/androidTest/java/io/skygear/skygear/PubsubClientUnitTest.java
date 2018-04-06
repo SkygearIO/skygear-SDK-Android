@@ -80,7 +80,11 @@ public class PubsubClientUnitTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         instrumentationContext = InstrumentationRegistry.getContext().getApplicationContext();
-        instrumentationContainer = new Container(instrumentationContext, Configuration.defaultConfiguration());
+        Configuration config = new Configuration.Builder()
+                .endPoint("http://skygear.dev/")
+                .apiKey("changeme")
+                .build();
+        instrumentationContainer = new Container(instrumentationContext, config);
     }
 
     @AfterClass

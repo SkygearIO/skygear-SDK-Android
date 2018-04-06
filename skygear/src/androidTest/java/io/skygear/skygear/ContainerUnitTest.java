@@ -62,20 +62,10 @@ public class ContainerUnitTest {
 
     @Test
     public void testContainerNormalFlow() throws Exception {
-        Configuration config = Configuration.defaultConfiguration();
+        Configuration config = Configuration.testConfiguration();
         Container container = new Container(instrumentationContext, config);
 
         assertEquals(config, container.getConfig());
-    }
-
-    @Test
-    public void testDefaultContainerNormalFlow() throws Exception {
-        Configuration config = Configuration.defaultConfiguration();
-        Container container = Container.defaultContainer(instrumentationContext);
-
-        assertEquals(config.endpoint, container.getConfig().endpoint);
-        assertEquals(config.apiKey, container.getConfig().apiKey);
-        assertEquals(instrumentationContext, container.getContext());
     }
 
     @Test
@@ -104,7 +94,7 @@ public class ContainerUnitTest {
 
     @Test
     public void testContainerPublicDatabase() throws Exception {
-        Configuration config = Configuration.defaultConfiguration();
+        Configuration config = Configuration.testConfiguration();
         Container container = new Container(instrumentationContext, config);
         Database publicDatabase = container.getPublicDatabase();
 
@@ -114,7 +104,7 @@ public class ContainerUnitTest {
 
     @Test
     public void testContainerPrivateDatabase() throws Exception {
-        Configuration config = Configuration.defaultConfiguration();
+        Configuration config = Configuration.testConfiguration();
         Container container = new Container(instrumentationContext, config);
         Map profile =  new HashMap<>();
         profile.put("username", "user123");
@@ -133,7 +123,7 @@ public class ContainerUnitTest {
 
     @Test(expected = AuthenticationException.class)
     public void testContainerNotAllowGetPrivateDatabaseWithoutLogin() throws Exception {
-        Configuration config = Configuration.defaultConfiguration();
+        Configuration config = Configuration.testConfiguration();
         Container container = new Container(instrumentationContext, config);
         container.getPrivateDatabase();
     }

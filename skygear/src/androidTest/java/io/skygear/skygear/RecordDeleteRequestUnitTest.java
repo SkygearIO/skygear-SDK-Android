@@ -41,7 +41,7 @@ public class RecordDeleteRequestUnitTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         instrumentationContext = InstrumentationRegistry.getContext().getApplicationContext();
-        instrumentationContainer = new Container(instrumentationContext, Configuration.defaultConfiguration());
+        instrumentationContainer = new Container(instrumentationContext, Configuration.testConfiguration());
         instrumentationPublicDatabase= Database.Factory.publicDatabase(instrumentationContainer);
     }
 

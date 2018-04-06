@@ -38,7 +38,7 @@ public class DatabaseUnitTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         instrumentationContext = InstrumentationRegistry.getContext().getApplicationContext();
-        instrumentationContainer = new Container(instrumentationContext, Configuration.defaultConfiguration());
+        instrumentationContainer = new Container(instrumentationContext, Configuration.testConfiguration());
     }
 
     @AfterClass
@@ -65,7 +65,7 @@ public class DatabaseUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testDatabaseWeakReferenceToContainer() throws Exception {
-        Container container = new Container(instrumentationContext, Configuration.defaultConfiguration());
+        Container container = new Container(instrumentationContext, Configuration.testConfiguration());
         Database database = Database.Factory.publicDatabase(container);
 
         container = null;

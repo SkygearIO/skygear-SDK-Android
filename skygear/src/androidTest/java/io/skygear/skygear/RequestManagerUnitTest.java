@@ -67,7 +67,7 @@ public class RequestManagerUnitTest {
 
     @Test
     public void testRequestManagerNormalFlow() throws Exception {
-        Configuration config = Configuration.defaultConfiguration();
+        Configuration config = Configuration.testConfiguration();
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
                 config
@@ -82,7 +82,7 @@ public class RequestManagerUnitTest {
     public void testRequestManagerUpdateConfig() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
-                Configuration.defaultConfiguration()
+                Configuration.testConfiguration()
         );
 
         Configuration config = new Configuration.Builder()
@@ -169,7 +169,7 @@ public class RequestManagerUnitTest {
     public void testSendRequestWithAccessToken() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
-                Configuration.defaultConfiguration()
+                Configuration.testConfiguration()
         );
 
         requestManager.accessToken = "my-access-token";
@@ -224,7 +224,7 @@ public class RequestManagerUnitTest {
     public void testSendRequestWithHandleSuccessResponse() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
-                Configuration.defaultConfiguration()
+                Configuration.testConfiguration()
         );
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -286,7 +286,7 @@ public class RequestManagerUnitTest {
     public void testSendRequestWithHandleErrorResponse() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
-                Configuration.defaultConfiguration()
+                Configuration.testConfiguration()
         );
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -359,7 +359,7 @@ public class RequestManagerUnitTest {
     public void testRequestValidationSuccess() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
-                Configuration.defaultConfiguration()
+                Configuration.testConfiguration()
         );
         requestManager.queue = Volley.newRequestQueue(
                 RequestManagerUnitTest.instrumentationContext,
@@ -406,7 +406,7 @@ public class RequestManagerUnitTest {
     public void testRequestValidationFail() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
-                Configuration.defaultConfiguration()
+                Configuration.testConfiguration()
         );
         requestManager.queue = Volley.newRequestQueue(
                 RequestManagerUnitTest.instrumentationContext,
@@ -452,7 +452,7 @@ public class RequestManagerUnitTest {
     public void testSendAssetPostRequest() throws Exception {
         RequestManager requestManager = new RequestManager(
                 RequestManagerUnitTest.instrumentationContext,
-                Configuration.defaultConfiguration()
+                Configuration.testConfiguration()
         );
         requestManager.queue = Volley.newRequestQueue(
                 RequestManagerUnitTest.instrumentationContext,
