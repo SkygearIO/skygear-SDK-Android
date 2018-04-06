@@ -504,10 +504,12 @@ public class AuthContainer implements AuthResolver {
     /**
      * Enable user
      *
+     * This method is intended for admin use.
+     *
      * @param userID   the user id
      * @param handler   the handler
      */
-    public void enableUser(@NonNull String userID, @Nullable SetDisableUserResponseHandler handler) {
+    public void adminEnableUser(@NonNull String userID, @Nullable SetDisableUserResponseHandler handler) {
         SetDisableUserRequest request = SetDisableUserRequest.enableUserRequest(userID);
         request.responseHandler = handler;
 
@@ -518,20 +520,24 @@ public class AuthContainer implements AuthResolver {
     /**
      * Disable user
      *
+     * This method is intended for admin use.
+     *
      * @param userID   the user id
      * @param handler   the handler
      */
-    public void disableUser(@NonNull String userID, @Nullable SetDisableUserResponseHandler handler) {
-        disableUser(userID, null, null, handler);
+    public void adminDisableUser(@NonNull String userID, @Nullable SetDisableUserResponseHandler handler) {
+        adminDisableUser(userID, null, null, handler);
     }
 
     /**
      * Disable user
      *
+     * This method is intended for admin use.
+     *
      * @param userID   the user id
      * @param handler   the handler
      */
-    public void disableUser(@NonNull String userID, @Nullable String message, @Nullable Date expiry, @Nullable SetDisableUserResponseHandler handler) {
+    public void adminDisableUser(@NonNull String userID, @Nullable String message, @Nullable Date expiry, @Nullable SetDisableUserResponseHandler handler) {
         SetDisableUserRequest request = SetDisableUserRequest.disableUserRequest(userID, message, expiry);
         request.responseHandler = handler;
 
