@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -85,7 +86,9 @@ public class RequestManager {
         this.context = context;
         this.queue = Volley.newRequestQueue(context);
         this.requestTimeout = DEFAULT_TIMEOUT;
-        this.configure(config);
+        if (config != null) {
+            this.configure(config);
+        }
     }
 
     /**
@@ -95,13 +98,7 @@ public class RequestManager {
      */
     public void configure(Configuration config) {
         if (config == null) {
-            if (this.endpoint != null) {
-                // It is okay to set null config if endpoint is not configured.
-                // Once endpoint is configured, setting a null config will
-                // make the RequestManager unusable.
-                throw new IllegalArgumentException("config should not be null");
-            }
-            return;
+            throw new InvalidParameterException("Null configuration is not allowed");
         }
 
         this.endpoint = config.endpoint;
