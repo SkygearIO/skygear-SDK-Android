@@ -78,7 +78,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 loading.dismiss();
                 new AlertDialog.Builder(ResetPasswordActivity.this)
                         .setTitle("Forgot Password failed.")
-                        .setMessage(email)
+                        .setMessage(String.format("Email: %s\nReason: %s", email, error.getDetailMessage()))
                         .setNeutralButton("Dismiss", null)
                         .create().show();
             }
