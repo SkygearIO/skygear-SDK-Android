@@ -238,4 +238,14 @@ public class LambdaRequestUnitTest {
         JSONObject value8 = (JSONObject) value3.get("key8");
         assertEquals("ok", value8.get("key9"));
     }
+
+    @Test
+    public void testLambdaRequestJSONNull() {
+        final HashMap<String, Object> map = new HashMap<String, Object>() {{
+            put("key1", JSONObject.NULL);
+        }};
+        LambdaRequest request = new LambdaRequest("test:op1", map);
+        Map<String, Object> data = request.getData();
+        assertEquals(JSONObject.NULL, data.get("key1"));
+    }
 }

@@ -182,6 +182,10 @@ public class LambdaRequest extends Request {
             }
         }
 
+        if (arg == JSONObject.NULL) {
+            return true;
+        }
+
         return false;
     }
 }
