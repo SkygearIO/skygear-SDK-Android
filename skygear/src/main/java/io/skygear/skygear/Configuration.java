@@ -23,8 +23,8 @@ import java.security.InvalidParameterException;
  * Configuration of Skygear.
  */
 public final class Configuration {
-    private static final String DEFAULT_BASE_URL = "http://skygear.dev/";
-    private static final String DEFAULT_API_KEY = "changeme";
+    private static final String TEST_BASE_URL = "http://skygear.dev/";
+    private static final String TEST_API_KEY = "changeme";
 
     /**
      * Skygear Endpoint.
@@ -46,16 +46,24 @@ public final class Configuration {
      */
     final boolean pubsubHandlerExecutionInBackground;
 
+    /**
+     * Boolean indicating whether PubsubClient is automatically connected upon
+     * configuration.
+     */
+    final boolean pubsubConnectAutomatically;
+
     private Configuration(
             String endpoint,
             String apiKey,
             String gcmSenderId,
-            boolean pubsubHandlerExecutionInBackground
+            boolean pubsubHandlerExecutionInBackground,
+            boolean pubsubConnectAutomatically
     ) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
         this.gcmSenderId = gcmSenderId;
         this.pubsubHandlerExecutionInBackground = pubsubHandlerExecutionInBackground;
+        this.pubsubConnectAutomatically = pubsubConnectAutomatically;
     }
 
     /**
@@ -95,14 +103,39 @@ public final class Configuration {
     }
 
     /**
-     * Default configuration
+     * Is pubsubClient connect automatically boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isPubsubConnectAutomatically() {
+        return pubsubConnectAutomatically;
+    }
+
+    /**
+     * Creates an instance of default configuration.
+     *
+     * This method is deprecated. You should create configuration by
+     * providing Endpoint and API key.
      *
      * @return a default configuration
      */
-    static Configuration defaultConfiguration() {
+    @Deprecated static Configuration defaultConfiguration() {
         return new Builder()
-                .endPoint(DEFAULT_BASE_URL)
-                .apiKey(DEFAULT_API_KEY)
+                .endPoint(TEST_BASE_URL)
+                .apiKey(TEST_API_KEY)
+                .build();
+    }
+
+    /**
+     * Creates an instance of test configuration.
+     *
+     * @return a test configuration
+     */
+    static Configuration testConfiguration() {
+        return new Builder()
+                .endPoint(TEST_BASE_URL)
+                .apiKey(TEST_API_KEY)
+                .pubsubConnectAutomatically(false)
                 .build();
     }
 
@@ -114,6 +147,14 @@ public final class Configuration {
         private String apiKey;
         private String gcmSenderId;
         private boolean pubsubHandlerExecutionInBackground;
+        private boolean pubsubConnectAutomatically;
+
+        /**
+         * Creates an instance of Builder.
+         */
+        public Builder() {
+            this.pubsubConnectAutomatically = true;
+        }
 
         /**
          * Sets the Skygear endpoint.
@@ -160,6 +201,18 @@ public final class Configuration {
         }
 
         /**
+         * Sets whether PubsubClient connect automatically.
+         *
+         * @param automatic the boolean indicating whether connection is made
+         * automatically.
+         * @return the builder
+         */
+        public Builder pubsubConnectAutomatically(boolean automatic) {
+            this.pubsubConnectAutomatically = automatic;
+            return this;
+        }
+
+        /**
          * Build a configuration.
          *
          * @return the configuration
@@ -177,7 +230,8 @@ public final class Configuration {
                     this.endpoint,
                     this.apiKey,
                     this.gcmSenderId,
-                    this.pubsubHandlerExecutionInBackground
+                    this.pubsubHandlerExecutionInBackground,
+                    this.pubsubConnectAutomatically
             );
         }
     }

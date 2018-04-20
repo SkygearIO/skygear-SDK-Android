@@ -40,7 +40,9 @@ public class PubsubContainer {
      * @param config the skygear config
      */
     public void configure(Configuration config) {
-        pubsubClient.configure(config);
+        if (config != null) {
+            pubsubClient.configure(config);
+        }
     }
 
     /**

@@ -69,8 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
         Configuration skygearConfig = this.skygear.getConfig();
 
-        this.endpointDisplay.setText(skygearConfig.getEndpoint());
-        this.apiKeyDisplay.setText(skygearConfig.getApiKey());
+        if (skygearConfig != null) {
+            this.endpointDisplay.setText(skygearConfig.getEndpoint());
+            this.apiKeyDisplay.setText(skygearConfig.getApiKey());
+        } else {
+            this.endpointDisplay.setText(getResources().getString(R.string.not_configured));
+            this.apiKeyDisplay.setText(getResources().getString(R.string.not_configured));
+        }
 
         this.updateUserInfoDisplay();
     }

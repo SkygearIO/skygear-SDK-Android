@@ -33,7 +33,7 @@ import static junit.framework.Assert.assertTrue;
 public class ConfigurationUnitTest {
     @Test
     public void testDefaultConfigurationNormalFlow() throws Exception {
-        Configuration defaultConfig = Configuration.defaultConfiguration();
+        Configuration defaultConfig = Configuration.testConfiguration();
 
         assertEquals("http://skygear.dev/", defaultConfig.endpoint);
         assertEquals("changeme", defaultConfig.apiKey);

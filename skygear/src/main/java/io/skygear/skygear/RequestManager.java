@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -85,7 +86,9 @@ public class RequestManager {
         this.context = context;
         this.queue = Volley.newRequestQueue(context);
         this.requestTimeout = DEFAULT_TIMEOUT;
-        this.configure(config);
+        if (config != null) {
+            this.configure(config);
+        }
     }
 
     /**
@@ -94,6 +97,10 @@ public class RequestManager {
      * @param config the config
      */
     public void configure(Configuration config) {
+        if (config == null) {
+            throw new InvalidParameterException("Null configuration is not allowed");
+        }
+
         this.endpoint = config.endpoint;
         this.apiKey = config.apiKey;
     }
@@ -141,6 +148,10 @@ public class RequestManager {
      * @param request the request
      */
     public void sendRequest(final Request request) {
+        if (this.endpoint == null) {
+            throw new IllegalStateException("Endpoint is not configured.");
+        }
+
         try {
             request.validate();
         } catch (Exception e) {
@@ -172,6 +183,10 @@ public class RequestManager {
     }
 
     public void sendAssetPostRequest(final AssetPostRequest request) {
+        if (this.endpoint == null) {
+            throw new IllegalStateException("Endpoint is not configured.");
+        }
+
         try {
             request.validate();
         } catch (Exception e) {

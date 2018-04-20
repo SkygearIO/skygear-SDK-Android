@@ -48,12 +48,20 @@ public class ServerConfigurationActivity extends AppCompatActivity {
         this.gcmSenderIdEditText = (EditText) findViewById(R.id.gcm_sender_id_edittext);
 
         Configuration config = this.skygear.getConfig();
-        this.endpointEditText.setText(config.getEndpoint());
-        this.apiKeyEditText.setText(config.getApiKey());
-
-        if (config.getGcmSenderId() != null) {
-            this.gcmSenderIdEditText.setText(config.getGcmSenderId());
+        if (config != null) {
+            this.endpointEditText.setText(config.getEndpoint());
+            this.apiKeyEditText.setText(config.getApiKey());
+            if (config.getGcmSenderId() != null) {
+                this.gcmSenderIdEditText.setText(config.getGcmSenderId());
+            } else {
+                this.gcmSenderIdEditText.setText("");
+            }
+        } else {
+            this.endpointEditText.setText("");
+            this.apiKeyEditText.setText("");
+            this.gcmSenderIdEditText.setText("");
         }
+
     }
 
     public void doConfigure(View view) {
