@@ -1,3 +1,22 @@
+## 1.5.0 (2018-04-23)
+
+### Features
+
+- Implement request verification and submit code
+
+### Bug Fixes
+
+- resetPassword API bug fix, change expireAt from Date to long
+- Fix JSON serialization error of auth_data in signup and login api which
+    happen in Android API version <= 18
+- Should allow `JSONObject.NULL` in lambda arguments
+
+### Other Notes
+
+- Add admin prefix to disable/enable user methods
+- Remove default endpoint in container
+- Count support in query #211
+
 ## 1.4.1 (2018-03-09)
 
 ### Other Notes
