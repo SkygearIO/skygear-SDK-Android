@@ -97,15 +97,11 @@ public class LambdaRequestUnitTest {
                 (short) 3,
                 "3",
                 jsonObject,
-                jsonArray
+                jsonArray,
+                new Date()
         });
 
         request.validate();
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testLambdaRequestIncompatibleValueValidation() throws Exception {
-        new LambdaRequest("test:op1", new Object[]{new Date()});
     }
 
     @Test
@@ -146,29 +142,17 @@ public class LambdaRequestUnitTest {
             put("key9", "3");
             put("key10", jsonObject);
             put("key11", jsonArray);
+            put("key12", new Date());
+            put("key13", new HashMap<String, Object>() {{
+                put("key13a", new Date());
+            }});
         }});
 
         request.validate();
     }
 
-    @Test(expected = InvalidParameterException.class)
-    public void testLambdaRequestIncompatibleValueWithMapValidation() throws Exception {
-        new LambdaRequest("test:op1", new HashMap<String, Object>() {{
-            put("key1", new Date());
-        }});
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testLambdaRequestIncompatibleNestedValueWithMapValidation() throws Exception {
-        new LambdaRequest("test:op1", new HashMap<String, Object>() {{
-            put("key1", new HashMap<String, Object>() {{
-                put("key2", new Date());
-            }});
-        }});
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testLambdaRequestIncompatibleNestedValueWithMapValidation2() throws Exception {
+    @Test
+    public void testLambdaRequestCompatibleNestedValueWithMapValidation1() throws Exception {
         final JSONObject object = new JSONObject();
         final JSONObject object2 = new JSONObject();
         object2.put("key2", new Date());
@@ -179,8 +163,8 @@ public class LambdaRequestUnitTest {
     }
 
 
-    @Test(expected = InvalidParameterException.class)
-    public void testLambdaRequestIncompatibleNestedValueWithMapValidation3() throws Exception {
+    @Test
+    public void testLambdaRequestCompatibleNestedValueWithMapValidation2() throws Exception {
         final JSONArray object = new JSONArray();
         final JSONObject object2 = new JSONObject();
         object2.put("key2", new Date());
