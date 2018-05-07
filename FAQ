@@ -1,0 +1,24 @@
+Frequently asked questions on skygear chat demo application. 
+Here are a list of frequently asked questions on skygear chat demo application by users. 
+FAQ
+	What is Skygear chat demo application about? 
+Skygear is an open source Backend as a Service for building mobile applications. This app shows the Chat features of Skygear.
+
+	Can I chat with skygear chat demo application?
+Skygear chat demo application is a quick demo for skygear so as any other demo application, it displays discreetly, the formats and layouts that should work on skygear. 
+
+	What’s new on skygear? 
+Skygear has so many features already and just added to its new updates is a Support user channel pubsub API.
+
+	Does Skygear support voice note conversations?
+Skygear chat demo application supports audio messages as well as voice note conversations as displayed on the app. 
+
+	Does skygear support peer to peer messaging?
+Skygear chat demo application supports messaging based on conversations created by a user using the create option on the application, this promotes group messaging but in the near future will provide a secured peer to peer messaging. 
+
+	Does Skygear support sending of media files? 
+Skygear chat demo application supports sharing of media files through mobile gallery and also mobile device camera. 
+
+	Is my personal information safe when attempting to log in with Skygear?
+Yes,  It is very much safe and you would only be required to use a username and a password when logging in.
+
