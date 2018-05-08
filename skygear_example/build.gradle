@@ -17,19 +17,6 @@
 
 apply plugin: 'com.android.application'
 
-def keystorePassword = System.getenv('KEYSTORE_PASSWORD')
-def keystoreKeyAlias = System.getenv('KEYSTORE_KEY_ALIAS')
-def keystoreKeyPassword = System.getenv('KEYSTORE_KEY_PASSWORD')
-
-if (project.rootProject.file('local.properties').exists()) {
-    Properties localProperties = new Properties()
-    localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-    keystorePassword = localProperties.getProperty('keystorePassword', keystorePassword)
-    keystoreKeyAlias = localProperties.getProperty('keystoreKeyAlias', keystoreKeyAlias)
-    keystoreKeyPassword = localProperties.getProperty('keystoreKeyPassword', keystoreKeyPassword)
-}
-
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.2"
@@ -44,20 +31,10 @@ android {
         multiDexEnabled true
     }
 
-    signingConfigs {
-        release {
-            storeFile project.rootProject.file('.keystore.jks')
-            storePassword keystorePassword
-            keyAlias keystoreKeyAlias
-            keyPassword keystoreKeyPassword
-        }
-    }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
     }
 }

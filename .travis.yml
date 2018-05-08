@@ -32,7 +32,6 @@ script:
   - ./gradlew :skygear:build :skygear:check :skygear:connectedAndroidTest --stacktrace
 
 before_deploy:
-  - scripts/build-apk.sh
   - sudo pip install awscli
   - aws configure set preview.cloudfront true
 
@@ -49,18 +48,6 @@ deploy:
     bucket: "docs.skygear.io"
     skip_cleanup: true
     acl: public_read
-    local_dir: "build/apk"
-    upload-dir: "android/build"
-    cache_control: "max-age=604800"
-    on:
-      repo: SkygearIO/skygear-SDK-Android
-      tags: true
-  - provider: s3
-    access_key_id: $AWS_ACCESS_KEY_ID
-    secret_access_key: $AWS_SECRET_ACCESS_KEY
-    bucket: "docs.skygear.io"
-    skip_cleanup: true
-    acl: public_read
     local_dir: "skygear/build/reports/androidTests/connected"
     upload-dir: "android/tests"
     cache_control: "max-age=604800"
@@ -71,17 +58,12 @@ deploy:
 env:
   global:
     - BINTRAY_USER="skygeario-builder"
-    - KEYSTORE_KEY_ALIAS="Skygear"
     # BINTRAY_API_KEY
     - secure: "AA1JqW1GST/LEaaRCfdYmBPvMfoutSzSQlXOzTDOK/gccatphpW2vqf3KbA7ukDKpSwiIAVn4yttV/5MVQ8corvHXF5Vz5SqYfjM/g92JaKdP6DA4q5sAWzP86JhRqbuD12Vi9JvxlWbAWGcAF6CfMuXIeL09XdA0BQwm0D29+RyGkfv/Lit2aTBIcUWbhnOI3VF22lqwi9iwoJvMXkTzNcXQNSpViLjYhnsI/s0GFdqV45kLwY7ZeWzODG76sVJov9cIIegD8PKdO/wtO5HXBbDqsCC1GYSRQ7YmW1ec8VFBSghdb0IuQzh7mcCIauD0jTeRg4Kgz8Kj7sHvgrd4JUSv0kROSq+ANY0oX5W+S/WnvuT/IqluPCzfmDcv0Quyw4w2vSG/G8aVqXkX5eASbV9p4dMCnuM+PDdvQSKEA/jRCU0PatMRh30G3LdLn8NuNue8KBox36VTpZNYj0eIaoU8Sbab92iWnnEGS/LiAu1Th/dCSXHcKlRkOgI2GeggLnntOzqK/6VDhyrIyo9tWcNXRBNzWaqITPuER3Ryd2I218doPrOlDQAh+cOX1t7j8BPZTFeFRuEbLBcIQmN9IhjnczI6yBL7C0jLWu1RLOS9AQgcyV3CnpTBr5enBxCaLzJoUH4mDU4sEqdjtwnE996n87XI5HAF9DZNPhZSZw="
     # AWS_ACCESS_KEY_ID
     - secure: "dk3OKIEdLbTSUH60Z8Xrr1NVb6sip9wSShhSPFocUU4NVhGJPFn63CEHSsFfLEhj85P7YhZ3EwK7yP4pLJsEeMfiZvaYQGJZlCAK587tIo6h9xInDayGLyAfpn2WBxFIy/8BqHkluhrTVd2jgnqGvRI+Un3qFXhVfnU166kEcgGsnAqoopaHah3ZCkt4sTsSD8Ze+KrTNUWf1MeqsxIq7L1I0QHMfzGURCfMJ1p64Uo49nAQVGogwpJect0w7ryRZHhm1Q8rvDuFOLvBbSrmfTLiohoHEwPs7rGGRgkGfmRM+u/trBV3TpkyDt8wAcx+p3tmVxFdQmFO9FaA9ZF7llIOzqce+OjIq1Bp5moZwj2IEhjaRrGnY6PwPu7LJ1vtW6LoU8yhDK6mcfVj9hUaRwWbUPPnDuHqcABvMVTnzqad7uelGJ1vxnVSOP3UueeYYmEi+OQkRunaD8vL2cIKPmJA1YCRPhkPfjp3/KNNegVYZ8ICCIQnr9ahFiFcxgoWLXKkjoEejBGcfXzc5f6ShE/oaFQT7vMhTubTQesijcG3VD6+egXaS00m9SbAJ029bxoI+qR1MEEw/rBwIbjF7CpoG84z+xMxwsGsZSOUFKCtuwHblHDVrtNaMT0/A+dWH8IcqQ3zN7nF/wh3KW+sI1HCK1SvThfr7Y6gduc8yvo="
     # AWS_SECRET_ACCESS_KEY
     - secure: "JhKVnAZewlBfbGtYRpvrk/Bfc8KmLkJzOsGz/7agSLnsCrXeKvD7WkuAkoBn5goM/UJueqFz+rXui1VgFXUFWY5MtnbIlLPX3xKcKLi48cp6NPKpFvoyJzgeBtiqwgcNdm1bW9MBrZR+Dz6iL+TdRQWib/EvX3P30jVCkYIONHFYfe4lpAdTPCOzHnEzgdM9iDSoX/SVGimJdsezCCsRyiG1CT7D8/jDR0KTidp/0Ix8XdlJ/66g53u1w0OwZZpSKv+lyH+evQ4GoLiHLSETy0NYHAnTGmOjdOsVl2oqGlo1vrz3wWri+qujkUVOZhEDdMIdi6oMRugVxyALHCINObzp0OJkqWL68ijgLyzhc464qsN4KXmraQO4R+PCLQiV2EwXuZyTSExrB3DBiuP0AZgOi5RV6cE6AcvNkK7E8xaNtNQH9JUjHf0ndnfZ0mJFhfB1p0JPztaSET2Blz+V5hXBnxwl7s5Jj3zAOfaChuRxIoZswsD+bNp4M+9F/zm58Czj+Imrn0gbpX10EFg66TOllH83GrtoL2iMsOdrGkSNGMMQDQFvnbX1IG+SsnTSLY5huT0AxeN99r4wd7Ot8dhawRc2pqJD12eW+VSwfUMdV5gLmXzlMB7sJXLLCdoZ2Fgy3mvI9+/1Mj0KWJBg5m8NQ66zo/d8Ibop3iGWyGE="
-    # KEYSTORE_PASSWORD
-    - secure: "R17oQwkS9VWbBBdsymPuL/cDrY7b9aReY4pG/zhPctPGyROheKg94fLU4KtylDoLBoq2P5WA7RzfcOm3lTfhl/1Snd0w5qQpyRA3IeEhs3149UHfEoKpUR2kTWGEoFAYpStYoGHXodWK5HdJhQWZWs4tz1xLe++JUIR6/da+Qz/NMpPbXbVFzbvlQJQ7WMel0n/VjMlCcSBox2VUkG132ma0t+l0Ba/SJEaNZ2rRzAcLIXmh36xq05oi2mPc1EpWQgee9dHgt/JbusNurMSLwKtYVDs2hupoEXpE4yrw0IUawM/nx+70MoHO7VeZTBTeFMgZ4L1K0zo9BxZv5mpUP6E6RWcQAhuYJ8eRw6FD5myoGxaf+HiKKN4HJ6bU5Td3x5Isnn9nX/YxPjNGYu2zCB+BaW4bPa44ue2sQtU9uaf7rMVpkyfNj/jzzQYZCRvwI/94VBBnPcZQDNBrHUYdFk51khlRQzwtfqun4jz9FaDt9DZFi4ZVdp66lBYH1q1eUOWHfkqb3D8mMtHlgu2xnH6l1KNRDWSsriS6+88I4IyDILFPrUripOLuvG4Zh00Kx2SLdsV692l/jG4KFuPpvPX6DRm/yidWjTikR+rlz3BFanLsBlmk/rc0RFj6kQmFvdDWaOFW9w1Zp7nAu19nIufr1hpMybEwaTtHsD+iAyY="
-    # KEYSTORE_KEY_PASSWORD
-    - secure: "oRxXOzXUnR7Xq6lzTeqEjFWu5+NuxnCisijWX6h/iEmqz/E64CS0R3/OogqPepsQ+CKXZ6WHc99HQO0zZjkz0Octa+TH/hCLX3P+8vIUkqyue6QtX39Ku+vGtbW1SUeGtSqhnD+cNlDxB79EkaxBemrgrwLVnNHWe7v558RccOpDRMYmw6oB/CLP6AGaxFLrcE3C985JD2HQncORhRPAVAPp/C8cyDV9uZrYOsIM2S1zU61dyg3Ii/z3JQk7OiobNul0DY41/2xI/RtQuZueAVsV7mO7oCgZqemm9+Um3C30IyOjbODmDlbY0IsV7c3XmADzmFq359a0IwRuNNyI5EkpuS0/F5XdB3A01Q6jXTdgv9lGOb9WoEIL1G2oZPGaAA/qQRTbxxsVH9k6s2jDVUUy2GB/TYn/hLqtBDdw7j7d3HJiyFZFv664pZphj7rnLlYKWiVeT9zM/RAC/nW545UuFhjcOyyvh/F0cXaLtFkuo8bdLzuT+Yc3li2MywSIupFAqFXpM4+hjVVpZLtmf6sgTU1MT9dKC5vLFDT/Chq77AOvHQW1RsNPmGKC9zmxZJtCq3XZwH9fDKhbSS931zQttBE6Dy+G1jR6hfoRjd/lhtAkDN3boH93CJ+AAFytinbH17Qw0BI2g80wifhLfd6+wsK/5T5D1Rn13ZjwcHU="
 
 notifications:
   slack:
