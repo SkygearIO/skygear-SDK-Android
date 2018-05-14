@@ -38,7 +38,10 @@ public abstract class TypedLambdaResponseHandler<T extends Object> extends Lambd
     @Override
     public void onSuccess(JSONObject result) {
         try {
-            this.onLambdaSuccess((T)ValueSerializer.deserialize(result));
+            // The object can be a JSONObject, JSONArray or other
+            // JSON-compatible types.
+            Object anyJSONObject = result.opt("result");
+            this.onLambdaSuccess((T)ValueSerializer.deserialize(anyJSONObject));
         } catch (JSONException ex) {
             this.onFail(new Error(ex.getMessage()));
         } catch (ClassCastException ex) {
