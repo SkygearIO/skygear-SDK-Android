@@ -44,6 +44,20 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class ValueSerializerUnitTest {
     @Test
+    public void testSerializeNull() throws Exception {
+        Object value = null;
+        Object jsonValue = ValueSerializer.serialize(value);
+
+        assertEquals(JSONObject.NULL, jsonValue);
+    }
+
+    @Test
+    public void testDeserializeNull() throws Exception {
+        Object value = (Object)ValueSerializer.deserialize(JSONObject.NULL);
+        assertNull(value);
+    }
+
+    @Test
     public void testSerializeDate() throws Exception {
         Date value = new DateTime(2016, 6, 15, 7, 55, 34, 342, DateTimeZone.UTC).toDate();
         JSONObject jsonValue = (JSONObject)ValueSerializer.serialize(value);

@@ -50,7 +50,7 @@ public class ValueSerializer {
      */
 
     protected static Object serialize(Object value) throws JSONException {
-        if (value == null || value == JSONObject.NULL) {
+        if (value == null || JSONObject.NULL.equals(value)) {
             return JSONObject.NULL;
         } else if (value instanceof JSONObject || value instanceof JSONArray) {
             return value;
@@ -135,7 +135,7 @@ public class ValueSerializer {
      * @throws JSONException the JSON exception
      */
     public static Object deserialize(JSONObject jsonObject) throws JSONException {
-        if (jsonObject == null || jsonObject == JSONObject.NULL) {
+        if (jsonObject == null) {
             return null;
         } else if (DateSerializer.isDateFormat(jsonObject)) {
             return DateSerializer.deserialize(jsonObject);
@@ -178,6 +178,8 @@ public class ValueSerializer {
             return ValueSerializer.deserialize((JSONArray)anyJSONObject);
         } else if (anyJSONObject instanceof JSONObject) {
             return ValueSerializer.deserialize((JSONObject)anyJSONObject);
+        } else if (JSONObject.NULL.equals(anyJSONObject)) {
+            return null;
         } else {
             return anyJSONObject;
         }
