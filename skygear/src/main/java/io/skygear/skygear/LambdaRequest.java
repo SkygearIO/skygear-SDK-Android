@@ -48,28 +48,16 @@ public class LambdaRequest extends Request {
             Map.class
     ));
 
-    /**
-     * Instantiates a new Skygear Lambda Function Request.
-     *
-     * @param name the name
-     * @param args the args
-     */
-    public LambdaRequest(String name, Object[] args) {
+    protected LambdaRequest(String name, Object args) {
         super(name);
 
-        this.data = new HashMap<>();
-
-        if (args != null) {
-            for (int idx = 0; idx < args.length; idx++) {
-                if (!this.isCompatibleArgument(args[idx])) {
-                    throw new InvalidParameterException(
-                            String.format("Argument at index %d is incompatible", idx)
-                    );
-                }
+        try {
+            this.data = new HashMap<>();
+            if (args != null) {
+                this.data.put("args", ValueSerializer.serialize(args));
             }
-
-            List<Object> argList = Arrays.asList(args);
-            this.data.put("args", new JSONArray(argList));
+        } catch (JSONException ex) {
+            throw new InvalidParameterException(ex.getMessage());
         }
     }
 
@@ -79,21 +67,18 @@ public class LambdaRequest extends Request {
      * @param name the name
      * @param args the args
      */
+    public LambdaRequest(String name, Object[] args) {
+        this(name, (Object)args);
+    }
+
+    /**
+     * Instantiates a new Skygear Lambda Function Request.
+     *
+     * @param name the name
+     * @param args the args
+     */
     public LambdaRequest(String name, Map<String, Object> args) {
-        super(name);
-
-        this.data = new HashMap<>();
-
-        if (args != null) {
-            for (String key : args.keySet()) {
-                if (!this.isCompatibleArgument(args.get(key))) {
-                    throw new InvalidParameterException(
-                            String.format("Argument at index %s is incompatible", key)
-                    );
-                }
-            }
-            this.data.put("args", new JSONObject(args));
-        }
+        this(name, (Object)args);
     }
 
     private boolean isCompatibleArgument(Object[] array) {
