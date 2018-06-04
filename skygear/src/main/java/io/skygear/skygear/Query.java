@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import java.security.InvalidParameterException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -696,6 +697,27 @@ public class Query {
     }
 
     /**
+     * And query.
+     *
+     * @param queries the queries
+     * @return the query
+     */
+    public static Query and(Query... queries) {
+        if (queries.length == 0) {
+            throw new InvalidParameterException("No queries to be processed");
+        }
+
+        ensureSameRecordType(queries);
+        JSONArray predicate = joinPredicatesWithOp("and", queries);
+
+        String type = queries[0].type;
+        Query newQuery = new Query(type);
+        newQuery.predicates.add(predicate);
+
+        return newQuery;
+    }
+
+    /**
      * Or query.
      *
      * @param queries the queries
@@ -706,25 +728,11 @@ public class Query {
             throw new InvalidParameterException("No queries to be processed");
         }
 
+        ensureSameRecordType(queries);
+        JSONArray predicate = joinPredicatesWithOp("or", queries);
+
         String type = queries[0].type;
         Query newQuery = new Query(type);
-
-        JSONArray predicate;
-        if (queries.length == 1) {
-            predicate = queries[0].getPredicateJson();
-        } else {
-            predicate = new JSONArray();
-            predicate.put("or");
-
-            for (Query perQuery : queries) {
-                if (!perQuery.getType().equals(type)) {
-                    throw new InvalidParameterException("All queries must be in the same type.");
-                }
-
-                predicate.put(perQuery.getPredicateJson());
-            }
-        }
-
         newQuery.predicates.add(predicate);
 
         return newQuery;
@@ -837,5 +845,31 @@ public class Query {
      */
     public void setOverallCount(boolean overallCount) {
         this.overallCount = overallCount;
+    }
+
+    private static void ensureSameRecordType(Query[] queries) {
+        String type = queries[0].type;
+
+        for (Query perQuery : queries) {
+            if (!perQuery.getType().equals(type)) {
+                throw new InvalidParameterException("All queries must be in the same type.");
+            }
+        }
+    }
+
+    private static JSONArray joinPredicatesWithOp(String op, Query[] queries) {
+        JSONArray predicate;
+        if (queries.length == 1) {
+            predicate = queries[0].getPredicateJson();
+        } else {
+            predicate = new JSONArray();
+            predicate.put(op);
+
+            for (Query perQuery : queries) {
+                predicate.put(perQuery.getPredicateJson());
+            }
+        }
+
+        return predicate;
     }
 }

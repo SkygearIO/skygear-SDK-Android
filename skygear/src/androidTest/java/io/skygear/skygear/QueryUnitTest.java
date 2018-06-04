@@ -550,6 +550,32 @@ public class QueryUnitTest {
     }
 
     @Test(expected = InvalidParameterException.class)
+    public void testAndQueryNotAllowEmptyList() throws Exception {
+        Query.and();
+    }
+
+    @Test
+    public void testAndQuery() throws Exception {
+        Query query1 = new Query("Note").caseInsensitiveLike("title", "Hello");
+        Query query2 = new Query("Note").caseInsensitiveLike("name", "World");
+        JSONArray andPredicate = Query.and(query1, query2).getPredicateJson();
+
+        assertEquals("and", andPredicate.getString(0));
+
+        JSONArray predicate1 = andPredicate.getJSONArray(1);
+        JSONObject predicate1Keypath = predicate1.getJSONObject(1);
+        assertEquals("keypath", predicate1Keypath.getString("$type"));
+        assertEquals("title", predicate1Keypath.getString("$val"));
+        assertEquals("Hello", predicate1.getString(2));
+
+        JSONArray predicate2 = andPredicate.getJSONArray(2);
+        JSONObject predicate2Keypath = predicate2.getJSONObject(1);
+        assertEquals("keypath", predicate2Keypath.getString("$type"));
+        assertEquals("name", predicate2Keypath.getString("$val"));
+        assertEquals("World", predicate2.getString(2));
+    }
+
+    @Test(expected = InvalidParameterException.class)
     public void testOrQueryNotAllowEmptyList() throws Exception {
         Query.or();
     }
