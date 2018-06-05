@@ -216,10 +216,23 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(String name, Object[] args, LambdaResponseHandler handler) {
-        LambdaRequest request = new LambdaRequest(name, args);
-        request.responseHandler = handler;
+        final String lambdaName = name;
+        final Object[] lambdaArgs = args;
+        final LambdaResponseHandler responseHandler = handler;
+        this.publicDatabase.presave(args, new ResultCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                LambdaRequest request = new LambdaRequest(lambdaName, lambdaArgs);
+                request.responseHandler = responseHandler;
 
-        this.requestManager.sendRequest(request);
+                Container.this.requestManager.sendRequest(request);
+            }
+
+            @Override
+            public void onFailure(Error error) {
+
+            }
+        });
     }
 
     /**
@@ -230,9 +243,22 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(String name, Map<String, Object> args, LambdaResponseHandler handler) {
-        LambdaRequest request = new LambdaRequest(name, args);
-        request.responseHandler = handler;
+        final String lambdaName = name;
+        final Map<String, Object> lambdaArgs = args;
+        final LambdaResponseHandler responseHandler = handler;
+        this.publicDatabase.presave(args, new ResultCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                LambdaRequest request = new LambdaRequest(lambdaName, lambdaArgs);
+                request.responseHandler = responseHandler;
 
-        this.requestManager.sendRequest(request);
+                Container.this.requestManager.sendRequest(request);
+            }
+
+            @Override
+            public void onFailure(Error error) {
+
+            }
+        });
     }
 }

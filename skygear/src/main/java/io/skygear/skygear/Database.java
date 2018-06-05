@@ -18,9 +18,13 @@
 package io.skygear.skygear;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 /**
  * The Skygear Database.
@@ -81,6 +85,69 @@ public class Database {
         return name;
     }
 
+    private static <T> List<T> findInObject(Object object, Class<T> klass) {
+        if (klass.isInstance(object)) {
+            List<T> wanted = new ArrayList<T>();
+            wanted.add((T)object);
+            return wanted;
+        } else if (object instanceof Record) {
+            return Database.findInObject((Record)object, klass);
+        } else if (object instanceof Map) {
+            return Database.findInObject((Map)object, klass);
+        } else if (object instanceof List) {
+            return Database.findInObject((List)object, klass);
+        } else if (object instanceof Object[]) {
+            return Database.findInObject(Arrays.asList((Object[])object), klass);
+        } else {
+            return new ArrayList<T>();
+        }
+    }
+
+    private static <T> List<T> findInObject(Record object, Class<T> klass) {
+        return Database.findInObject(object.getData(), klass);
+    }
+
+    private static <T> List<T> findInObject(Map<String, Object> object, Class<T> klass) {
+        List<T> wanted = new ArrayList<T>();
+        for (Map.Entry<String, Object> entry : object.entrySet()) {
+            wanted.addAll(Database.findInObject(entry.getValue(), klass));
+        }
+        return wanted;
+    }
+
+    private static <T> List<T> findInObject(List<Object> object, Class<T> klass) {
+        List<T> wanted = new ArrayList<T>();
+        for (Object item : object) {
+            wanted.addAll(Database.findInObject(item, klass));
+        }
+        return wanted;
+    }
+
+    void presave(final Object object, final ResultCallback callback) { // package-private
+        List<Asset> assetsToUpload = new ArrayList<Asset>();
+        for (Asset asset : Database.findInObject(object, Asset.class)) {
+            if (asset.isPendingUpload()) {
+                assetsToUpload.add(asset);
+            }
+        }
+
+        if (assetsToUpload.size() > 0) {
+            this.uploadAssets(assetsToUpload, new ResultCallback<List<Asset>>() {
+                @Override
+                public void onSuccess(List<Asset> result) {
+                    callback.onSuccess(object);
+                }
+
+                @Override
+                public void onFailure(Error error) {
+                    callback.onFailure(error);
+                }
+            });
+        } else {
+            callback.onSuccess(object);
+        }
+    }
+
     /**
      * Save a record.
      *
@@ -98,10 +165,22 @@ public class Database {
      * @param handler the response handler
      */
     public void save(Record[] records, RecordSaveResponseHandler handler) {
-        RecordSaveRequest request = new RecordSaveRequest(records, this);
-        request.responseHandler = handler;
+        final Record[] recordsToSave = records;
+        final RecordSaveResponseHandler responseHandler = handler;
+        this.presave(records, new ResultCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                RecordSaveRequest request = new RecordSaveRequest(recordsToSave, Database.this);
+                request.responseHandler = responseHandler;
 
-        this.getContainer().sendRequest(request);
+                Database.this.getContainer().sendRequest(request);
+            }
+
+            @Override
+            public void onFailure(Error error) {
+                responseHandler.onSaveFail(error);
+            }
+        });
     }
 
     /**
@@ -121,11 +200,23 @@ public class Database {
      * @param handler the response handler
      */
     public void saveAtomically(Record[] records, RecordSaveResponseHandler handler) {
-        RecordSaveRequest request = new RecordSaveRequest(records, this);
-        request.responseHandler = handler;
-        request.setAtomic(true);
+        final Record[] recordsToSave = records;
+        final RecordSaveResponseHandler responseHandler = handler;
+        this.presave(records, new ResultCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                RecordSaveRequest request = new RecordSaveRequest(recordsToSave, Database.this);
+                request.setAtomic(true);
+                request.responseHandler = responseHandler;
 
-        this.getContainer().sendRequest(request);
+                Database.this.getContainer().sendRequest(request);
+            }
+
+            @Override
+            public void onFailure(Error error) {
+                responseHandler.onSaveFail(error);
+            }
+        });
     }
 
     /**
@@ -193,6 +284,54 @@ public class Database {
         };
 
         requestManager.sendRequest(preparePostRequest);
+    }
+
+    public void uploadAssets(
+            final List<Asset> assets,
+            final ResultCallback<List<Asset>> callback
+    ) {
+        final RequestManager requestManager = this.getContainer().requestManager;
+
+        AssetPostRequest.ResponseHandler handler = new AssetPostRequest.ResponseHandler() {
+            final List<Asset> savedAssets = new ArrayList<Asset>();
+            final List<Error> errors = new ArrayList<Error>();
+            final List<Asset> allAssets = assets;
+            final Semaphore lock = new Semaphore(1);
+
+            private void onAllFinished() {
+                if (errors.isEmpty()) {
+                    callback.onSuccess(savedAssets);
+                } else {
+                    callback.onFailure(errors.get(0));
+                }
+            }
+
+            @Override
+            public void onPostSuccess(Asset asset, String response) {
+                lock.acquireUninterruptibly();
+                savedAssets.add(asset);
+                boolean allFinished = this.allAssets.size() >= this.savedAssets.size() + this.errors.size();
+                lock.release();
+                if (allFinished) {
+                    this.onAllFinished();
+                }
+            }
+
+            @Override
+            public void onPostFail(Asset asset, Error error) {
+                lock.acquireUninterruptibly();
+                errors.add(error);
+                boolean allFinished = this.allAssets.size() >= this.savedAssets.size() + this.errors.size();
+                lock.release();
+                if (allFinished) {
+                    this.onAllFinished();
+                }
+            }
+        };
+
+        for (Asset asset : assets) {
+            this.uploadAsset(asset, handler);
+        }
     }
 
     static class Factory {
