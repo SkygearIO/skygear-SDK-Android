@@ -122,7 +122,6 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
 
     @Override
     public void onResponse(String response) {
-        this.asset.pendingUpload = false;
         if (this.responseHandler != null) {
             this.responseHandler.onPostSuccess(this.asset, response);
         }

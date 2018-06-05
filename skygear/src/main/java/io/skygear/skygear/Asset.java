@@ -40,11 +40,6 @@ public class Asset {
     byte[] data;
 
     /**
-     * The indicator whether it is pending upload.
-     */
-    boolean pendingUpload;
-
-    /**
      * The Asset MIME Type.
      */
     String mimeType;
@@ -62,7 +57,6 @@ public class Asset {
         this.name = name;
         this.mimeType = mimeType;
         this.data = data;
-        this.pendingUpload = true;
     }
 
     /**
@@ -78,7 +72,6 @@ public class Asset {
         this.name = name;
         this.url = url;
         this.mimeType = mimeType;
-        this.pendingUpload = false;
     }
 
     /**
@@ -109,7 +102,7 @@ public class Asset {
      * @return the boolean
      */
     public boolean isPendingUpload() {
-        return pendingUpload;
+        return this.url == null;
     }
 
     /**
