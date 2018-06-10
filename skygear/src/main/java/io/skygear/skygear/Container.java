@@ -21,6 +21,7 @@ import android.content.Context;
 
 import java.security.InvalidParameterException;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Container for Skygear.
@@ -215,14 +216,14 @@ public final class Container {
      * @param args    the arguments
      * @param handler the response handler
      */
-    public void callLambdaFunction(String name, Object[] args, LambdaResponseHandler handler) {
+    public void callLambdaFunction(final String name, Object[] args, LambdaResponseHandler handler) {
         final String lambdaName = name;
         final Object[] lambdaArgs = args;
         final LambdaResponseHandler responseHandler = handler;
         this.publicDatabase.presave(args, new ResultCallback() {
             @Override
             public void onSuccess(Object result) {
-                LambdaRequest request = new LambdaRequest(lambdaName, lambdaArgs);
+                LambdaRequest request = new LambdaRequest(name, (List)result);
                 request.responseHandler = responseHandler;
 
                 Container.this.requestManager.sendRequest(request);
@@ -249,7 +250,7 @@ public final class Container {
         this.publicDatabase.presave(args, new ResultCallback() {
             @Override
             public void onSuccess(Object result) {
-                LambdaRequest request = new LambdaRequest(lambdaName, lambdaArgs);
+                LambdaRequest request = new LambdaRequest(lambdaName, (Map)result);
                 request.responseHandler = responseHandler;
 
                 Container.this.requestManager.sendRequest(request);

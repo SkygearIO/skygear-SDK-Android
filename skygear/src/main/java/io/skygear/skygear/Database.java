@@ -22,6 +22,7 @@ import java.lang.reflect.Array;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
@@ -91,36 +92,57 @@ public class Database {
             wanted.add((T)object);
             return wanted;
         } else if (object instanceof Record) {
-            return Database.findInObject((Record)object, klass);
+            return Database.findInObject(((Record)object).getData(), klass);
         } else if (object instanceof Map) {
-            return Database.findInObject((Map)object, klass);
+            List<T> wanted = new ArrayList<T>();
+            for (Map.Entry<String, Object> entry : ((Map<String, Object>)object).entrySet()) {
+                wanted.addAll(Database.findInObject(entry.getValue(), klass));
+            }
+            return wanted;
+
         } else if (object instanceof List) {
-            return Database.findInObject((List)object, klass);
+            List<T> wanted = new ArrayList<T>();
+            for (Object item : (List)object) {
+                wanted.addAll(Database.findInObject(item, klass));
+            }
+            return wanted;
         } else if (object instanceof Object[]) {
-            return Database.findInObject(Arrays.asList((Object[])object), klass);
+            return Database.findInObject((List)object, klass);
         } else {
             return new ArrayList<T>();
         }
     }
 
-    private static <T> List<T> findInObject(Record object, Class<T> klass) {
-        return Database.findInObject(object.getData(), klass);
-    }
-
-    private static <T> List<T> findInObject(Map<String, Object> object, Class<T> klass) {
-        List<T> wanted = new ArrayList<T>();
-        for (Map.Entry<String, Object> entry : object.entrySet()) {
-            wanted.addAll(Database.findInObject(entry.getValue(), klass));
+    private static <T extends Object> Object replaceObject(Object object, Map<T, T> mapTable) {
+        if (object == null) {
+            return null;
+        } else if (mapTable.containsKey(object)) {
+            return mapTable.get(object);
         }
-        return wanted;
-    }
 
-    private static <T> List<T> findInObject(List<Object> object, Class<T> klass) {
-        List<T> wanted = new ArrayList<T>();
-        for (Object item : object) {
-            wanted.addAll(Database.findInObject(item, klass));
+        if (object instanceof Record) {
+            // TODO: It is better to create a clone of the Record object, but
+            // the Record class does not offer a clone method.
+            Record record = (Record)object;
+            record.set((Map)Database.replaceObject(record.getData(), mapTable));
+            return record;
+        } else if (object instanceof Map) {
+            Map<String, Object> newMap = new HashMap<String, Object>();
+            for (Map.Entry<String, Object> entry : ((Map<String, Object>)object).entrySet()) {
+                newMap.put(entry.getKey(), Database.replaceObject(entry.getValue(), mapTable));
+            }
+            return newMap;
+        } else if (object instanceof List) {
+            List<Object> newList = new ArrayList<Object>();
+            for (Object item : (List)object) {
+                newList.add(Database.replaceObject(item, mapTable));
+            }
+            return newList;
+        } else if (object instanceof Object[]) {
+            return Database.replaceObject(Arrays.asList((Object[])object), mapTable);
+        } else {
+            return object;
         }
-        return wanted;
     }
 
     void presave(final Object object, final ResultCallback callback) { // package-private
@@ -132,9 +154,9 @@ public class Database {
         }
 
         if (assetsToUpload.size() > 0) {
-            this.uploadAssets(assetsToUpload, new ResultCallback<List<Asset>>() {
+            this.uploadAssets(assetsToUpload, new ResultCallback<Map<Asset, Asset>>() {
                 @Override
-                public void onSuccess(List<Asset> result) {
+                public void onSuccess(Map<Asset, Asset> result) {
                     callback.onSuccess(object);
                 }
 
@@ -164,13 +186,22 @@ public class Database {
      * @param records the records
      * @param handler the response handler
      */
-    public void save(Record[] records, RecordSaveResponseHandler handler) {
+    public void save(final Record[] records, RecordSaveResponseHandler handler) {
         final Record[] recordsToSave = records;
         final RecordSaveResponseHandler responseHandler = handler;
         this.presave(records, new ResultCallback() {
             @Override
             public void onSuccess(Object result) {
-                RecordSaveRequest request = new RecordSaveRequest(recordsToSave, Database.this);
+                Record[] presavedRecords = null;
+                if (result instanceof List) {
+                    List<Record> theList = (List<Record>)result;
+                    presavedRecords = theList.toArray(new Record[theList.size()]);
+                } else if (result instanceof Record[]) {
+                    presavedRecords = (Record[])result;
+                } else {
+                    presavedRecords = records;
+                }
+                RecordSaveRequest request = new RecordSaveRequest(presavedRecords, Database.this);
                 request.responseHandler = responseHandler;
 
                 Database.this.getContainer().sendRequest(request);
@@ -199,13 +230,22 @@ public class Database {
      * @param records the records
      * @param handler the response handler
      */
-    public void saveAtomically(Record[] records, RecordSaveResponseHandler handler) {
+    public void saveAtomically(final Record[] records, RecordSaveResponseHandler handler) {
         final Record[] recordsToSave = records;
         final RecordSaveResponseHandler responseHandler = handler;
         this.presave(records, new ResultCallback() {
             @Override
             public void onSuccess(Object result) {
-                RecordSaveRequest request = new RecordSaveRequest(recordsToSave, Database.this);
+                Record[] presavedRecords = null;
+                if (result instanceof List) {
+                    List<Record> theList = (List<Record>)result;
+                    presavedRecords = theList.toArray(new Record[theList.size()]);
+                } else if (result instanceof Record[]) {
+                    presavedRecords = (Record[])result;
+                } else {
+                    presavedRecords = records;
+                }
+                RecordSaveRequest request = new RecordSaveRequest(presavedRecords, Database.this);
                 request.setAtomic(true);
                 request.responseHandler = responseHandler;
 
@@ -286,50 +326,50 @@ public class Database {
         requestManager.sendRequest(preparePostRequest);
     }
 
-    public void uploadAssets(
+    private void uploadAssets(
             final List<Asset> assets,
-            final ResultCallback<List<Asset>> callback
+            final ResultCallback<Map<Asset, Asset>> callback
     ) {
         final RequestManager requestManager = this.getContainer().requestManager;
 
-        AssetPostRequest.ResponseHandler handler = new AssetPostRequest.ResponseHandler() {
-            final List<Asset> savedAssets = new ArrayList<Asset>();
-            final List<Error> errors = new ArrayList<Error>();
-            final List<Asset> allAssets = assets;
-            final Semaphore lock = new Semaphore(1);
+        final Map<Asset, Asset> savedAssets = new HashMap<>();
+        final List<Error> errors = new ArrayList<Error>();
+        final List<Asset> allAssets = assets;
+        final Semaphore lock = new Semaphore(1);
 
-            private void onAllFinished() {
-                if (errors.isEmpty()) {
-                    callback.onSuccess(savedAssets);
-                } else {
-                    callback.onFailure(errors.get(0));
+        for (final Asset asset : assets) {
+            AssetPostRequest.ResponseHandler handler = new AssetPostRequest.ResponseHandler() {
+                private void onAllFinished() {
+                    if (errors.isEmpty()) {
+                        callback.onSuccess(savedAssets);
+                    } else {
+                        callback.onFailure(errors.get(0));
+                    }
                 }
-            }
 
-            @Override
-            public void onPostSuccess(Asset asset, String response) {
-                lock.acquireUninterruptibly();
-                savedAssets.add(asset);
-                boolean allFinished = this.allAssets.size() >= this.savedAssets.size() + this.errors.size();
-                lock.release();
-                if (allFinished) {
-                    this.onAllFinished();
+                @Override
+                public void onPostSuccess(Asset savedAsset, String response) {
+                    lock.acquireUninterruptibly();
+                    savedAssets.put(asset, savedAsset);
+                    boolean allFinished = allAssets.size() >= savedAssets.size() + errors.size();
+                    lock.release();
+                    if (allFinished) {
+                        this.onAllFinished();
+                    }
                 }
-            }
 
-            @Override
-            public void onPostFail(Asset asset, Error error) {
-                lock.acquireUninterruptibly();
-                errors.add(error);
-                boolean allFinished = this.allAssets.size() >= this.savedAssets.size() + this.errors.size();
-                lock.release();
-                if (allFinished) {
-                    this.onAllFinished();
+                @Override
+                public void onPostFail(Asset savedAsset, Error error) {
+                    lock.acquireUninterruptibly();
+                    errors.add(error);
+                    boolean allFinished = allAssets.size() >= savedAssets.size() + errors.size();
+                    lock.release();
+                    if (allFinished) {
+                        this.onAllFinished();
+                    }
                 }
-            }
-        };
+            };
 
-        for (Asset asset : assets) {
             this.uploadAsset(asset, handler);
         }
     }
