@@ -23,6 +23,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
@@ -95,8 +96,9 @@ public class Database {
             return Database.findInObject(((Record)object).getData(), klass);
         } else if (object instanceof Map) {
             List<T> wanted = new ArrayList<T>();
-            for (Map.Entry<String, Object> entry : ((Map<String, Object>)object).entrySet()) {
-                wanted.addAll(Database.findInObject(entry.getValue(), klass));
+
+            for (Object item : ((Map)object).values()) {
+                wanted.addAll(Database.findInObject(item, klass));
             }
             return wanted;
 
@@ -107,13 +109,13 @@ public class Database {
             }
             return wanted;
         } else if (object instanceof Object[]) {
-            return Database.findInObject((List)object, klass);
+            return Database.findInObject(Arrays.asList(object), klass);
         } else {
             return new ArrayList<T>();
         }
     }
 
-    private static <T extends Object> Object replaceObject(Object object, Map<T, T> mapTable) {
+    private static Object replaceObject(Object object, Map mapTable) {
         if (object == null) {
             return null;
         } else if (mapTable.containsKey(object)) {
@@ -121,23 +123,11 @@ public class Database {
         }
 
         if (object instanceof Record) {
-            // TODO: It is better to create a clone of the Record object, but
-            // the Record class does not offer a clone method.
-            Record record = (Record)object;
-            record.set((Map)Database.replaceObject(record.getData(), mapTable));
-            return record;
+            return Database.replaceObject((Record)object, mapTable);
         } else if (object instanceof Map) {
-            Map<String, Object> newMap = new HashMap<String, Object>();
-            for (Map.Entry<String, Object> entry : ((Map<String, Object>)object).entrySet()) {
-                newMap.put(entry.getKey(), Database.replaceObject(entry.getValue(), mapTable));
-            }
-            return newMap;
+            return Database.replaceObject((Map)object, mapTable);
         } else if (object instanceof List) {
-            List<Object> newList = new ArrayList<Object>();
-            for (Object item : (List)object) {
-                newList.add(Database.replaceObject(item, mapTable));
-            }
-            return newList;
+            return Database.replaceObject((List)object, mapTable);
         } else if (object instanceof Object[]) {
             return Database.replaceObject(Arrays.asList((Object[])object), mapTable);
         } else {
@@ -145,7 +135,33 @@ public class Database {
         }
     }
 
-    void presave(final Object object, final ResultCallback callback) { // package-private
+    private static Map replaceObject(Map object, Map mapTable) {
+        Map newMap = new HashMap();
+        Iterator it = object.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry)it.next();
+            newMap.put(entry.getKey(), Database.replaceObject(entry.getValue(), mapTable));
+        }
+        return newMap;
+    }
+
+    private static List replaceObject(List object, Map mapTable) {
+        List newList = new ArrayList();
+        for (Object item : object) {
+            newList.add(Database.replaceObject(item, mapTable));
+        }
+        return newList;
+    }
+
+    private static Record replaceObject(Record object, Map mapTable) {
+        // TODO: It is better to create a clone of the Record object, but
+        // the Record class does not offer a clone method.
+        Record record = (Record)object;
+        record.set((Map)Database.replaceObject(record.getData(), mapTable));
+        return record;
+    }
+
+    private void presaveAssets(final Object object, final ResultCallback<Map<Asset, Asset>> callback) {
         List<Asset> assetsToUpload = new ArrayList<Asset>();
         for (Asset asset : Database.findInObject(object, Asset.class)) {
             if (asset.isPendingUpload()) {
@@ -154,21 +170,56 @@ public class Database {
         }
 
         if (assetsToUpload.size() > 0) {
-            this.uploadAssets(assetsToUpload, new ResultCallback<Map<Asset, Asset>>() {
-                @Override
-                public void onSuccess(Map<Asset, Asset> result) {
-                    Object presavedObject = Database.replaceObject(object, result);
-                    callback.onSuccess(presavedObject);
-                }
-
-                @Override
-                public void onFailure(Error error) {
-                    callback.onFailure(error);
-                }
-            });
+            this.uploadAssets(assetsToUpload, callback);
         } else {
-            callback.onSuccess(object);
+            callback.onSuccess(new HashMap<Asset, Asset>());
         }
+    }
+
+    private void presave(final Record[] object, final ResultCallback<Record[]> callback) {
+        this.presaveAssets(object, new ResultCallback<Map<Asset, Asset>>() {
+            @Override
+            public void onSuccess(Map<Asset, Asset> result) {
+                Record[] newArray = new Record[object.length];
+                for (int i = 0; i < object.length; i++) {
+                    newArray[i] = Database.replaceObject(object[i], result);
+                }
+                callback.onSuccess(newArray);
+            }
+
+            @Override
+            public void onFailure(Error error) {
+                callback.onFailure(error);
+            }
+        });
+    }
+
+    void presave(final List object, final ResultCallback<List> callback) { // package-private
+        this.presaveAssets(object, new ResultCallback<Map<Asset, Asset>>() {
+            @Override
+            public void onSuccess(Map<Asset, Asset> result) {
+                callback.onSuccess(Database.replaceObject(object, result));
+            }
+
+            @Override
+            public void onFailure(Error error) {
+                callback.onFailure(error);
+            }
+        });
+    }
+
+    void presave(final Map object, final ResultCallback<Map> callback) { // package-private
+        this.presaveAssets(object, new ResultCallback<Map<Asset, Asset>>() {
+            @Override
+            public void onSuccess(Map<Asset, Asset> result) {
+                callback.onSuccess(Database.replaceObject(object, result));
+            }
+
+            @Override
+            public void onFailure(Error error) {
+                callback.onFailure(error);
+            }
+        });
     }
 
     /**
@@ -190,19 +241,10 @@ public class Database {
     public void save(final Record[] records, RecordSaveResponseHandler handler) {
         final Record[] recordsToSave = records;
         final RecordSaveResponseHandler responseHandler = handler;
-        this.presave(records, new ResultCallback() {
+        this.presave(records, new ResultCallback<Record[]>() {
             @Override
-            public void onSuccess(Object result) {
-                Record[] presavedRecords = null;
-                if (result instanceof List) {
-                    List<Record> theList = (List<Record>)result;
-                    presavedRecords = theList.toArray(new Record[theList.size()]);
-                } else if (result instanceof Record[]) {
-                    presavedRecords = (Record[])result;
-                } else {
-                    presavedRecords = records;
-                }
-                RecordSaveRequest request = new RecordSaveRequest(presavedRecords, Database.this);
+            public void onSuccess(Record[] result) {
+                RecordSaveRequest request = new RecordSaveRequest(result, Database.this);
                 request.responseHandler = responseHandler;
 
                 Database.this.getContainer().sendRequest(request);
@@ -234,19 +276,10 @@ public class Database {
     public void saveAtomically(final Record[] records, RecordSaveResponseHandler handler) {
         final Record[] recordsToSave = records;
         final RecordSaveResponseHandler responseHandler = handler;
-        this.presave(records, new ResultCallback() {
+        this.presave(records, new ResultCallback<Record[]>() {
             @Override
-            public void onSuccess(Object result) {
-                Record[] presavedRecords = null;
-                if (result instanceof List) {
-                    List<Record> theList = (List<Record>)result;
-                    presavedRecords = theList.toArray(new Record[theList.size()]);
-                } else if (result instanceof Record[]) {
-                    presavedRecords = (Record[])result;
-                } else {
-                    presavedRecords = records;
-                }
-                RecordSaveRequest request = new RecordSaveRequest(presavedRecords, Database.this);
+            public void onSuccess(Record[] result) {
+                RecordSaveRequest request = new RecordSaveRequest(result, Database.this);
                 request.setAtomic(true);
                 request.responseHandler = responseHandler;
 
