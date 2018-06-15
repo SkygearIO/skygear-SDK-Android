@@ -129,7 +129,7 @@ public class Database {
         } else if (object instanceof List) {
             return Database.replaceObject((List)object, mapTable);
         } else if (object instanceof Object[]) {
-            return Database.replaceObject(Arrays.asList((Object[])object), mapTable);
+            return Database.replaceObject((Object[])object, mapTable);
         } else {
             return object;
         }
@@ -151,6 +151,14 @@ public class Database {
             newList.add(Database.replaceObject(item, mapTable));
         }
         return newList;
+    }
+
+    private static Object[] replaceObject(Object[] object, Map mapTable) {
+        Object[] newArray = new Object[object.length];
+        for (int i = 0; i < newArray.length; i++) {
+            newArray[i] = Database.replaceObject(object[i], mapTable);
+        }
+        return newArray;
     }
 
     private static Record replaceObject(Record object, Map mapTable) {
