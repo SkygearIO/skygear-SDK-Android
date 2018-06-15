@@ -157,7 +157,8 @@ public class Database {
             this.uploadAssets(assetsToUpload, new ResultCallback<Map<Asset, Asset>>() {
                 @Override
                 public void onSuccess(Map<Asset, Asset> result) {
-                    callback.onSuccess(object);
+                    Object presavedObject = Database.replaceObject(object, result);
+                    callback.onSuccess(presavedObject);
                 }
 
                 @Override
