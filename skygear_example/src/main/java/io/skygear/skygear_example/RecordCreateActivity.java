@@ -447,27 +447,8 @@ public class RecordCreateActivity
     }
 
     private void handleImageUpload(byte[] data, String mimeType) {
-        final ProgressDialog loading = new ProgressDialog(this);
-        loading.setTitle("Loading");
-        loading.setMessage("Uploading image...");
-        loading.setCancelable(false);
-        loading.show();
-
         Asset asset = new Asset("Record-Image", mimeType, data);
-        this.skygear.getPublicDatabase().uploadAsset(asset, new AssetPostRequest.ResponseHandler() {
-            @Override
-            public void onPostSuccess(Asset asset, String response) {
-                Log.i(TAG, "handleImageUpload: successfully uploaded to " + asset.getUrl());
-                RecordCreateActivity.this.recordAsset = asset;
-                RecordCreateActivity.this.updateAssetViews();
-                loading.dismiss();
-            }
-
-            @Override
-            public void onPostFail(Asset asset, Error error) {
-                Log.i(TAG, "handleImageUpload: fail - " + error.getMessage());
-                loading.dismiss();
-            }
-        });
+        RecordCreateActivity.this.recordAsset = asset;
+        RecordCreateActivity.this.updateAssetViews();
     }
 }

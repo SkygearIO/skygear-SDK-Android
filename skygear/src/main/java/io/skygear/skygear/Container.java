@@ -20,7 +20,9 @@ package io.skygear.skygear;
 import android.content.Context;
 
 import java.security.InvalidParameterException;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Container for Skygear.
@@ -215,11 +217,24 @@ public final class Container {
      * @param args    the arguments
      * @param handler the response handler
      */
-    public void callLambdaFunction(String name, Object[] args, LambdaResponseHandler handler) {
-        LambdaRequest request = new LambdaRequest(name, args);
-        request.responseHandler = handler;
+    public void callLambdaFunction(final String name, Object[] args, LambdaResponseHandler handler) {
+        final String lambdaName = name;
+        final Object[] lambdaArgs = args;
+        final LambdaResponseHandler responseHandler = handler;
+        this.publicDatabase.presave(Arrays.asList(args), new ResultCallback<List>() {
+            @Override
+            public void onSuccess(List result) {
+                LambdaRequest request = new LambdaRequest(name, result);
+                request.responseHandler = responseHandler;
 
-        this.requestManager.sendRequest(request);
+                Container.this.requestManager.sendRequest(request);
+            }
+
+            @Override
+            public void onFailure(Error error) {
+
+            }
+        });
     }
 
     /**
@@ -230,9 +245,22 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(String name, Map<String, Object> args, LambdaResponseHandler handler) {
-        LambdaRequest request = new LambdaRequest(name, args);
-        request.responseHandler = handler;
+        final String lambdaName = name;
+        final Map<String, Object> lambdaArgs = args;
+        final LambdaResponseHandler responseHandler = handler;
+        this.publicDatabase.presave(args, new ResultCallback<Map>() {
+            @Override
+            public void onSuccess(Map result) {
+                LambdaRequest request = new LambdaRequest(lambdaName, result);
+                request.responseHandler = responseHandler;
 
-        this.requestManager.sendRequest(request);
+                Container.this.requestManager.sendRequest(request);
+            }
+
+            @Override
+            public void onFailure(Error error) {
+
+            }
+        });
     }
 }

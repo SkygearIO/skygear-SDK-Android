@@ -77,6 +77,30 @@ public class LambdaRequest extends Request {
      * @param name the name
      * @param args the args
      */
+    public LambdaRequest(String name, List<Object> args) {
+        super(name);
+
+        this.data = new HashMap<>();
+
+        if (args != null) {
+            for (int idx = 0; idx < args.size(); idx++) {
+                if (!this.isCompatibleArgument(args.get(idx))) {
+                    throw new InvalidParameterException(
+                            String.format("Argument at index %d is incompatible", idx)
+                    );
+                }
+            }
+
+            this.data.put("args", new JSONArray(args));
+        }
+    }
+
+    /**
+     * Instantiates a new Skygear Lambda Function Request.
+     *
+     * @param name the name
+     * @param args the args
+     */
     public LambdaRequest(String name, Map<String, Object> args) {
         this(name, (Object)args);
     }
