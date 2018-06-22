@@ -31,12 +31,12 @@ public abstract class TypedLambdaResponseHandler<T extends Object> extends Lambd
      */
     public abstract void onLambdaSuccess(T result);
 
-    public void onLambdaSuccess(JSONObject result) {
-        this.onLambdaSuccess((T)result);
+    final public void onLambdaSuccess(JSONObject result) {
+        throw new IllegalStateException("onLambdaSuccess should not be called.");
     }
 
     @Override
-    public void onSuccess(JSONObject result) {
+    final public void onSuccess(JSONObject result) {
         try {
             // The object can be a JSONObject, JSONArray or other
             // JSON-compatible types.
@@ -47,5 +47,10 @@ public abstract class TypedLambdaResponseHandler<T extends Object> extends Lambd
         } catch (ClassCastException ex) {
             this.onFail(new Error(ex.getMessage()));
         }
+    }
+
+    @Override
+    final public void onFail(Error error) {
+        this.onLambdaFail(error);
     }
 }
