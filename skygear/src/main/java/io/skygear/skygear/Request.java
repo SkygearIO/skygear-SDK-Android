@@ -104,6 +104,14 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
 
     @Override
     public void onResponse(JSONObject response) {
+        // TODO(cheungpat): It is not deisred to decide whether to unwrap the result
+        // object depending on whether the `result` key contains a JSONObject
+        // or not. In the future, the `onSuccess` method is always called
+        // with a JSONObject containing a `result` key.
+
+        // NOTE(cheungpat): LambdaRequest has overridden this method
+        // with logic that does not implement conditional unwrapping. When
+        // updating this method, consider also updating LambdaRequest.onResponse.
         if (this.responseHandler != null) {
             JSONObject resultObject;
             try {

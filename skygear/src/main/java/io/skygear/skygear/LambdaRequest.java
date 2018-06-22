@@ -105,6 +105,27 @@ public class LambdaRequest extends Request {
         this(name, (Object)args);
     }
 
+    @Override
+    public void onResponse(JSONObject response) {
+        if (this.responseHandler instanceof TypedLambdaResponseHandler) {
+            // NOTE(cheungpat): The TypedLamdbdaResponseHandler need to access the
+            // response object because the type of the `result` key is arbitrary.
+            // See comments in Request.onResponse.
+            this.responseHandler.onSuccess(response);
+        } else if (this.responseHandler instanceof LambdaResponseHandler) {
+            // NOTE(cheungpat): LambdaResponseHandler does not support arbitrary result class.
+            // If the `result` key contains something other than a JSONObject, we
+            // fall back to pass the response JSONObject to response handler.
+            //
+            // In the future, LambdaResponseHandler will be replaced by TypedLambdaResponseHandler.
+            JSONObject result = response.optJSONObject("result");
+            if (result == null) {
+                result = response;
+            }
+            this.responseHandler.onSuccess(result);
+        }
+    }
+
     private boolean isCompatibleArgument(Object[] array) {
         boolean result = true;
         int l = array.length;
