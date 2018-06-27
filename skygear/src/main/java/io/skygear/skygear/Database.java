@@ -109,7 +109,11 @@ public class Database {
             }
             return wanted;
         } else if (object instanceof Object[]) {
-            return Database.findInObject(Arrays.asList(object), klass);
+            List<T> wanted = new ArrayList<T>();
+            for (Object item : (Object[])object) {
+                wanted.addAll(Database.findInObject(item, klass));
+            }
+            return wanted;
         } else {
             return new ArrayList<T>();
         }
