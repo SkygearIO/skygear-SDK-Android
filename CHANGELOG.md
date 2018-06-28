@@ -1,3 +1,15 @@
+## 1.6.0 (2018-06-28)
+
+### Features
+
+- Add Lambda support for Skygear Data Type
+- Auto save asset when saving record and lambda
+- Implement joining queries with 'and'
+
+### Other Notes
+
+- Upgrade websocket lib to 1.3.8
+
 ## 1.5.0 (2018-04-23)
 
 ### Features
