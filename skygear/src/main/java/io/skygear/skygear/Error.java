@@ -205,6 +205,10 @@ public class Error extends Exception {
          */
         USER_DISABLED(127),
         /**
+         * Verification required error.
+         */
+        VERIFICATION_REQUIRED(128),
+        /**
          * Unexpected error.
          */
         UNEXPECTED_ERROR(10000);
