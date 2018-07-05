@@ -209,6 +209,10 @@ public class Error extends Exception {
          */
         VERIFICATION_REQUIRED(128),
         /**
+         * Asset size too large error.
+         */
+        ASSET_SIZE_TOO_LARGE(129),
+        /**
          * Unexpected error.
          */
         UNEXPECTED_ERROR(10000);
