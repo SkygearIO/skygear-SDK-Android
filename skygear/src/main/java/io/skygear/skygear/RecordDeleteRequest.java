@@ -77,7 +77,7 @@ public class RecordDeleteRequest extends Request {
 
         Set<String> typeSet = new HashSet<>();
         for (Record perRecord : this.records) {
-            typeSet.add(perRecord.type);
+            typeSet.add(perRecord.getType());
         }
 
         if (typeSet.size() > 1) {

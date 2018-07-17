@@ -54,11 +54,8 @@ public class RecordDeleteRequestUnitTest {
 
     @Test
     public void testRecordDeleteRequestNormalFlow() throws Exception {
-        Record note1 = new Record("Note");
-        Record note2 = new Record("Note");
-
-        note1.id = "9C0F4536-FEA7-42DB-B8EF-561CCD175E06";
-        note2.id = "05A2946A-72DC-4F20-99F9-129BD1FCB52A";
+        Record note1 = new Record("Note", "9C0F4536-FEA7-42DB-B8EF-561CCD175E06");
+        Record note2 = new Record("Note", "05A2946A-72DC-4F20-99F9-129BD1FCB52A");
 
         RecordDeleteRequest request
                 = new RecordDeleteRequest(new Record[]{note1, note2}, instrumentationPublicDatabase);

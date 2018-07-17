@@ -36,8 +36,8 @@ public class AuthResponseHandlerUnitTest {
         AuthResponseHandler authResponseHandler = new AuthResponseHandler() {
             @Override
             public void onAuthSuccess(Record user) {
-                assertEquals("user", user.type);
-                assertEquals("user-id-1", user.id);
+                assertEquals("user", user.getType());
+                assertEquals("user-id-1", user.getId());
                 assertEquals("user1", user.get("username"));
                 assertEquals("user1@skygear.dev", user.get("email"));
 

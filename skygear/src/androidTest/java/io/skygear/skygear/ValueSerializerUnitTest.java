@@ -196,7 +196,18 @@ public class ValueSerializerUnitTest {
         JSONObject jsonValue = (JSONObject)ValueSerializer.serialize((Object)value);
 
         assertEquals("record", jsonValue.getString("$type"));
-        assertEquals("note/48092492-0791-4120-b314-022202ad3971", jsonValue.getJSONObject("$record").getString("_id"));
+        assertEquals(
+                "note/48092492-0791-4120-b314-022202ad3971",
+                jsonValue.getJSONObject("$record").getString("_id")
+        );
+        assertEquals(
+                "note",
+                jsonValue.getJSONObject("$record").getString("_recordType")
+        );
+        assertEquals(
+                "48092492-0791-4120-b314-022202ad3971",
+                jsonValue.getJSONObject("$record").getString("_recordID")
+        );
     }
 
     @Test

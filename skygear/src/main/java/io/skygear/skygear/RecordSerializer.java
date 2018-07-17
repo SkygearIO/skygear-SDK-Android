@@ -45,6 +45,8 @@ public class RecordSerializer {
     private static List<String> ReservedKeys = Arrays.asList(
             "_id",
             "_type",
+            "_recordType",
+            "_recordID",
             "_created_at",
             "_updated_at",
             "_ownerID",
@@ -161,7 +163,13 @@ public class RecordSerializer {
         try {
             JSONObject jsonObject = RecordSerializer.serialize(record.data);
 
-            jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
+            jsonObject.put("_id", String.format(
+                    "%s/%s",
+                    record.getType(),
+                    record.getId()
+            ));
+            jsonObject.put("_recordType", record.getType());
+            jsonObject.put("_recordID", record.getId());
             if (record.createdAt != null) {
                 jsonObject.put("_created_at", DateSerializer.stringFromDate(record.createdAt));
             }
@@ -214,16 +222,24 @@ public class RecordSerializer {
      * @throws JSONException the JSON exception
      */
     public static Record deserialize(JSONObject jsonObject) throws JSONException {
-        String typedId = jsonObject.optString("_id");
-        String[] split = typedId.split("/", 2);
+        String recordType;
+        String recordID;
+        try {
+            recordType = jsonObject.getString("_recordType");
+            recordID = jsonObject.getString("_recordID");
+        } catch (JSONException e) {
+            String typedId = jsonObject.optString("_id");
+            String[] split = typedId.split("/", 2);
 
-        if (split.length < 2 || split[1].length() == 0) {
-            throw new InvalidParameterException("_id field is malformed");
+            if (split.length < 2 || split[0].length() == 0 || split[1].length() == 0) {
+                throw new InvalidParameterException("Fail to parse record id");
+            }
+
+            recordType = split[0];
+            recordID = split[1];
         }
 
-        // handle _id
-        Record record = new Record(split[0]);
-        record.id = split[1];
+        Record record = new Record(recordType, recordID);
 
         // handle _create_at
         if (jsonObject.has("_created_at")) {

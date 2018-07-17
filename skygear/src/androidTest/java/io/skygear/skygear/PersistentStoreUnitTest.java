@@ -97,8 +97,8 @@ public class PersistentStoreUnitTest {
         PersistentStore persistentStore = new PersistentStore(instrumentationContext);
         Record currentUser = persistentStore.currentUser;
 
-        assertEquals("user", currentUser.type);
-        assertEquals("123", currentUser.id);
+        assertEquals("user", currentUser.getType());
+        assertEquals("123", currentUser.getId());
         assertEquals("user_123", currentUser.get("username"));
         assertEquals("user123@skygear.dev", currentUser.get("email"));
 
@@ -131,6 +131,8 @@ public class PersistentStoreUnitTest {
         JSONObject currentUserJson = new JSONObject(currentUserString);
 
         assertEquals("user/12345", currentUserJson.getString("_id"));
+        assertEquals("user", currentUserJson.getString("_recordType"));
+        assertEquals("12345", currentUserJson.getString("_recordID"));
         assertEquals("user_12345", currentUserJson.getString("username"));
         assertEquals("user12345@skygear.dev", currentUserJson.getString("email"));
         assertEquals("token_12345", pref.getString(PersistentStore.ACCESS_TOKEN_KEY, null));

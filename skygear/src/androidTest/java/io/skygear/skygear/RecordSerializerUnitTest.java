@@ -55,6 +55,8 @@ public class RecordSerializerUnitTest {
         assertFalse(RecordSerializer.isValidKey(""));
         assertFalse(RecordSerializer.isValidKey("_id"));
         assertFalse(RecordSerializer.isValidKey("_type"));
+        assertFalse(RecordSerializer.isValidKey("_recordType"));
+        assertFalse(RecordSerializer.isValidKey("_recordID"));
         assertFalse(RecordSerializer.isValidKey("_created_at"));
         assertFalse(RecordSerializer.isValidKey("_updated_at"));
         assertFalse(RecordSerializer.isValidKey("_ownerID"));
@@ -155,6 +157,8 @@ public class RecordSerializerUnitTest {
 
         assertNotNull(jsonObject);
         assertEquals("Note/" + aNote.getId(), jsonObject.getString("_id"));
+        assertEquals("Note", jsonObject.getString("_recordType"));
+        assertEquals(aNote.getId(), jsonObject.getString("_recordID"));
         assertEquals("user123", jsonObject.getString("_ownerID"));
         assertEquals("user123", jsonObject.getString("_created_by"));
         assertEquals("user456", jsonObject.getString("_updated_by"));
@@ -206,6 +210,8 @@ public class RecordSerializerUnitTest {
 
         JSONObject commentTransient = transientObject.getJSONObject("comment");
         assertEquals("Comment/" + aComment.getId(), commentTransient.getString("_id"));
+        assertEquals("Comment", commentTransient.getString("_recordType"));
+        assertEquals(aComment.getId(), commentTransient.getString("_recordID"));
         assertEquals("google", commentTransient.getString("okay"));
         assertEquals("siri", commentTransient.getString("hey"));
     }
@@ -276,13 +282,15 @@ public class RecordSerializerUnitTest {
         // prepare reference record data
         String referenceRecordId = "7a7873dc-e14b-4b8f-9c51-948da68e924e";
         JSONObject referenceRecordData = new JSONObject();
-        referenceRecordData.put("_id", "Comment/" + referenceRecordId);
+        referenceRecordData.put("_recordType", "Comment");
+        referenceRecordData.put("_recordID", referenceRecordId);
         referenceRecordData.put("okay", "google");
         referenceRecordData.put("hey", "siri");
 
         // prepare record data
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_recordType", "Note");
+        jsonObject.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
         jsonObject.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
         jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
@@ -393,10 +401,49 @@ public class RecordSerializerUnitTest {
         assertEquals("siri", commentTransient.get("hey"));
     }
 
+    @Test
+    public void testRecordDeserializationDeprecatedFlow() throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
+        jsonObject.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
+        jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
+        jsonObject.put("_updated_at", "2016-06-15T07:55:33.342Z");
+        jsonObject.put("_updated_by", "5a497b0b-cf93-4720-bea4-14637478cfc2");
+        jsonObject.put("_access", new JSONArray("[{\"public\":true,\"level\":\"write\"}]"));
+
+        jsonObject.put("hello", "world");
+        jsonObject.put("foobar", 3);
+        jsonObject.put("abc", 12.345);
+
+        Record record = RecordSerializer.deserialize(jsonObject);
+
+        assertEquals("Note", record.getType());
+        assertEquals("48092492-0791-4120-B314-022202AD3971", record.getId());
+        assertEquals("5a497b0b-cf93-4720-bea4-14637478cfc0", record.getCreatorId());
+        assertEquals("5a497b0b-cf93-4720-bea4-14637478cfc1", record.getOwnerId());
+        assertEquals("5a497b0b-cf93-4720-bea4-14637478cfc2", record.getUpdaterId());
+
+        assertEquals(
+                new DateTime(2016, 6, 15, 7, 55, 32, 342, DateTimeZone.UTC).toDate(),
+                record.getCreatedAt()
+        );
+        assertEquals(
+                new DateTime(2016, 6, 15, 7, 55, 33, 342, DateTimeZone.UTC).toDate(),
+                record.getUpdatedAt()
+        );
+
+        assertEquals("world", record.get("hello"));
+        assertEquals(3, record.get("foobar"));
+        assertEquals(12.345, record.get("abc"));
+
+        assertTrue(record.isPublicWritable());
+    }
+
     @Test(expected = InvalidParameterException.class)
     public void testRecordDeserializationNotAllowNoId() throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("_id", "Note");
+        jsonObject.put("_recordType", "Note");
         jsonObject.put("hello", "world");
         jsonObject.put("foobar", 3);
         jsonObject.put("abc", 12.345);
@@ -408,7 +455,8 @@ public class RecordSerializerUnitTest {
     /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/23 */
     public void testRecordDeserializeJsonObject() throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_recordType", "Note");
+        jsonObject.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
         jsonObject.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
         jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
@@ -426,7 +474,8 @@ public class RecordSerializerUnitTest {
     /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/23 */
     public void testRecordDeserializeArray() throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_recordType", "Note");
+        jsonObject.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
         jsonObject.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
         jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
@@ -446,7 +495,8 @@ public class RecordSerializerUnitTest {
     /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/44 */
     public void testRecordDeserializeWithNullAccess() throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_recordType", "Note");
+        jsonObject.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject.put("_created_at", "2016-06-15T07:55:32.342Z");
         jsonObject.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
         jsonObject.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
@@ -463,7 +513,8 @@ public class RecordSerializerUnitTest {
     /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/45 */
     public void testRecordDeserializeNotRequiredMetaData() throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_recordType", "Note");
+        jsonObject.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject.put("foo", "bar");
 
         RecordSerializer.deserialize(jsonObject);
@@ -473,7 +524,8 @@ public class RecordSerializerUnitTest {
     /* Regression: https://github.com/SkygearIO/skygear-SDK-Android/issues/61 */
     public void testRecordDeserializeNull() throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_recordType", "Note");
+        jsonObject.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject.put("null-value-key", JSONObject.NULL);
 
         Record aNote = RecordSerializer.deserialize(jsonObject);
@@ -486,7 +538,7 @@ public class RecordSerializerUnitTest {
         JSONObject jsonObject = RecordSerializer.serialize(note);
         Record record = RecordSerializer.deserialize(jsonObject);
 
-        assertEquals(note.id, record.id);
+        assertEquals(note.getId(), record.getId());
         assertEquals(note.ownerId, record.ownerId);
         assertEquals(note.createdAt, record.createdAt);
         assertEquals(note.creatorId, record.creatorId);
