@@ -170,8 +170,10 @@ public class RecordSerializerUnitTest {
         assertEquals("2016-06-15T07:55:34.342Z", publishDateObject.getString("$date"));
 
         JSONObject commentObject = jsonObject.getJSONObject("comment");
-        assertEquals("Comment/" + aComment.getId(), commentObject.getString("$id"));
         assertEquals("ref", commentObject.getString("$type"));
+        assertEquals("Comment/" + aComment.getId(), commentObject.getString("$id"));
+        assertEquals("Comment", commentObject.getString("$recordType"));
+        assertEquals(aComment.getId(), commentObject.getString("$recordID"));
 
         JSONObject locationObject = jsonObject.getJSONObject("loc");
         assertEquals("geo", locationObject.getString("$type"));
@@ -312,7 +314,8 @@ public class RecordSerializerUnitTest {
 
         JSONObject commentReferenceObject = new JSONObject();
         commentReferenceObject.put("$type", "ref");
-        commentReferenceObject.put("$id", "Comment/" + referenceRecordId);
+        commentReferenceObject.put("$recordType", "Comment");
+        commentReferenceObject.put("$recordID", referenceRecordId);
         jsonObject.put("comment", commentReferenceObject);
 
         JSONObject unknownValueObject = new JSONObject();

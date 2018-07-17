@@ -147,7 +147,15 @@ public class ValueSerializerUnitTest {
         JSONObject jsonValue = (JSONObject)ValueSerializer.serialize((Object)value);
 
         assertEquals("ref", jsonValue.getString("$type"));
-        assertEquals("Comment/7a7873dc-e14b-4b8f-9c51-948da68e924e", jsonValue.getString("$id"));
+        assertEquals("Comment", jsonValue.getString("$recordType"));
+        assertEquals("" +
+                "7a7873dc-e14b-4b8f-9c51-948da68e924e",
+                jsonValue.getString("$recordID")
+        );
+        assertEquals(
+                "Comment/7a7873dc-e14b-4b8f-9c51-948da68e924e",
+                jsonValue.getString("$id")
+        );
     }
 
     @Test

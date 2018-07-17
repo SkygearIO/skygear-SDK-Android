@@ -38,6 +38,8 @@ public class ReferenceSerializer {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("$type", "ref");
             jsonObject.put("$id", reference.getType() + '/' + reference.getId());
+            jsonObject.put("$recordType", reference.getType());
+            jsonObject.put("$recordID", reference.getId());
 
             return jsonObject;
         } catch (JSONException e) {
@@ -55,14 +57,23 @@ public class ReferenceSerializer {
     public static Reference deserialize(JSONObject jsonObject) throws JSONException {
         String typeValue = jsonObject.getString("$type");
         if (typeValue.equals("ref")) {
-            String typedId = jsonObject.getString("$id");
-            String[] split = typedId.split("/", 2);
+            String recordType, recordID;
+            try {
+                recordType = jsonObject.getString("$recordType");
+                recordID = jsonObject.getString("$recordID");
+            } catch (JSONException e) {
+                String typedId = jsonObject.getString("$id");
+                String[] split = typedId.split("/", 2);
 
-            if (split.length < 2 || split[1].length() == 0) {
-                throw new JSONException("$id field is malformed");
+                if (split.length < 2 || split[0].length() == 0 || split[1].length() == 0) {
+                    throw new JSONException("$id field is malformed");
+                }
+
+                recordType = split[0];
+                recordID = split[1];
             }
 
-            return new Reference(split[0], split[1]);
+            return new Reference(recordType, recordID);
         }
 
         throw new JSONException("Invalid $type value: " + typeValue);
@@ -77,8 +88,25 @@ public class ReferenceSerializer {
     public static boolean isReferenceFormat(Object object) {
         try {
             JSONObject jsonObject = (JSONObject) object;
-            return jsonObject.getString("$type").equals("ref") &&
-                    !jsonObject.isNull("$id");
+            if (jsonObject == null) {
+                return false;
+            }
+
+            if (!jsonObject.getString("$type").equals("ref")) {
+                return false;
+            }
+
+            try {
+                String recordType = jsonObject.getString("$recordType");
+                String recordID = jsonObject.getString("$recordID");
+
+                return recordType.length() > 0 && recordID.length() > 0;
+            } catch (JSONException e) {
+                String typedId = jsonObject.getString("$id");
+                String[] split = typedId.split("/", 2);
+
+                return split.length >= 2 && split[0].length() > 0 && split[1].length() > 0;
+            }
         } catch (ClassCastException e) {
             return false;
         } catch (JSONException e) {
