@@ -61,18 +61,18 @@ public class RecordDeleteRequestUnitTest {
                 = new RecordDeleteRequest(new Record[]{note1, note2}, instrumentationPublicDatabase);
         Map<String, Object> data = request.data;
         assertEquals("_public", data.get("database_id"));
+        assertEquals("Note", data.get("recordType"));
 
-        JSONArray ids = (JSONArray) data.get("ids");
-        assertEquals(2, ids.length());
+        JSONArray recordIDs = (JSONArray) data.get("recordIDs");
 
-        assertEquals(
-                String.format("%s/%s", note1.getType(), note1.getId()),
-                ids.get(0)
-        );
-        assertEquals(
-                String.format("%s/%s", note2.getType(), note2.getId()),
-                ids.get(1)
-        );
+        assertEquals(2, recordIDs.length());
+        assertEquals("9C0F4536-FEA7-42DB-B8EF-561CCD175E06", recordIDs.getString(0));
+        assertEquals("05A2946A-72DC-4F20-99F9-129BD1FCB52A", recordIDs.getString(1));
+
+        JSONArray deprecatedIDs = (JSONArray) data.get("ids");
+        assertEquals(2, deprecatedIDs.length());
+        assertEquals("Note/9C0F4536-FEA7-42DB-B8EF-561CCD175E06", deprecatedIDs.getString(0));
+        assertEquals("Note/05A2946A-72DC-4F20-99F9-129BD1FCB52A", deprecatedIDs.getString(1));
 
         request.validate();
     }

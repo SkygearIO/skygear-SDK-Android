@@ -57,13 +57,25 @@ public class RecordDeleteRequest extends Request {
     }
 
     private void updateData() {
-        JSONArray recordArray = new JSONArray();
+        String recordType = null;
+        JSONArray recordIDs = new JSONArray();
+        JSONArray deprecatedIDs = new JSONArray();
         for (Record perRecord : this.records) {
-            recordArray.put(String.format("%s/%s", perRecord.getType(), perRecord.getId()));
+            if (recordType == null) {
+                recordType = perRecord.getType();
+            }
+
+            recordIDs.put(perRecord.getId());
+            deprecatedIDs.put(String.format("%s/%s", perRecord.getType(), perRecord.getId()));
         }
 
-        this.data.put("ids", recordArray);
+        this.data.put("ids", deprecatedIDs);
+        this.data.put("recordIDs", recordIDs);
         this.data.put("database_id", this.databaseId);
+
+        if (recordType != null) {
+            this.data.put("recordType", recordType);
+        }
     }
 
     @Override

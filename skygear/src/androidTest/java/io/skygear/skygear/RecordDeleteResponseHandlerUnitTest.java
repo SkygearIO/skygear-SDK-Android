@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
@@ -35,11 +36,13 @@ public class RecordDeleteResponseHandlerUnitTest {
     @Test
     public void testRecordDeleteResponseHandlerSuccessFlow() throws Exception {
         JSONObject jsonObject1 = new JSONObject();
-        jsonObject1.put("_id", "Note/48092492-0791-4120-B314-022202AD3970");
+        jsonObject1.put("_recordType", "Note");
+        jsonObject1.put("_recordID", "48092492-0791-4120-B314-022202AD3970");
         jsonObject1.put("_type", "record");
 
         JSONObject jsonObject2 = new JSONObject();
-        jsonObject2.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject2.put("_recordType", "Note");
+        jsonObject2.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject2.put("_type", "record");
 
         JSONArray result = new JSONArray();
@@ -60,7 +63,7 @@ public class RecordDeleteResponseHandlerUnitTest {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
+            public void onDeletePartialSuccess(String[] ids, Error[] errors) {
                 fail("Should not get partial success callback");
             }
 
@@ -77,11 +80,13 @@ public class RecordDeleteResponseHandlerUnitTest {
     @Test
     public void testRecordDeleteResponseHandlerPartialSuccessFlow() throws Exception {
         JSONObject jsonObject1 = new JSONObject();
-        jsonObject1.put("_id", "Note/48092492-0791-4120-B314-022202AD3970");
+        jsonObject1.put("_recordType", "Note");
+        jsonObject1.put("_recordID", "48092492-0791-4120-B314-022202AD3970");
         jsonObject1.put("_type", "record");
 
         JSONObject jsonObject2 = new JSONObject();
-        jsonObject2.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject2.put("_recordType", "Note");
+        jsonObject2.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject2.put("_type", "error");
         jsonObject2.put("code", 110);
         jsonObject2.put("message", "record not found");
@@ -102,13 +107,16 @@ public class RecordDeleteResponseHandlerUnitTest {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
-                assertEquals(1, ids.length);
-                assertEquals(1, errors.size());
+            public void onDeletePartialSuccess(String[] ids, Error[] errors) {
+                assertEquals(2, ids.length);
+                assertEquals(2, errors.length);
 
                 assertEquals("48092492-0791-4120-B314-022202AD3970", ids[0]);
-                assertEquals(Error.Code.RESOURCE_NOT_FOUND, errors.get("48092492-0791-4120-B314-022202AD3971").getCode());
-                assertEquals("record not found", errors.get("48092492-0791-4120-B314-022202AD3971").getDetailMessage());
+                assertNull(ids[1]);
+
+                assertNull(errors[0]);
+                assertEquals(Error.Code.RESOURCE_NOT_FOUND, errors[1].getCode());
+                assertEquals("record not found", errors[1].getDetailMessage());
 
                 checkpoints[0] = true;
             }
@@ -126,14 +134,16 @@ public class RecordDeleteResponseHandlerUnitTest {
     @Test
     public void testRecordDeleteResponseHandlerAllFailFlow() throws Exception {
         JSONObject jsonObject1 = new JSONObject();
-        jsonObject1.put("_id", "Note/48092492-0791-4120-B314-022202AD3970");
+        jsonObject1.put("_recordType", "Note");
+        jsonObject1.put("_recordID", "48092492-0791-4120-B314-022202AD3970");
         jsonObject1.put("_type", "error");
         jsonObject1.put("code", 102);
         jsonObject1.put("message", "no permission to delete");
         jsonObject1.put("name", "PermissionDenied");
 
         JSONObject jsonObject2 = new JSONObject();
-        jsonObject2.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject2.put("_recordType", "Note");
+        jsonObject2.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject2.put("_type", "error");
         jsonObject2.put("code", 110);
         jsonObject2.put("message", "record not found");
@@ -154,7 +164,7 @@ public class RecordDeleteResponseHandlerUnitTest {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
+            public void onDeletePartialSuccess(String[] ids, Error[] errors) {
                 fail("Should not get partial success callback");
             }
 
@@ -180,7 +190,7 @@ public class RecordDeleteResponseHandlerUnitTest {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
+            public void onDeletePartialSuccess(String[] ids, Error[] errors) {
                 fail("Should not get partial success callback");
             }
 
