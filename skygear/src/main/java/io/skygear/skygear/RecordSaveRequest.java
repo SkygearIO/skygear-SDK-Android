@@ -64,7 +64,7 @@ public class RecordSaveRequest extends Request {
 
     public void setAtomic(boolean atomic) {
         this.atomic = atomic;
-        this.updateData();
+        this.data.put("atomic", this.atomic);
     }
 
     private void updateData() {
@@ -88,19 +88,12 @@ public class RecordSaveRequest extends Request {
             throw new InvalidParameterException("No records to be processed");
         }
 
-        Set<String> typeSet = new HashSet<>();
         for (Record perRecord : this.records) {
-            typeSet.add(perRecord.getType());
-
             for (Object perRecordPerValue : perRecord.getData().values()) {
                 if (perRecordPerValue instanceof Asset && ((Asset) perRecordPerValue).isPendingUpload()) {
                     throw new InvalidParameterException("Cannot save records with pending upload asset");
                 }
             }
-        }
-
-        if (typeSet.size() > 1) {
-            throw new InvalidParameterException("Only records in the same type are allowed");
         }
     }
 }

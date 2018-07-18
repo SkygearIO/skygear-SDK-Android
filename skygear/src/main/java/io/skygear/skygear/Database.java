@@ -270,16 +270,6 @@ public class Database {
     }
 
     /**
-     * Save a record atomically.
-     *
-     * @param record  the record
-     * @param handler the response handler
-     */
-    public void saveAtomically(Record record, RecordSaveResponseHandler handler) {
-        this.saveAtomically(new Record[]{ record }, handler);
-    }
-
-    /**
      * Save multiple records atomically.
      *
      * @param records the records

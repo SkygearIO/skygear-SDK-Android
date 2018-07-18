@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
@@ -37,7 +38,8 @@ public class RecordSaveResponseHandlerUnitTest {
     @Test
     public void testRecordSaveResponseHandlerSuccessFlow() throws Exception {
         JSONObject jsonObject1 = new JSONObject();
-        jsonObject1.put("_id", "Note/48092492-0791-4120-B314-022202AD3970");
+        jsonObject1.put("_recordType", "Note");
+        jsonObject1.put("_recordID", "48092492-0791-4120-B314-022202AD3970");
         jsonObject1.put("_created_at", "2016-06-15T07:55:32.342Z");
         jsonObject1.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
         jsonObject1.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
@@ -50,7 +52,8 @@ public class RecordSaveResponseHandlerUnitTest {
         jsonObject1.put("abc", 12.345);
 
         JSONObject jsonObject2 = new JSONObject();
-        jsonObject2.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject2.put("_recordType", "Note");
+        jsonObject2.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject2.put("_created_at", "2016-06-15T07:55:32.342Z");
         jsonObject2.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
         jsonObject2.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
@@ -116,7 +119,7 @@ public class RecordSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
+            public void onPartiallySaveSuccess(Record[] successRecords, Error[] errors) {
                 fail("Should not get partial success callback");
             }
 
@@ -133,7 +136,8 @@ public class RecordSaveResponseHandlerUnitTest {
     @Test
     public void testRecordSaveResponseHandlerPartialSuccessFlow() throws Exception {
         JSONObject jsonObject1 = new JSONObject();
-        jsonObject1.put("_id", "Note/48092492-0791-4120-B314-022202AD3970");
+        jsonObject1.put("_recordType", "Note");
+        jsonObject1.put("_recordID", "48092492-0791-4120-B314-022202AD3970");
         jsonObject1.put("_created_at", "2016-06-15T07:55:32.342Z");
         jsonObject1.put("_created_by", "5a497b0b-cf93-4720-bea4-14637478cfc0");
         jsonObject1.put("_ownerID", "5a497b0b-cf93-4720-bea4-14637478cfc1");
@@ -146,7 +150,8 @@ public class RecordSaveResponseHandlerUnitTest {
         jsonObject1.put("abc", 12.345);
 
         JSONObject jsonObject2 = new JSONObject();
-        jsonObject2.put("_id", "Note/48092492-0791-4120-B314-022202AD3971");
+        jsonObject2.put("_recordType", "Note");
+        jsonObject2.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         jsonObject2.put("_type", "error");
         jsonObject2.put("code", 1000);
         jsonObject2.put("message", "pq: duplicate key value violates unique constraint \"note__id_key\"");
@@ -167,11 +172,11 @@ public class RecordSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
-                assertEquals(1, successRecords.size());
-                assertEquals(1, errors.size());
+            public void onPartiallySaveSuccess(Record[] successRecords, Error[] errors) {
+                assertEquals(2, successRecords.length);
+                assertEquals(2, errors.length);
 
-                Record record1 = successRecords.get("48092492-0791-4120-B314-022202AD3970");
+                Record record1 = successRecords[0];
                 assertEquals("Note", record1.getType());
                 assertEquals("48092492-0791-4120-B314-022202AD3970", record1.getId());
                 assertEquals(
@@ -189,10 +194,16 @@ public class RecordSaveResponseHandlerUnitTest {
                 assertEquals(3, record1.get("foobar"));
                 assertEquals(12.345, record1.get("abc"));
 
-                Error.Code code2 = errors.get("48092492-0791-4120-B314-022202AD3971").getCode();
-                String reason2 = errors.get("48092492-0791-4120-B314-022202AD3971").getDetailMessage();
-                assertEquals(Error.Code.UNEXPECTED_ERROR, code2);
-                assertEquals("pq: duplicate key value violates unique constraint \"note__id_key\"", reason2);
+                assertNull(successRecords[1]);
+
+                assertNull(errors[0]);
+
+                Error error2 = errors[1];
+                assertEquals(Error.Code.UNEXPECTED_ERROR, error2.getCode());
+                assertEquals(
+                        "pq: duplicate key value violates unique constraint \"note__id_key\"",
+                        error2.getDetailMessage()
+                );
 
                 checkpoints[0] = true;
             }
@@ -238,7 +249,7 @@ public class RecordSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
+            public void onPartiallySaveSuccess(Record[] successRecords, Error[] errors) {
                 fail("Should not get partial success callback");
             }
 
@@ -264,7 +275,7 @@ public class RecordSaveResponseHandlerUnitTest {
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
+            public void onPartiallySaveSuccess(Record[] successRecords, Error[] errors) {
                 fail("Should not get partial success callback");
             }
 

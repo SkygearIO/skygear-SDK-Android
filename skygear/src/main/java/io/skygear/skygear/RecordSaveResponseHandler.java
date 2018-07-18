@@ -21,6 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -39,10 +41,11 @@ public abstract class RecordSaveResponseHandler implements ResponseHandler {
     /**
      * partially save success callback.
      *
-     * @param successRecords the successfully saved record map (recordId to record)
-     * @param errors         the errors (recordId to error)
+     * @param successRecords the successfully saved record
+     *                       (null when fail to save the corresponding record)
+     * @param errors         the errors (null when the corresponding record is saved successfully)
      */
-    public abstract void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors);
+    public abstract void onPartiallySaveSuccess(Record[] successRecords, Error[] errors);
 
     /**
      * Save fail callback.
@@ -55,20 +58,30 @@ public abstract class RecordSaveResponseHandler implements ResponseHandler {
     public void onSuccess(JSONObject result) {
         try {
             JSONArray results = result.getJSONArray("result");
-            Map<String, Record> recordMap = new TreeMap<>();
-            Map<String, Error> errorMap = new TreeMap<>();
 
-            for (int idx = 0; idx < results.length(); idx++) {
+            int resultSize = results.length();
+
+            List<Record> recordList = new LinkedList<>();
+            List<Error> errorList = new LinkedList<>();
+
+            boolean hasSuccess = false;
+            boolean hasError = false;
+
+            for (int idx = 0; idx < resultSize; idx++) {
                 JSONObject perResult = results.getJSONObject(idx);
-                String perResultId = perResult.getString("_id").split("/", 2)[1];
                 String perResultType = perResult.getString("_type");
 
                 switch (perResultType) {
-                    case "record":
-                        recordMap.put(perResultId, Record.fromJson(perResult));
+                    case "record": {
+                        hasSuccess = true;
+                        recordList.add(Record.fromJson(perResult));
+                        errorList.add(null);
                         break;
+                    }
                     case "error":{
-                        errorMap.put(perResultId, ErrorSerializer.deserialize(perResult));
+                        hasError = true;
+                        recordList.add(null);
+                        errorList.add(ErrorSerializer.deserialize(perResult));
                         break;
                     }
                     default: {
@@ -82,18 +95,18 @@ public abstract class RecordSaveResponseHandler implements ResponseHandler {
                 }
             }
 
-            if (errorMap.size() == 0) {
-                // all success
-                Record[] records = new Record[recordMap.size()];
-                recordMap.values().toArray(records);
-
-                this.onSaveSuccess(records);
-            } else if (recordMap.size() == 0) {
-                // all fail
-                this.onSaveFail(errorMap.values().iterator().next());
-            } else {
+            if (hasSuccess && hasError) {
                 // partial success
-                this.onPartiallySaveSuccess(recordMap, errorMap);
+                this.onPartiallySaveSuccess(
+                        recordList.toArray(new Record[resultSize]),
+                        errorList.toArray(new Error[resultSize])
+                );
+            } else if (hasError) {
+                // all fail
+                this.onSaveFail(errorList.get(0));
+            } else {
+                // all success
+                this.onSaveSuccess(recordList.toArray(new Record[resultSize]));
             }
         } catch (JSONException e) {
             this.onSaveFail(new Error("Malformed server response"));

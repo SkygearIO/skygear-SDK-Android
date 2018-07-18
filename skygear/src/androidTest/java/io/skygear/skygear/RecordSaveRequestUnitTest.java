@@ -77,6 +77,8 @@ public class RecordSaveRequestUnitTest {
                 String.format("%s/%s", note1.getType(), note1.getId()),
                 record1.getString("_id")
         );
+        assertEquals(note1.getType(), record1.getString("_recordType"));
+        assertEquals(note1.getId(), record1.getString("_recordID"));
         assertEquals(1, record1.getInt("identifier"));
 
         JSONObject record2 = (JSONObject) records.get(1);
@@ -84,6 +86,8 @@ public class RecordSaveRequestUnitTest {
                 String.format("%s/%s", note2.getType(), note2.getId()),
                 record2.getString("_id")
         );
+        assertEquals(note2.getType(), record2.getString("_recordType"));
+        assertEquals(note2.getId(), record2.getString("_recordID"));
         assertEquals(2, record2.getInt("identifier"));
 
         recordSaveRequest.validate();
@@ -98,15 +102,8 @@ public class RecordSaveRequestUnitTest {
         assertTrue((boolean)data.get("atomic"));
     }
 
-    @Test(expected = InvalidParameterException.class)
-    public void testRecordSaveRequestNotAllowSaveNoRecords() throws Exception {
-        RecordSaveRequest recordSaveRequest
-                = new RecordSaveRequest(new Record[]{}, instrumentationPublicDatabase);
-        recordSaveRequest.validate();
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testRecordSaveRequestNotAllowMultiTypeRecords() throws Exception {
+    @Test
+    public void testRecordSaveRequestAllowMultiTypeRecords() throws Exception {
         RecordSaveRequest recordSaveRequest = new RecordSaveRequest(
                 new Record[]{
                         new Record("Note"),
@@ -114,6 +111,13 @@ public class RecordSaveRequestUnitTest {
                 },
                 instrumentationPublicDatabase
         );
+        recordSaveRequest.validate();
+    }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testRecordSaveRequestNotAllowSaveNoRecords() throws Exception {
+        RecordSaveRequest recordSaveRequest
+                = new RecordSaveRequest(new Record[]{}, instrumentationPublicDatabase);
         recordSaveRequest.validate();
     }
 
