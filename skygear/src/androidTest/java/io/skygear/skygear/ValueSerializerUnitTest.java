@@ -148,8 +148,7 @@ public class ValueSerializerUnitTest {
 
         assertEquals("ref", jsonValue.getString("$type"));
         assertEquals("Comment", jsonValue.getString("$recordType"));
-        assertEquals("" +
-                "7a7873dc-e14b-4b8f-9c51-948da68e924e",
+        assertEquals("7a7873dc-e14b-4b8f-9c51-948da68e924e",
                 jsonValue.getString("$recordID")
         );
         assertEquals(

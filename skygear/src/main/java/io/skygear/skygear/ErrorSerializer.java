@@ -27,6 +27,11 @@ import org.json.JSONObject;
  */
 public class ErrorSerializer {
 
+    private static final String ErrorSerializationCodeKey = "code";
+    private static final String ErrorSerializationNameKey = "name";
+    private static final String ErrorSerializationMessageKey = "message";
+    private static final String ErrorSerializationExtraInfoKey = "info";
+
     /**
      * Serializes an error object
      *
@@ -36,13 +41,14 @@ public class ErrorSerializer {
     public static JSONObject serialize(Error errorObject) {
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("message", errorObject.getDetailMessage());
-            jsonObject.put("code", errorObject.getCodeValue());
-            jsonObject.put("name", errorObject.getName());
+
+            jsonObject.put(ErrorSerializationCodeKey, errorObject.getCodeValue());
+            jsonObject.put(ErrorSerializationNameKey, errorObject.getName());
+            jsonObject.put(ErrorSerializationMessageKey, errorObject.getDetailMessage());
             
             JSONObject infoObject = errorObject.getInfo();
             if (infoObject != null) {
-                jsonObject.put("info", infoObject);
+                jsonObject.put(ErrorSerializationExtraInfoKey, infoObject);
             }
 
             return jsonObject;
@@ -59,10 +65,11 @@ public class ErrorSerializer {
      * @throws JSONException the json exception
      */
     public static Error deserialize(JSONObject jsonObject) throws JSONException {
-        String errorString = jsonObject.optString("message");
-        int errorCodeValue = jsonObject.getInt("code");
-        String errorName = jsonObject.optString("name");
-        JSONObject errorInfo = jsonObject.optJSONObject("info");
+
+        int errorCodeValue = jsonObject.getInt(ErrorSerializationCodeKey);
+        String errorName = jsonObject.optString(ErrorSerializationNameKey);
+        String errorString = jsonObject.optString(ErrorSerializationMessageKey);
+        JSONObject errorInfo = jsonObject.optJSONObject(ErrorSerializationExtraInfoKey);
 
         return new Error(errorCodeValue, errorName, errorString, errorInfo);
     }

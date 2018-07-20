@@ -69,16 +69,16 @@ public class ReferenceSerializerUnitTest {
         assertFalse(ReferenceSerializer.isReferenceFormat(new Object()));
         assertFalse(ReferenceSerializer.isReferenceFormat(new JSONObject("{}")));
         assertFalse(ReferenceSerializer.isReferenceFormat(
-                new JSONObject("{\"$type\": \"record\"}")
+                new JSONObject("{\"$type\": \"not-ref\"}")
         ));
         assertFalse(ReferenceSerializer.isReferenceFormat(
-                new JSONObject("{\"$type\": \"record\", \"$recordType\": \"Note\"}")
+                new JSONObject("{\"$type\": \"ref\", \"$recordType\": \"Note\"}")
         ));
         assertFalse(ReferenceSerializer.isReferenceFormat(
-                new JSONObject("{\"$type\": \"record\", \"$recordID\": \"some-id\"}")
+                new JSONObject("{\"$type\": \"ref\", \"$recordID\": \"some-id\"}")
         ));
         assertFalse(ReferenceSerializer.isReferenceFormat(
-                new JSONObject("{\"$type\": \"record\", \"$id\": \"some-id\"}")
+                new JSONObject("{\"$type\": \"ref\", \"$id\": \"some-id\"}")
         ));
         assertTrue(ReferenceSerializer.isReferenceFormat(
                 new JSONObject("{" +

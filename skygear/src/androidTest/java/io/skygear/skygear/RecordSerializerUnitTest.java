@@ -440,7 +440,7 @@ public class RecordSerializerUnitTest {
         assertTrue(record.isPublicWritable());
     }
 
-    @Test(expected = InvalidParameterException.class)
+    @Test(expected = JSONException.class)
     public void testRecordDeserializationNotAllowNoId() throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("_recordType", "Note");
