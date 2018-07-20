@@ -95,6 +95,52 @@ public class RecordDeleteRequestUnitTest {
         request.validate();
     }
 
+    @Test
+    public void testRecordDeleteRequestAcceptRecordIDs() throws Exception {
+        RecordDeleteRequest request = new RecordDeleteRequest(
+                "Note",
+                new String[]{
+                        "9C0F4536-FEA7-42DB-B8EF-561CCD175E06",
+                        "05A2946A-72DC-4F20-99F9-129BD1FCB52A"
+                },
+                instrumentationPublicDatabase
+        );
+        Map<String, Object> data = request.data;
+        assertEquals("_public", data.get("database_id"));
+
+        JSONArray deprecatedIDs = (JSONArray) data.get("ids");
+        assertEquals(2, deprecatedIDs.length());
+        assertEquals("Note/9C0F4536-FEA7-42DB-B8EF-561CCD175E06", deprecatedIDs.getString(0));
+        assertEquals("Note/05A2946A-72DC-4F20-99F9-129BD1FCB52A", deprecatedIDs.getString(1));
+
+        JSONArray recordIdentifiers = (JSONArray) data.get("records");
+        assertEquals(2, recordIdentifiers.length());
+        assertEquals(
+                "Note/9C0F4536-FEA7-42DB-B8EF-561CCD175E06",
+                recordIdentifiers.getJSONObject(0).getString("_id"));
+        assertEquals(
+                "Note",
+                recordIdentifiers.getJSONObject(0).getString("_recordType")
+        );
+        assertEquals(
+                "9C0F4536-FEA7-42DB-B8EF-561CCD175E06",
+                recordIdentifiers.getJSONObject(0).getString("_recordID")
+        );
+        assertEquals(
+                "Note/05A2946A-72DC-4F20-99F9-129BD1FCB52A",
+                recordIdentifiers.getJSONObject(1).getString("_id"));
+        assertEquals(
+                "Note",
+                recordIdentifiers.getJSONObject(1).getString("_recordType")
+        );
+        assertEquals(
+                "05A2946A-72DC-4F20-99F9-129BD1FCB52A",
+                recordIdentifiers.getJSONObject(1).getString("_recordID")
+        );
+
+        request.validate();
+    }
+
     @Test(expected = InvalidParameterException.class)
     public void testRecordSaveRequestNotAllowSaveNoRecords() throws Exception {
         RecordDeleteRequest request

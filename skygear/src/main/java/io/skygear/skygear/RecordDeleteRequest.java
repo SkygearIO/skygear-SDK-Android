@@ -67,6 +67,26 @@ public class RecordDeleteRequest extends Request {
         this.updateData();
     }
 
+    /**
+     * Instantiates a new record delete request.
+     *
+     * @param recordType the record type
+     * @param recordIDs  the record IDs
+     * @param database   the database
+     */
+    public RecordDeleteRequest(String recordType, String[] recordIDs, Database database) {
+        this();
+        this.databaseId = database.getName();
+
+        for (String perRecordID: recordIDs) {
+            this.recordIdentifiers.add(
+                    new RecordIdentifier(recordType, perRecordID)
+            );
+        }
+
+        this.updateData();
+    }
+
     private void updateData() {
         JSONArray deprecatedIDs = new JSONArray();
         JSONArray recordIdentifiers = new JSONArray();

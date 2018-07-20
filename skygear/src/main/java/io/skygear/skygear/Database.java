@@ -332,6 +332,31 @@ public class Database {
     }
 
     /**
+     * Delete a record.
+     *
+     * @param recordType the record type
+     * @param recordID   the record ID
+     * @param handler    the response handler
+     */
+    public void delete(String recordType, String recordID, RecordDeleteResponseHandler handler) {
+        this.delete(recordType, new String[] { recordID }, handler);
+    }
+
+    /**
+     * Delete multiple records.
+     *
+     * @param recordType the record type
+     * @param recordIDs  the record IDs
+     * @param handler    the response handler
+     */
+    public void delete(String recordType, String[] recordIDs, RecordDeleteResponseHandler handler) {
+        RecordDeleteRequest request = new RecordDeleteRequest(recordType, recordIDs, this);
+        request.responseHandler = handler;
+
+        this.getContainer().sendRequest(request);
+    }
+
+    /**
      * Upload asset.
      *
      * @param asset           the asset
