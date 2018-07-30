@@ -102,7 +102,6 @@ public class RecordDeleteRequest extends Request {
                 deprecatedIDs.put(perRecordDeprecatedID);
 
                 JSONObject perRecordIdentifierData = new JSONObject();
-                perRecordIdentifierData.put("_id", perRecordDeprecatedID);
                 perRecordIdentifierData.put("_recordType", perRecordIdentifier.type);
                 perRecordIdentifierData.put("_recordID", perRecordIdentifier.id);
 
