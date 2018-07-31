@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
 
 @RunWith(AndroidJUnit4.class)
 public class ReferenceSerializerUnitTest {
@@ -34,10 +36,24 @@ public class ReferenceSerializerUnitTest {
 
         assertEquals("ref", jsonObject.getString("$type"));
         assertEquals("Note/c71c6ce4-a3c7-4b7d-833b-46b7df8cec03", jsonObject.getString("$id"));
+        assertEquals("Note", jsonObject.getString("$recordType"));
+        assertEquals("c71c6ce4-a3c7-4b7d-833b-46b7df8cec03", jsonObject.getString("$recordID"));
     }
 
     @Test
     public void testReferenceDeserializationNormalFlow() throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("$type", "ref");
+        jsonObject.put("$recordType", "Note");
+        jsonObject.put("$recordID", "c71c6ce4-a3c7-4b7d-833b-46b7df8cec03");
+
+        Reference ref = ReferenceSerializer.deserialize(jsonObject);
+        assertEquals("Note", ref.getType());
+        assertEquals("c71c6ce4-a3c7-4b7d-833b-46b7df8cec03", ref.getId());
+    }
+
+    @Test
+    public void testReferenceDeserializationDeprecatedFlow() throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("$type", "ref");
         jsonObject.put("$id", "Note/c71c6ce4-a3c7-4b7d-833b-46b7df8cec03");
@@ -45,5 +61,34 @@ public class ReferenceSerializerUnitTest {
         Reference ref = ReferenceSerializer.deserialize(jsonObject);
         assertEquals("Note", ref.getType());
         assertEquals("c71c6ce4-a3c7-4b7d-833b-46b7df8cec03", ref.getId());
+    }
+
+    @Test
+    public void testReferenceFormatChecking() throws Exception {
+        assertFalse(ReferenceSerializer.isReferenceFormat(null));
+        assertFalse(ReferenceSerializer.isReferenceFormat(new Object()));
+        assertFalse(ReferenceSerializer.isReferenceFormat(new JSONObject("{}")));
+        assertFalse(ReferenceSerializer.isReferenceFormat(
+                new JSONObject("{\"$type\": \"not-ref\"}")
+        ));
+        assertFalse(ReferenceSerializer.isReferenceFormat(
+                new JSONObject("{\"$type\": \"ref\", \"$recordType\": \"Note\"}")
+        ));
+        assertFalse(ReferenceSerializer.isReferenceFormat(
+                new JSONObject("{\"$type\": \"ref\", \"$recordID\": \"some-id\"}")
+        ));
+        assertFalse(ReferenceSerializer.isReferenceFormat(
+                new JSONObject("{\"$type\": \"ref\", \"$id\": \"some-id\"}")
+        ));
+        assertTrue(ReferenceSerializer.isReferenceFormat(
+                new JSONObject("{" +
+                        "\"$type\": \"ref\", " +
+                        "\"$recordType\": \"some-id\", " +
+                        "\"$recordID\": \"some-id\"" +
+                    "}")
+        ));
+        assertTrue(ReferenceSerializer.isReferenceFormat(
+                new JSONObject("{\"$type\": \"ref\", \"$id\": \"Note/some-id\"}")
+        ));
     }
 }

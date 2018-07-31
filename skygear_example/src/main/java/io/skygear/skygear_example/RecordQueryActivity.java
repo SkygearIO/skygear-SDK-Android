@@ -242,10 +242,24 @@ public class RecordQueryActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
+            public void onDeletePartialSuccess(String[] ids, Error[] errors) {
                 RecordQueryActivity.this.records = null;
+                int successCount = 0;
+                for (String eachId: ids) {
+                    if (eachId != null) {
+                        successCount++;
+                    }
+                }
+
+                int errorCount = 0;
+                for (Error eachError: errors) {
+                    if (eachError != null) {
+                        errorCount++;
+                    }
+                }
+
                 partiallySuccessDialog.setMessage(
-                        String.format("%d successes\n%d fails", ids.length, errors.size())
+                        String.format("%d successes\n%d fails", successCount, errorCount)
                 );
                 partiallySuccessDialog.show();
             }

@@ -54,27 +54,76 @@ public class RecordDeleteRequestUnitTest {
 
     @Test
     public void testRecordDeleteRequestNormalFlow() throws Exception {
-        Record note1 = new Record("Note");
-        Record note2 = new Record("Note");
-
-        note1.id = "9C0F4536-FEA7-42DB-B8EF-561CCD175E06";
-        note2.id = "05A2946A-72DC-4F20-99F9-129BD1FCB52A";
+        Record note1 = new Record("Note", "9C0F4536-FEA7-42DB-B8EF-561CCD175E06");
+        Record note2 = new Record("Note", "05A2946A-72DC-4F20-99F9-129BD1FCB52A");
 
         RecordDeleteRequest request
                 = new RecordDeleteRequest(new Record[]{note1, note2}, instrumentationPublicDatabase);
         Map<String, Object> data = request.data;
         assertEquals("_public", data.get("database_id"));
 
-        JSONArray ids = (JSONArray) data.get("ids");
-        assertEquals(2, ids.length());
+        JSONArray deprecatedIDs = (JSONArray) data.get("ids");
+        assertEquals(2, deprecatedIDs.length());
+        assertEquals("Note/9C0F4536-FEA7-42DB-B8EF-561CCD175E06", deprecatedIDs.getString(0));
+        assertEquals("Note/05A2946A-72DC-4F20-99F9-129BD1FCB52A", deprecatedIDs.getString(1));
 
+        JSONArray recordIdentifiers = (JSONArray) data.get("records");
+        assertEquals(2, recordIdentifiers.length());
         assertEquals(
-                String.format("%s/%s", note1.getType(), note1.getId()),
-                ids.get(0)
+                "Note",
+                recordIdentifiers.getJSONObject(0).getString("_recordType")
         );
         assertEquals(
-                String.format("%s/%s", note2.getType(), note2.getId()),
-                ids.get(1)
+                "9C0F4536-FEA7-42DB-B8EF-561CCD175E06",
+                recordIdentifiers.getJSONObject(0).getString("_recordID")
+        );
+        assertEquals(
+                "Note",
+                recordIdentifiers.getJSONObject(1).getString("_recordType")
+        );
+        assertEquals(
+                "05A2946A-72DC-4F20-99F9-129BD1FCB52A",
+                recordIdentifiers.getJSONObject(1).getString("_recordID")
+        );
+
+        request.validate();
+    }
+
+    @Test
+    public void testRecordDeleteRequestAcceptRecordIDs() throws Exception {
+        RecordDeleteRequest request = new RecordDeleteRequest(
+                "Note",
+                new String[]{
+                        "9C0F4536-FEA7-42DB-B8EF-561CCD175E06",
+                        "05A2946A-72DC-4F20-99F9-129BD1FCB52A"
+                },
+                instrumentationPublicDatabase
+        );
+        Map<String, Object> data = request.data;
+        assertEquals("_public", data.get("database_id"));
+
+        JSONArray deprecatedIDs = (JSONArray) data.get("ids");
+        assertEquals(2, deprecatedIDs.length());
+        assertEquals("Note/9C0F4536-FEA7-42DB-B8EF-561CCD175E06", deprecatedIDs.getString(0));
+        assertEquals("Note/05A2946A-72DC-4F20-99F9-129BD1FCB52A", deprecatedIDs.getString(1));
+
+        JSONArray recordIdentifiers = (JSONArray) data.get("records");
+        assertEquals(2, recordIdentifiers.length());
+        assertEquals(
+                "Note",
+                recordIdentifiers.getJSONObject(0).getString("_recordType")
+        );
+        assertEquals(
+                "9C0F4536-FEA7-42DB-B8EF-561CCD175E06",
+                recordIdentifiers.getJSONObject(0).getString("_recordID")
+        );
+        assertEquals(
+                "Note",
+                recordIdentifiers.getJSONObject(1).getString("_recordType")
+        );
+        assertEquals(
+                "05A2946A-72DC-4F20-99F9-129BD1FCB52A",
+                recordIdentifiers.getJSONObject(1).getString("_recordID")
         );
 
         request.validate();
@@ -84,18 +133,6 @@ public class RecordDeleteRequestUnitTest {
     public void testRecordSaveRequestNotAllowSaveNoRecords() throws Exception {
         RecordDeleteRequest request
                 = new RecordDeleteRequest(new Record[]{}, instrumentationPublicDatabase);
-        request.validate();
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testRecordSaveRequestNotAllowMultiTypeRecords() throws Exception {
-        RecordDeleteRequest request = new RecordDeleteRequest(
-                new Record[]{
-                        new Record("Note"),
-                        new Record("Comment")
-                },
-                instrumentationPublicDatabase
-        );
         request.validate();
     }
 }

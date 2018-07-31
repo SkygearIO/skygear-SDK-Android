@@ -17,22 +17,27 @@
 
 package io.skygear.skygear;
 
+import android.util.Log;
+
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import static io.skygear.skygear.RecordSerializer.RecordIdentifier;
 
 /**
  * The Skygear Record Delete Request.
  */
 public class RecordDeleteRequest extends Request {
+    private static final String TAG = "Skygear SDK";
+
     private String databaseId;
-    private List<Record> records;
+    private List<RecordIdentifier> recordIdentifiers;
 
     /**
      * Instantiates a new record delete request with default properties.
@@ -40,7 +45,7 @@ public class RecordDeleteRequest extends Request {
     RecordDeleteRequest() {
         super("record:delete");
         this.data = new HashMap<>();
-        this.records = new ArrayList<>();
+        this.recordIdentifiers = new ArrayList<>();
     }
 
     /**
@@ -52,17 +57,62 @@ public class RecordDeleteRequest extends Request {
     public RecordDeleteRequest(Record[] records, Database database) {
         this();
         this.databaseId = database.getName();
-        this.records = Arrays.asList(records);
+
+        for (Record perRecord : records) {
+            this.recordIdentifiers.add(
+                    new RecordIdentifier(perRecord.type, perRecord.id)
+            );
+        }
+
+        this.updateData();
+    }
+
+    /**
+     * Instantiates a new record delete request.
+     *
+     * @param recordType the record type
+     * @param recordIDs  the record IDs
+     * @param database   the database
+     */
+    public RecordDeleteRequest(String recordType, String[] recordIDs, Database database) {
+        this();
+        this.databaseId = database.getName();
+
+        for (String perRecordID: recordIDs) {
+            this.recordIdentifiers.add(
+                    new RecordIdentifier(recordType, perRecordID)
+            );
+        }
+
         this.updateData();
     }
 
     private void updateData() {
-        JSONArray recordArray = new JSONArray();
-        for (Record perRecord : this.records) {
-            recordArray.put(String.format("%s/%s", perRecord.getType(), perRecord.getId()));
+        JSONArray deprecatedIDs = new JSONArray();
+        JSONArray recordIdentifiers = new JSONArray();
+
+        try {
+            for (RecordIdentifier perRecordIdentifier : this.recordIdentifiers) {
+                String perRecordDeprecatedID = String.format(
+                        "%s/%s",
+                        perRecordIdentifier.type,
+                        perRecordIdentifier.id
+                );
+
+                deprecatedIDs.put(perRecordDeprecatedID);
+
+                JSONObject perRecordIdentifierData = new JSONObject();
+                perRecordIdentifierData.put("_recordType", perRecordIdentifier.type);
+                perRecordIdentifierData.put("_recordID", perRecordIdentifier.id);
+
+                recordIdentifiers.put(perRecordIdentifierData);
+            }
+        } catch(JSONException e) {
+            Log.w(TAG, "Fail to serialize record identifiers");
         }
 
-        this.data.put("ids", recordArray);
+        this.data.put("ids", deprecatedIDs);
+        this.data.put("records", recordIdentifiers);
         this.data.put("database_id", this.databaseId);
     }
 
@@ -73,15 +123,6 @@ public class RecordDeleteRequest extends Request {
         JSONArray ids = (JSONArray) this.data.get("ids");
         if (ids.length() == 0) {
             throw new InvalidParameterException("No records to be processed");
-        }
-
-        Set<String> typeSet = new HashSet<>();
-        for (Record perRecord : this.records) {
-            typeSet.add(perRecord.type);
-        }
-
-        if (typeSet.size() > 1) {
-            throw new InvalidParameterException("Only records in the same type are allowed");
         }
     }
 }

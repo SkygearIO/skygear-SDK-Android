@@ -41,17 +41,32 @@ import java.util.Set;
  * The Skygear Record Serializer.
  */
 public class RecordSerializer {
+
+    private static final String RecordSerializationDeprecatedIDKey = "_id";
+    private static final String RecordSerializationResponseTypeKey = "_type";
+    private static final String RecordSerializationRecordTypeKey = "_recordType";
+    private static final String RecordSerializationRecordIDKey = "_recordID";
+    private static final String RecordSerializationCreationDatetimeKey = "_created_at";
+    private static final String RecordSerializationUpdateDatetimeKey = "_updated_at";
+    private static final String RecordSerializationOwnerIDKey = "_ownerID";
+    private static final String RecordSerializationCreatorIDKey = "_created_by";
+    private static final String RecordSerializationUpdaterIDKey = "_updated_by";
+    private static final String RecordSerializationAccessKey = "_access";
+    private static final String RecordSerializationTransientKey = "_transient";
+
     private static final String TAG = "Skygear SDK";
     private static List<String> ReservedKeys = Arrays.asList(
-            "_id",
-            "_type",
-            "_created_at",
-            "_updated_at",
-            "_ownerID",
-            "_created_by",
-            "_updated_by",
-            "_access",
-            "_transient"
+            RecordSerializationDeprecatedIDKey,
+            RecordSerializationResponseTypeKey,
+            RecordSerializationRecordTypeKey,
+            RecordSerializationRecordIDKey,
+            RecordSerializationCreationDatetimeKey,
+            RecordSerializationUpdateDatetimeKey,
+            RecordSerializationOwnerIDKey,
+            RecordSerializationCreatorIDKey,
+            RecordSerializationUpdaterIDKey,
+            RecordSerializationAccessKey,
+            RecordSerializationTransientKey
     );
 
     private static Set<? extends Class> CompatibleValueClasses = new HashSet<>(Arrays.asList(
@@ -161,25 +176,40 @@ public class RecordSerializer {
         try {
             JSONObject jsonObject = RecordSerializer.serialize(record.data);
 
-            jsonObject.put("_id", String.format("%s/%s", record.type, record.id));
+            jsonObject.put(RecordSerializationDeprecatedIDKey, String.format(
+                    "%s/%s",
+                    record.getType(),
+                    record.getId()
+            ));
+            jsonObject.put(RecordSerializationRecordTypeKey, record.getType());
+            jsonObject.put(RecordSerializationRecordIDKey, record.getId());
             if (record.createdAt != null) {
-                jsonObject.put("_created_at", DateSerializer.stringFromDate(record.createdAt));
+                jsonObject.put(
+                        RecordSerializationCreationDatetimeKey,
+                        DateSerializer.stringFromDate(record.createdAt)
+                );
             }
             if (record.updatedAt != null) {
-                jsonObject.put("_updated_at", DateSerializer.stringFromDate(record.updatedAt));
+                jsonObject.put(
+                        RecordSerializationUpdateDatetimeKey,
+                        DateSerializer.stringFromDate(record.updatedAt)
+                );
             }
             if (record.creatorId != null) {
-                jsonObject.put("_created_by", record.creatorId);
+                jsonObject.put(RecordSerializationCreatorIDKey, record.creatorId);
             }
             if (record.updaterId != null) {
-                jsonObject.put("_updated_by", record.updaterId);
+                jsonObject.put(RecordSerializationUpdaterIDKey, record.updaterId);
             }
             if (record.ownerId != null) {
-                jsonObject.put("_ownerID", record.ownerId);
+                jsonObject.put(RecordSerializationOwnerIDKey, record.ownerId);
             }
 
             if (record.getAccess() != null) {
-                jsonObject.put("_access", AccessControlSerializer.serialize(record.getAccess()));
+                jsonObject.put(
+                        RecordSerializationAccessKey,
+                        AccessControlSerializer.serialize(record.getAccess())
+                );
             }
 
             // handle _transient
@@ -195,7 +225,7 @@ public class RecordSerializer {
                     }
                 }
 
-                jsonObject.put("_transient", transientObject);
+                jsonObject.put(RecordSerializationTransientKey, transientObject);
             }
 
             return jsonObject;
@@ -214,49 +244,41 @@ public class RecordSerializer {
      * @throws JSONException the JSON exception
      */
     public static Record deserialize(JSONObject jsonObject) throws JSONException {
-        String typedId = jsonObject.optString("_id");
-        String[] split = typedId.split("/", 2);
-
-        if (split.length < 2 || split[1].length() == 0) {
-            throw new InvalidParameterException("_id field is malformed");
-        }
-
-        // handle _id
-        Record record = new Record(split[0]);
-        record.id = split[1];
+        RecordIdentifier identifier = RecordSerializer.deserializeRecordIdentifer(jsonObject);
+        Record record = new Record(identifier.type, identifier.id);
 
         // handle _create_at
-        if (jsonObject.has("_created_at")) {
-            String createdAtString = jsonObject.getString("_created_at");
+        if (jsonObject.has(RecordSerializationCreationDatetimeKey)) {
+            String createdAtString = jsonObject.getString(RecordSerializationCreationDatetimeKey);
             record.createdAt = DateSerializer.dateFromString(createdAtString);
         }
 
         // handle _updated_at
-        if (jsonObject.has("_updated_at")) {
-            String updatedAtString = jsonObject.getString("_updated_at");
+        if (jsonObject.has(RecordSerializationUpdateDatetimeKey)) {
+            String updatedAtString = jsonObject.getString(RecordSerializationUpdateDatetimeKey);
             record.updatedAt = DateSerializer.dateFromString(updatedAtString);
         }
 
         // handle _created_by, _updated_by, _ownerID
-        if (jsonObject.has("_created_by")) {
-            record.creatorId = jsonObject.getString("_created_by");
+        if (jsonObject.has(RecordSerializationCreatorIDKey)) {
+            record.creatorId = jsonObject.getString(RecordSerializationCreatorIDKey);
         }
-        if (jsonObject.has("_updated_by")) {
-            record.updaterId = jsonObject.getString("_updated_by");
+        if (jsonObject.has(RecordSerializationUpdaterIDKey)) {
+            record.updaterId = jsonObject.getString(RecordSerializationUpdaterIDKey);
         }
-        if (jsonObject.has("_ownerID")) {
-            record.ownerId = jsonObject.getString("_ownerID");
+        if (jsonObject.has(RecordSerializationOwnerIDKey)) {
+            record.ownerId = jsonObject.getString(RecordSerializationOwnerIDKey);
         }
 
         // handle _access
         JSONArray accessJsonArray = null;
-        if (!jsonObject.isNull("_access")) {
-            accessJsonArray = jsonObject.getJSONArray("_access");
+        if (!jsonObject.isNull(RecordSerializationAccessKey)) {
+            accessJsonArray = jsonObject.getJSONArray(RecordSerializationAccessKey);
         }
 
         // handle _transient
-        if (!jsonObject.isNull("_transient")) {
-            JSONObject transientObject = jsonObject.getJSONObject("_transient");
+        if (!jsonObject.isNull(RecordSerializationTransientKey)) {
+            JSONObject transientObject = jsonObject.getJSONObject(RecordSerializationTransientKey);
             Iterator<String> transientKeys = transientObject.keys();
 
             while(transientKeys.hasNext()) {
@@ -302,5 +324,48 @@ public class RecordSerializer {
         }
 
         return record;
+    }
+
+    /**
+     * RecordIdentifier is a data class representing the identifier of a record, which includes
+     * the type and the ID of the record.
+     *
+     * RecordIdentifier is only used within this package.
+     */
+    static class RecordIdentifier {
+        final String type;
+        final String id;
+
+        RecordIdentifier(String type, String id) {
+            this.type = type;
+            this.id = id;
+        }
+    }
+
+    static RecordIdentifier deserializeRecordIdentifer(JSONObject jsonObject)
+            throws JSONException
+    {
+        String recordType;
+        String recordID;
+        try {
+            recordType = jsonObject.getString(RecordSerializationRecordTypeKey);
+            recordID = jsonObject.getString(RecordSerializationRecordIDKey);
+        } catch (JSONException e) {
+            String typedId = jsonObject.getString(RecordSerializationDeprecatedIDKey);
+            String[] split = typedId.split("/", 2);
+
+            if (split.length != 2 || split[0].length() == 0 || split[1].length() == 0) {
+                throw new JSONException(String.format(
+                        "%s and / or %s is malformed",
+                        RecordSerializationRecordTypeKey,
+                        RecordSerializationRecordIDKey
+                ));
+            }
+
+            recordType = split[0];
+            recordID = split[1];
+        }
+
+        return new RecordIdentifier(recordType, recordID);
     }
 }

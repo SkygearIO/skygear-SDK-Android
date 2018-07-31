@@ -147,7 +147,14 @@ public class ValueSerializerUnitTest {
         JSONObject jsonValue = (JSONObject)ValueSerializer.serialize((Object)value);
 
         assertEquals("ref", jsonValue.getString("$type"));
-        assertEquals("Comment/7a7873dc-e14b-4b8f-9c51-948da68e924e", jsonValue.getString("$id"));
+        assertEquals("Comment", jsonValue.getString("$recordType"));
+        assertEquals("7a7873dc-e14b-4b8f-9c51-948da68e924e",
+                jsonValue.getString("$recordID")
+        );
+        assertEquals(
+                "Comment/7a7873dc-e14b-4b8f-9c51-948da68e924e",
+                jsonValue.getString("$id")
+        );
     }
 
     @Test
@@ -188,7 +195,18 @@ public class ValueSerializerUnitTest {
         JSONObject jsonValue = (JSONObject)ValueSerializer.serialize((Object)value);
 
         assertEquals("record", jsonValue.getString("$type"));
-        assertEquals("note/48092492-0791-4120-b314-022202ad3971", jsonValue.getJSONObject("$record").getString("_id"));
+        assertEquals(
+                "note/48092492-0791-4120-b314-022202ad3971",
+                jsonValue.getJSONObject("$record").getString("_id")
+        );
+        assertEquals(
+                "note",
+                jsonValue.getJSONObject("$record").getString("_recordType")
+        );
+        assertEquals(
+                "48092492-0791-4120-b314-022202ad3971",
+                jsonValue.getJSONObject("$record").getString("_recordID")
+        );
     }
 
     @Test

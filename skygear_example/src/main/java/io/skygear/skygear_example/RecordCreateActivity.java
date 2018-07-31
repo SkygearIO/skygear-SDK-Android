@@ -308,7 +308,7 @@ public class RecordCreateActivity
             }
 
             @Override
-            public void onPartiallySaveSuccess(Map<String, Record> successRecords, Map<String, Error> errors) {
+            public void onPartiallySaveSuccess(Record[] successRecords, Error[] errors) {
                 failDialog.setMessage("Unexpected Error");
                 failDialog.show();
             }
@@ -366,7 +366,7 @@ public class RecordCreateActivity
             }
 
             @Override
-            public void onDeletePartialSuccess(String[] ids, Map<String, Error> errors) {
+            public void onDeletePartialSuccess(String[] ids, Error[] errors) {
                 failDialog.setMessage("Unexpected Error");
                 failDialog.show();
             }

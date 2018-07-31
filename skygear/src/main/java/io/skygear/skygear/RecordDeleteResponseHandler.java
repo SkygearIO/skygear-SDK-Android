@@ -41,10 +41,10 @@ public abstract class RecordDeleteResponseHandler implements ResponseHandler {
     /**
      * Partially delete success callback.
      *
-     * @param ids    the deleted record ids
-     * @param errors the errors (recordId to error)
+     * @param ids    the deleted record ids (null when fail to delete the corresponding record)
+     * @param errors the errors (null when the corresponding record is deleted successfully)
      */
-    public abstract void onDeletePartialSuccess(String[] ids, Map<String, Error> errors);
+    public abstract void onDeletePartialSuccess(String[] ids, Error[] errors);
 
     /**
      * Delete fail callback.
@@ -58,19 +58,27 @@ public abstract class RecordDeleteResponseHandler implements ResponseHandler {
         try {
             JSONArray results = result.getJSONArray("result");
             List<String> successList = new LinkedList<>();
-            Map<String, Error> errorMap = new TreeMap<>();
+            List<Error> errorList = new LinkedList<>();
+
+            boolean hasSuccess = false;
+            boolean hasError = false;
 
             for (int idx = 0; idx < results.length(); idx++) {
                 JSONObject perResult = results.getJSONObject(idx);
-                String perResultId = perResult.getString("_id").split("/", 2)[1];
+                String perResultId = perResult.getString("_recordID");
                 String perResultType = perResult.getString("_type");
 
                 switch (perResultType) {
-                    case "record":
+                    case "record": {
+                        hasSuccess = true;
                         successList.add(perResultId);
+                        errorList.add(null);
                         break;
+                    }
                     case "error": {
-                        errorMap.put(perResultId, ErrorSerializer.deserialize(perResult));
+                        hasError = true;
+                        successList.add(null);
+                        errorList.add(ErrorSerializer.deserialize(perResult));
                         break;
                     }
                     default: {
@@ -84,15 +92,18 @@ public abstract class RecordDeleteResponseHandler implements ResponseHandler {
                 }
             }
 
-            if (errorMap.size() == 0) {
+            if (hasSuccess && hasError) {
+                // partial success
+                this.onDeletePartialSuccess(
+                        successList.toArray(new String[]{}),
+                        errorList.toArray(new Error[]{})
+                );
+            } else if (hasError) {
+                // all fail
+                this.onFail(errorList.get(0));
+            } else {
                 // all success
                 this.onDeleteSuccess(successList.toArray(new String[]{}));
-            } else if (successList.size() == 0) {
-                // all fail
-                this.onDeleteFail(errorMap.values().iterator().next());
-            } else {
-                // partial success
-                this.onDeletePartialSuccess(successList.toArray(new String[]{}), errorMap);
             }
         } catch (JSONException e) {
             this.onDeleteFail(new Error("Malformed server response"));

@@ -37,8 +37,8 @@ public class AuthResponseHandlerWrapperUnitTest {
             @Override
             public void onAuthSuccess(Record user) {
                 checkpoints[0] = true;
-                assertEquals("user", user.type);
-                assertEquals("user_001", user.id);
+                assertEquals("user", user.getType());
+                assertEquals("user_001", user.getId());
             }
 
             @Override
@@ -98,8 +98,8 @@ public class AuthResponseHandlerWrapperUnitTest {
             @Override
             public void resolveAuthUser(Record user, String accessToken) {
                 checkpoints[0] = true;
-                assertEquals("user", user.type);
-                assertEquals("user_001", user.id);
+                assertEquals("user", user.getType());
+                assertEquals("user_001", user.getId());
                 assertEquals("my-token", accessToken);
 
             }

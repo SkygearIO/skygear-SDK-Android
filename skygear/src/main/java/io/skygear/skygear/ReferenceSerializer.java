@@ -20,12 +20,21 @@ package io.skygear.skygear;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static io.skygear.skygear.RecordSerializer.RecordIdentifier;
+
 /**
  * The Skygear Record Reference Serializer.
  * <p>
  * This class converts between record reference object and JSON object in Skygear defined format.
  */
 public class ReferenceSerializer {
+
+    private static final String ReferenceSerializationTypeKey = "$type";
+    private static final String ReferenceSerializationDeprecatedIDKey = "$id";
+    private static final String ReferenceSerializationRecordTypeKey = "$recordType";
+    private static final String ReferenceSerializationRecordIDKey = "$recordID";
+
+    private static final String ReferenceSerializationTypeValue = "ref";
 
     /**
      * Serializes a record reference
@@ -36,8 +45,13 @@ public class ReferenceSerializer {
     public static JSONObject serialize(Reference reference) {
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("$type", "ref");
-            jsonObject.put("$id", reference.getType() + '/' + reference.getId());
+            jsonObject.put(ReferenceSerializationTypeKey, ReferenceSerializationTypeValue);
+            jsonObject.put(
+                    ReferenceSerializationDeprecatedIDKey,
+                    reference.getType() + '/' + reference.getId()
+            );
+            jsonObject.put(ReferenceSerializationRecordTypeKey, reference.getType());
+            jsonObject.put(ReferenceSerializationRecordIDKey, reference.getId());
 
             return jsonObject;
         } catch (JSONException e) {
@@ -53,16 +67,11 @@ public class ReferenceSerializer {
      * @throws JSONException the json exception
      */
     public static Reference deserialize(JSONObject jsonObject) throws JSONException {
-        String typeValue = jsonObject.getString("$type");
-        if (typeValue.equals("ref")) {
-            String typedId = jsonObject.getString("$id");
-            String[] split = typedId.split("/", 2);
-
-            if (split.length < 2 || split[1].length() == 0) {
-                throw new JSONException("$id field is malformed");
-            }
-
-            return new Reference(split[0], split[1]);
+        String typeValue = jsonObject.getString(ReferenceSerializationTypeKey);
+        if (typeValue.equals(ReferenceSerializationTypeValue)) {
+            RecordIdentifier identifier
+                    = ReferenceSerializer.deserializeRecordIdentifer(jsonObject);
+            return new Reference(identifier.type, identifier.id);
         }
 
         throw new JSONException("Invalid $type value: " + typeValue);
@@ -77,12 +86,54 @@ public class ReferenceSerializer {
     public static boolean isReferenceFormat(Object object) {
         try {
             JSONObject jsonObject = (JSONObject) object;
-            return jsonObject.getString("$type").equals("ref") &&
-                    !jsonObject.isNull("$id");
+            if (jsonObject == null) {
+                return false;
+            }
+
+            if (!jsonObject.getString(ReferenceSerializationTypeKey)
+                    .equals(ReferenceSerializationTypeValue)
+            ) {
+                return false;
+            }
+
+            try {
+                RecordIdentifier identifier
+                        = ReferenceSerializer.deserializeRecordIdentifer(jsonObject);
+                return identifier.type.length() > 0 && identifier.id.length() > 0;
+            } catch (JSONException e) {
+                return false;
+            }
         } catch (ClassCastException e) {
             return false;
         } catch (JSONException e) {
             return false;
         }
+    }
+
+    static RecordIdentifier deserializeRecordIdentifer(JSONObject jsonObject)
+            throws JSONException
+    {
+        String recordType;
+        String recordID;
+        try {
+            recordType = jsonObject.getString(ReferenceSerializationRecordTypeKey);
+            recordID = jsonObject.getString(ReferenceSerializationRecordIDKey);
+        } catch (JSONException e) {
+            String typedId = jsonObject.getString(ReferenceSerializationDeprecatedIDKey);
+            String[] split = typedId.split("/", 2);
+
+            if (split.length != 2 || split[0].length() == 0 || split[1].length() == 0) {
+                throw new JSONException(String.format(
+                        "%s and / or %s are malformed",
+                        ReferenceSerializationRecordTypeKey,
+                        ReferenceSerializationRecordIDKey
+                ));
+            }
+
+            recordType = split[0];
+            recordID = split[1];
+        }
+
+        return new RecordIdentifier(recordType, recordID);
     }
 }
