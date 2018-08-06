@@ -52,6 +52,7 @@ public class RecordSerializer {
     private static final String RecordSerializationCreatorIDKey = "_created_by";
     private static final String RecordSerializationUpdaterIDKey = "_updated_by";
     private static final String RecordSerializationAccessKey = "_access";
+    private static final String RecordSerializationDeletedKey = "_deleted";
     private static final String RecordSerializationTransientKey = "_transient";
 
     private static final String TAG = "Skygear SDK";
@@ -66,6 +67,7 @@ public class RecordSerializer {
             RecordSerializationCreatorIDKey,
             RecordSerializationUpdaterIDKey,
             RecordSerializationAccessKey,
+            RecordSerializationDeletedKey,
             RecordSerializationTransientKey
     );
 
@@ -205,6 +207,10 @@ public class RecordSerializer {
                 jsonObject.put(RecordSerializationOwnerIDKey, record.ownerId);
             }
 
+            if (record.deleted) {
+                jsonObject.put(RecordSerializationDeletedKey, true);
+            }
+
             if (record.getAccess() != null) {
                 jsonObject.put(
                         RecordSerializationAccessKey,
@@ -275,6 +281,9 @@ public class RecordSerializer {
         if (!jsonObject.isNull(RecordSerializationAccessKey)) {
             accessJsonArray = jsonObject.getJSONArray(RecordSerializationAccessKey);
         }
+
+        // handler _deleted
+        record.deleted = jsonObject.optBoolean(RecordSerializationDeletedKey, false);
 
         // handle _transient
         if (!jsonObject.isNull(RecordSerializationTransientKey)) {
