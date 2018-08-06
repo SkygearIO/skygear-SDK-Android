@@ -20,30 +20,20 @@ package io.skygear.skygear;
 import org.json.JSONObject;
 
 /**
- * The Skygear Lambda Response Handler.
+ * The Response Handling interface for Skygear Request.
  */
-public abstract class LambdaResponseHandler extends ResponseHandler {
+public interface ResponseHandling {
     /**
      * The success callback.
      *
      * @param result the result
      */
-    public abstract void onLambdaSuccess(JSONObject result);
+    void onSuccess(JSONObject result);
 
     /**
-     * The fail callback.
+     * The error callback.
      *
      * @param error the error
      */
-    public abstract void onLambdaFail(Error error);
-
-    @Override
-    public void onSuccess(JSONObject result) {
-        this.onLambdaSuccess(result);
-    }
-
-    @Override
-    public void onFail(Error error) {
-        this.onLambdaFail(error);
-    }
+    void onFail(Error error);
 }

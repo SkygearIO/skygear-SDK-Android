@@ -26,7 +26,7 @@ import org.json.JSONObject;
  * This wrapper wraps original auth response handler and auth resolver
  * so that the resolver will be called before original handler is called.
  */
-class AuthResponseHandlerWrapper implements ResponseHandler {
+class AuthResponseHandlerWrapper extends ResponseHandler {
     private final AuthResolver authResolver;
     private final AuthResponseHandler originalHandler;
 
@@ -43,7 +43,7 @@ class AuthResponseHandlerWrapper implements ResponseHandler {
     }
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             JSONObject profile = result.optJSONObject("profile");
             String accessToken = result.getString("access_token");
@@ -60,7 +60,7 @@ class AuthResponseHandlerWrapper implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFail(Error error) {
         if (this.originalHandler != null) {
             this.originalHandler.onFail(error);
         }

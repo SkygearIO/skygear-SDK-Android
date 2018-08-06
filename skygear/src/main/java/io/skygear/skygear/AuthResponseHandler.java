@@ -23,7 +23,7 @@ import org.json.JSONObject;
 /**
  * The Auth response handler.
  */
-public abstract class AuthResponseHandler implements ResponseHandler {
+public abstract class AuthResponseHandler extends ResponseHandler {
     /**
      * Auth success callback
      *
@@ -39,7 +39,7 @@ public abstract class AuthResponseHandler implements ResponseHandler {
     public abstract void onAuthFail(Error error);
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             JSONObject profile = result.getJSONObject("profile");
             this.onAuthSuccess(RecordSerializer.deserialize(profile));
@@ -49,7 +49,7 @@ public abstract class AuthResponseHandler implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFail(Error error) {
         this.onAuthFail(error);
     }
 }

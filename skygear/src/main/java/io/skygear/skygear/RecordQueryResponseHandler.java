@@ -24,7 +24,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Record Query Response Handler.
  */
-public abstract class RecordQueryResponseHandler implements ResponseHandler {
+public abstract class RecordQueryResponseHandler extends ResponseHandler {
     /**
      * Query success callback.
      *
@@ -47,7 +47,7 @@ public abstract class RecordQueryResponseHandler implements ResponseHandler {
     public abstract void onQueryError(Error error);
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             JSONArray results = result.getJSONArray("result");
             Record[] records = new Record[results.length()];
@@ -74,7 +74,7 @@ public abstract class RecordQueryResponseHandler implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFail(Error error) {
         this.onQueryError(error);
     }
 }

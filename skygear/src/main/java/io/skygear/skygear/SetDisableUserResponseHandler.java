@@ -5,7 +5,7 @@ import org.json.JSONObject;
 /**
  * The Set Disable Skygear User Response Handler.
  */
-public abstract class SetDisableUserResponseHandler implements ResponseHandler {
+public abstract class SetDisableUserResponseHandler extends ResponseHandler {
     /**
      * Disable success callback.
      */
@@ -20,12 +20,12 @@ public abstract class SetDisableUserResponseHandler implements ResponseHandler {
 
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         this.onSetSuccess();
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFail(Error error) {
         this.onSetFail(error);
     }
 }

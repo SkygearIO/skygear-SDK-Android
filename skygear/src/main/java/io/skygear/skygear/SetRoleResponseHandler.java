@@ -24,7 +24,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Role Setup Response Handler.
  */
-public abstract class SetRoleResponseHandler implements ResponseHandler {
+public abstract class SetRoleResponseHandler extends ResponseHandler {
     /**
      * Setup success callback.
      *
@@ -40,7 +40,7 @@ public abstract class SetRoleResponseHandler implements ResponseHandler {
     public abstract void onSetFail(Error error);
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             JSONArray resultJSONArray = result.getJSONArray("result");
             int resultCount = resultJSONArray.length();
@@ -58,7 +58,7 @@ public abstract class SetRoleResponseHandler implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFail(Error error) {
         this.onSetFail(error);
     }
 }

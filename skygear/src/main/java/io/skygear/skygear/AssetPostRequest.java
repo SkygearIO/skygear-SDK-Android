@@ -20,6 +20,7 @@ package io.skygear.skygear;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,10 +43,7 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
      */
     Map<String, String> extraFields;
 
-    /**
-     * The Response Handler.
-     */
-    public ResponseHandler responseHandler;
+    private ResponseHandler responseHandler;
 
     /**
      * Instantiates a new Skygear Asset Post Request.
@@ -94,6 +92,26 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
     }
 
     /**
+     * Set the Response Handler of the Request.
+     *
+     * After this method call, the response handler would have
+     * a weak reference back to the request
+     *
+     * @param responseHandler the response handler of the request
+     */
+    public void setResponseHandler(ResponseHandler responseHandler) {
+        this.responseHandler = responseHandler;
+
+        if (this.responseHandler != null) {
+            this.responseHandler.requestRef = new WeakReference<>(this);
+        }
+    }
+
+    public ResponseHandler getResponseHandler() {
+        return this.responseHandler;
+    }
+
+    /**
      * Validate method.
      * This is be called before sending out the request.
      * Throw an exception to indicate any validation error.
@@ -135,9 +153,9 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
     }
 
     /**
-     * The Skygear Asset Post Response Handler interface.
+     * The Skygear Asset Post Response Handling interface.
      */
-    public interface ResponseHandler {
+    public interface ResponseHandling {
         /**
          * Post success callback.
          *
@@ -153,6 +171,26 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
          * @param error the error
          */
         void onPostFail(Asset asset, Error error);
+    }
+
+    /**
+     * The Skygear Asset Post Response Handler Base Class.
+     */
+    public static abstract class ResponseHandler implements ResponseHandling {
+        WeakReference<AssetPostRequest> requestRef;
+
+        /**
+         * The request the handler is serving
+         *
+         * @return the request
+         */
+        public AssetPostRequest getRequest() {
+            if (this.requestRef != null) {
+                return this.requestRef.get();
+            }
+
+            return null;
+        }
     }
 }
 

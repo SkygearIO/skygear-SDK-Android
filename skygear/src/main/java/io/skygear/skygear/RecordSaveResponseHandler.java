@@ -23,13 +23,11 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * The Record Save Response Handler.
  */
-public abstract class RecordSaveResponseHandler implements ResponseHandler {
+public abstract class RecordSaveResponseHandler extends ResponseHandler {
 
     /**
      * Save success callback.
@@ -55,7 +53,7 @@ public abstract class RecordSaveResponseHandler implements ResponseHandler {
     public abstract void onSaveFail(Error error);
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             JSONArray results = result.getJSONArray("result");
 
@@ -114,7 +112,7 @@ public abstract class RecordSaveResponseHandler implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFail(Error error) {
         this.onSaveFail(error);
     }
 }

@@ -29,7 +29,7 @@ import java.util.TreeMap;
 /**
  * The Record Delete Response Handler.
  */
-public abstract class RecordDeleteResponseHandler implements ResponseHandler {
+public abstract class RecordDeleteResponseHandler extends ResponseHandler {
 
     /**
      * Delete success callback.
@@ -54,7 +54,7 @@ public abstract class RecordDeleteResponseHandler implements ResponseHandler {
     public abstract void onDeleteFail(Error error);
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             JSONArray results = result.getJSONArray("result");
             List<String> successList = new LinkedList<>();
@@ -111,7 +111,7 @@ public abstract class RecordDeleteResponseHandler implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFail(Error error) {
         this.onDeleteFail(error);
     }
 }

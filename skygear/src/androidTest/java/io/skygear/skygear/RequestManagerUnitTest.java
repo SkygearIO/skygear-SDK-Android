@@ -491,7 +491,7 @@ public class RequestManagerUnitTest {
                 "http://skygear.dev/asset/upload",
                 extraFields
         );
-        request.responseHandler = new AssetPostRequest.ResponseHandler() {
+        request.setResponseHandler(new AssetPostRequest.ResponseHandler() {
             @Override
             public void onPostSuccess(Asset asset, String response) {
                 checkpoints[0] = true;
@@ -502,7 +502,7 @@ public class RequestManagerUnitTest {
             public void onPostFail(Asset asset, Error error) {
                 fail("Should not get fail callback");
             }
-        };
+        });
 
         requestManager.sendAssetPostRequest(request);
 

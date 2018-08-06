@@ -4,16 +4,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
  * The Fetch Skygear User Role Response Handler.
  */
-public abstract class FetchUserRoleResponseHandler implements ResponseHandler {
+public abstract class FetchUserRoleResponseHandler extends ResponseHandler {
     /**
      * Fetch success callback.
      *
@@ -47,7 +45,7 @@ public abstract class FetchUserRoleResponseHandler implements ResponseHandler {
     }
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             Map<String, Role[]> userRoles = this.parseUserRoles(result.getJSONObject("result"));
             this.onFetchSuccess(userRoles);
@@ -57,7 +55,7 @@ public abstract class FetchUserRoleResponseHandler implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFail(Error error) {
         this.onFetchFail(error);
     }
 }

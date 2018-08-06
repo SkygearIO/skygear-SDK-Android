@@ -101,7 +101,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void signup(Map<String, Object> authData, String password, Map<String, Object> profile, AuthResponseHandler handler) {
         Request req = new SignupRequest(authData, password, profile);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        req.setResponseHandler(new AuthResponseHandlerWrapper(this, handler));
 
         this.getContainer().requestManager.sendRequest(req);
     }
@@ -165,7 +165,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void signupAnonymously(AuthResponseHandler handler) {
         Request req = new SignupRequest();
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        req.setResponseHandler(new AuthResponseHandlerWrapper(this, handler));
 
         this.getContainer().requestManager.sendRequest(req);
     }
@@ -179,7 +179,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void login(Map<String, Object> authData, String password, AuthResponseHandler handler) {
         Request req = new LoginRequest(authData, password);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        req.setResponseHandler(new AuthResponseHandlerWrapper(this, handler));
 
         this.getContainer().requestManager.sendRequest(req);
     }
@@ -224,7 +224,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void loginWithCustomToken(String token, AuthResponseHandler handler) {
         Request req = new CustomTokenLoginRequest(token);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        req.setResponseHandler(new AuthResponseHandlerWrapper(this, handler));
 
         this.getContainer().requestManager.sendRequest(req);
     }
@@ -302,7 +302,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void logout(LogoutResponseHandler handler) {
         final Request logoutRequest = new LogoutRequest();
-        logoutRequest.responseHandler = new LogoutResponseHandlerWrapper(this, handler);
+        logoutRequest.setResponseHandler(new LogoutResponseHandlerWrapper(this, handler));
 
         String deviceId = this.getContainer().persistentStore.deviceId;
         if (this.getCurrentUser() != null && deviceId != null) {
@@ -333,7 +333,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void whoami(AuthResponseHandler handler) {
         Request req = new GetCurrentUserRequest();
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        req.setResponseHandler(new AuthResponseHandlerWrapper(this, handler));
 
         this.getContainer().requestManager.sendRequest(req);
     }
@@ -358,7 +358,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void changePassword(String newPassword, String oldPassword, AuthResponseHandler handler) {
         Request req = new ChangePasswordRequest(newPassword, oldPassword);
-        req.responseHandler = new AuthResponseHandlerWrapper(this, handler);
+        req.setResponseHandler(new AuthResponseHandlerWrapper(this, handler));
 
         this.getContainer().requestManager.sendRequest(req);
     }
@@ -385,7 +385,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void setAdminRole(Role[] role, SetRoleResponseHandler handler) {
         SetAdminRoleRequest request = new SetAdminRoleRequest(role);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         RequestManager requestManager = this.getContainer().requestManager;
         requestManager.sendRequest(request);
@@ -409,7 +409,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void setDefaultRole(Role[] role, SetRoleResponseHandler handler) {
         SetDefaultRoleRequest request = new SetDefaultRoleRequest(role);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         RequestManager requestManager = this.getContainer().requestManager;
         requestManager.sendRequest(request);
@@ -443,7 +443,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void fetchUserRole(String[] userIDs, FetchUserRoleResponseHandler handler) {
         FetchUserRoleRequest request = new FetchUserRoleRequest(userIDs);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         RequestManager requestManager = this.getContainer().requestManager;
         requestManager.sendRequest(request);
@@ -469,7 +469,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void assignUserRole(String[] userIDs, String[] roleNames, SetUserRoleResponseHandler handler) {
         AssignUserRoleRequest request = new AssignUserRoleRequest(userIDs, roleNames);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         RequestManager requestManager = this.getContainer().requestManager;
         requestManager.sendRequest(request);
@@ -495,7 +495,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void revokeUserRole(String[] userIDs, String[] roleNames, SetUserRoleResponseHandler handler) {
         RevokeUserRoleRequest request = new RevokeUserRoleRequest(userIDs, roleNames);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         RequestManager requestManager = this.getContainer().requestManager;
         requestManager.sendRequest(request);
@@ -511,7 +511,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void adminEnableUser(@NonNull String userID, @Nullable SetDisableUserResponseHandler handler) {
         SetDisableUserRequest request = SetDisableUserRequest.enableUserRequest(userID);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         RequestManager requestManager = this.getContainer().requestManager;
         requestManager.sendRequest(request);
@@ -539,7 +539,7 @@ public class AuthContainer implements AuthResolver {
      */
     public void adminDisableUser(@NonNull String userID, @Nullable String message, @Nullable Date expiry, @Nullable SetDisableUserResponseHandler handler) {
         SetDisableUserRequest request = SetDisableUserRequest.disableUserRequest(userID, message, expiry);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         RequestManager requestManager = this.getContainer().requestManager;
         requestManager.sendRequest(request);

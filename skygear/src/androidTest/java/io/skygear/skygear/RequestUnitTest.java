@@ -71,7 +71,7 @@ public class RequestUnitTest {
 
         assertEquals("test:action", req.action);
         assertEquals(RequestUnitTest.sampleData, req.data);
-        assertEquals(RequestUnitTest.sampleHandler, req.responseHandler);
+        assertEquals(RequestUnitTest.sampleHandler, req.getResponseHandler());
     }
 
     @Test
@@ -83,6 +83,6 @@ public class RequestUnitTest {
 
         assertEquals("test:action", req.action);
         assertEquals(RequestUnitTest.sampleData, req.data);
-        assertNull(req.responseHandler);
+        assertNull(req.getResponseHandler());
     }
 }

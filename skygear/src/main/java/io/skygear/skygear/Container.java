@@ -225,7 +225,7 @@ public final class Container {
             @Override
             public void onSuccess(List result) {
                 LambdaRequest request = new LambdaRequest(name, result);
-                request.responseHandler = responseHandler;
+                request.setResponseHandler(responseHandler);
 
                 Container.this.requestManager.sendRequest(request);
             }
@@ -252,7 +252,7 @@ public final class Container {
             @Override
             public void onSuccess(Map result) {
                 LambdaRequest request = new LambdaRequest(lambdaName, result);
-                request.responseHandler = responseHandler;
+                request.setResponseHandler(responseHandler);
 
                 Container.this.requestManager.sendRequest(request);
             }

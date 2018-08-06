@@ -78,7 +78,7 @@ public class PushContainer {
                     container.getContext().getPackageName()
             );
 
-            request.responseHandler = new RegisterDeviceResponseHandler() {
+            request.setResponseHandler(new RegisterDeviceResponseHandler() {
                 @Override
                 public void onRegisterSuccess(String deviceId) {
                     Container container = PushContainer.this.getContainer();
@@ -95,7 +95,7 @@ public class PushContainer {
                             error.getDetailMessage()
                     ));
                 }
-            };
+            });
 
             container.requestManager.sendRequest(request);
         }
@@ -131,7 +131,7 @@ public class PushContainer {
         String deviceId = container.persistentStore.deviceId;
         if (container.auth.getCurrentUser() != null && deviceId != null) {
             UnregisterDeviceRequest request = new UnregisterDeviceRequest(deviceId);
-            request.responseHandler = handler;
+            request.setResponseHandler(handler);
 
             container.requestManager.sendRequest(request);
         }

@@ -257,7 +257,7 @@ public class Database {
             @Override
             public void onSuccess(Record[] result) {
                 RecordSaveRequest request = new RecordSaveRequest(result, Database.this);
-                request.responseHandler = responseHandler;
+                request.setResponseHandler(responseHandler);
 
                 Database.this.getContainer().sendRequest(request);
             }
@@ -283,7 +283,7 @@ public class Database {
             public void onSuccess(Record[] result) {
                 RecordSaveRequest request = new RecordSaveRequest(result, Database.this);
                 request.setAtomic(true);
-                request.responseHandler = responseHandler;
+                request.setResponseHandler(responseHandler);
 
                 Database.this.getContainer().sendRequest(request);
             }
@@ -303,7 +303,7 @@ public class Database {
      */
     public void query(Query query, RecordQueryResponseHandler handler) {
         RecordQueryRequest request = new RecordQueryRequest(query, this);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         this.getContainer().sendRequest(request);
     }
@@ -326,7 +326,7 @@ public class Database {
      */
     public void delete(Record[] records, RecordDeleteResponseHandler handler) {
         RecordDeleteRequest request = new RecordDeleteRequest(records, this);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         this.getContainer().sendRequest(request);
     }
@@ -351,7 +351,7 @@ public class Database {
      */
     public void delete(String recordType, String[] recordIDs, RecordDeleteResponseHandler handler) {
         RecordDeleteRequest request = new RecordDeleteRequest(recordType, recordIDs, this);
-        request.responseHandler = handler;
+        request.setResponseHandler(handler);
 
         this.getContainer().sendRequest(request);
     }
@@ -369,10 +369,10 @@ public class Database {
         final RequestManager requestManager = this.getContainer().requestManager;
 
         AssetPreparePostRequest preparePostRequest = new AssetPreparePostRequest(asset);
-        preparePostRequest.responseHandler = new AssetPreparePostResponseHandler(asset) {
+        preparePostRequest.setResponseHandler(new AssetPreparePostResponseHandler(asset) {
             @Override
             public void onPreparePostSuccess(AssetPostRequest postRequest) {
-                postRequest.responseHandler = responseHandler;
+                postRequest.setResponseHandler(responseHandler);
                 requestManager.sendAssetPostRequest(postRequest);
             }
 
@@ -382,7 +382,7 @@ public class Database {
                     responseHandler.onPostFail(asset, error);
                 }
             }
-        };
+        });
 
         requestManager.sendRequest(preparePostRequest);
     }
