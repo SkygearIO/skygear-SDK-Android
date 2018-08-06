@@ -31,6 +31,8 @@ import java.security.InvalidParameterException;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class RecordDeleteRequestUnitTest {
@@ -86,6 +88,8 @@ public class RecordDeleteRequestUnitTest {
                 recordIdentifiers.getJSONObject(1).getString("_recordID")
         );
 
+        assertTrue((boolean) data.get("atomic"));
+
         request.validate();
     }
 
@@ -125,6 +129,25 @@ public class RecordDeleteRequestUnitTest {
                 "05A2946A-72DC-4F20-99F9-129BD1FCB52A",
                 recordIdentifiers.getJSONObject(1).getString("_recordID")
         );
+
+        assertTrue((boolean) data.get("atomic"));
+
+        request.validate();
+    }
+
+    @Test
+    public void testRecordDeleteRequestNonAtomic() throws Exception {
+        RecordDeleteRequest request = new RecordDeleteRequest(
+                "Note",
+                new String[]{
+                        "9C0F4536-FEA7-42DB-B8EF-561CCD175E06",
+                        "05A2946A-72DC-4F20-99F9-129BD1FCB52A"
+                },
+                instrumentationPublicDatabase
+        );
+        request.setAtomic(false);
+
+        assertFalse(request.data.containsKey("atomic"));
 
         request.validate();
     }

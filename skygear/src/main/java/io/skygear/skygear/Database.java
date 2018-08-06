@@ -315,7 +315,10 @@ public class Database {
      * @param handler the response handler
      */
     public void delete(Record record, RecordDeleteResponseHandler handler) {
-        this.delete(new Record[] { record }, handler);
+        RecordDeleteRequest request = new RecordDeleteRequest(new Record[]{record}, this);
+        request.setResponseHandler(handler);
+
+        this.getContainer().sendRequest(request);
     }
 
     /**
@@ -324,7 +327,7 @@ public class Database {
      * @param records the records
      * @param handler the response handler
      */
-    public void delete(Record[] records, RecordDeleteResponseHandler handler) {
+    public void delete(Record[] records, MultiRecordDeleteResponseHandler handler) {
         RecordDeleteRequest request = new RecordDeleteRequest(records, this);
         request.setResponseHandler(handler);
 
@@ -338,8 +341,11 @@ public class Database {
      * @param recordID   the record ID
      * @param handler    the response handler
      */
-    public void delete(String recordType, String recordID, RecordDeleteResponseHandler handler) {
-        this.delete(recordType, new String[] { recordID }, handler);
+    public void delete(String recordType, String recordID, RecordDeleteByIDResponseHandler handler) {
+        RecordDeleteRequest request = new RecordDeleteRequest(recordType, new String[]{recordID}, this);
+        request.setResponseHandler(handler);
+
+        this.getContainer().sendRequest(request);
     }
 
     /**
@@ -349,7 +355,7 @@ public class Database {
      * @param recordIDs  the record IDs
      * @param handler    the response handler
      */
-    public void delete(String recordType, String[] recordIDs, RecordDeleteResponseHandler handler) {
+    public void delete(String recordType, String[] recordIDs, MultiRecordDeleteByIDResponseHandler handler) {
         RecordDeleteRequest request = new RecordDeleteRequest(recordType, recordIDs, this);
         request.setResponseHandler(handler);
 
