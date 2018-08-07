@@ -26,7 +26,6 @@ public class MultiRecordDeleteResponseHandlerUnitTest {
         jsonObject2.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
         results.put(jsonObject2);
 
-
         JSONObject resultObject = new JSONObject();
         resultObject.put("result", results);
 

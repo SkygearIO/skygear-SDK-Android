@@ -363,6 +363,42 @@ public class Database {
     }
 
     /**
+     * Delete records by IDs non-atomically.
+     *
+     * @param recordType the record type
+     * @param recordIDs  the record IDs
+     * @param handler    the response handler
+     */
+    public void deleteNonAtomically(
+            String recordType,
+            String[] recordIDs,
+            RecordNonAtomicDeleteByIDResponseHandler handler)
+    {
+        RecordDeleteRequest request = new RecordDeleteRequest(recordType, recordIDs, this);
+        request.setAtomic(false);
+        request.setResponseHandler(handler);
+
+        this.getContainer().sendRequest(request);
+    }
+
+    /**
+     * Delete records non-atomically.
+     *
+     * @param records the records
+     * @param handler the response handler
+     */
+    public void deleteNonAtomically(
+            Record[] records,
+            RecordNonAtomicDeleteResponseHandler handler
+    ) {
+        RecordDeleteRequest request = new RecordDeleteRequest(records, this);
+        request.setAtomic(false);
+        request.setResponseHandler(handler);
+
+        this.getContainer().sendRequest(request);
+    }
+
+    /**
      * Upload asset.
      *
      * @param asset           the asset
