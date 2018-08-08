@@ -17,6 +17,7 @@
 
 package io.skygear.skygear;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.util.Log;
 
@@ -31,9 +32,12 @@ import io.skygear.utils.volley.SimpleMultiPartRequest;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidParameterException;
@@ -194,14 +198,9 @@ public class RequestManager {
             return;
         }
 
-        // write the asset data to a temp file
         File tempFile;
         try {
-            tempFile = File.createTempFile("Skygear", null);
-
-            FileOutputStream tempFileStream = new FileOutputStream(tempFile);
-            tempFileStream.write(request.getAsset().data);
-            tempFileStream.close();
+            tempFile = createTempFileFromAsset(request.getAsset());
         } catch (IOException e) {
             Log.e(TAG, "Fail to create temporary file", e);
             request.onValidationError(e);
@@ -240,6 +239,24 @@ public class RequestManager {
 
         multiPartRequest.addFile("file", tempFile.getAbsolutePath());
         this.queue.add(multiPartRequest);
+    }
+
+    private static File createTempFileFromAsset(Asset asset) throws IOException {
+        File file = File.createTempFile("Skygear", null);
+        OutputStream tempFileStream = new FileOutputStream(file);
+        InputStream inputStream = asset.inputStream;
+
+        int bufferSize = 10 * 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        for (int length; (length = inputStream.read(buffer)) != -1; ){
+            tempFileStream.write(buffer, 0, length);
+        }
+
+        inputStream.close();
+        tempFileStream.close();
+
+        return file;
     }
 
     private static class MultiPartRequest extends SimpleMultiPartRequest {
