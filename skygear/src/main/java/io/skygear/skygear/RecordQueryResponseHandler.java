@@ -33,9 +33,10 @@ public abstract class RecordQueryResponseHandler extends ResponseHandler {
     public void onQuerySuccess(Record[] records) {}
 
     /**
-     * Query success callback.
+     * Query success callback with query info.
      *
-     * @param records the records
+     * @param records   the records
+     * @param queryInfo the query info
      */
     public void onQuerySuccess(Record[] records, QueryInfo queryInfo) {}
 

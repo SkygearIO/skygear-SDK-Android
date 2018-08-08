@@ -317,6 +317,42 @@ public class Database {
     }
 
     /**
+     * Fetch record by ID.
+     *
+     * @param recordType the record type
+     * @param recordId   the record id
+     * @param handler    the response handler
+     */
+    public void fetchRecordById(
+            String recordType,
+            String recordId,
+            RecordFetchResponseHandler handler
+    ) {
+        RecordFetchRequest request = new RecordFetchRequest(recordType, recordId, this);
+        request.setResponseHandler(handler);
+
+        this.getContainer().sendRequest(request);
+    }
+
+    /**
+     * Fetch records by ID.
+     *
+     * @param recordType the record type
+     * @param recordIds  the record ids
+     * @param handler    the response handler
+     */
+    public void fetchRecordById(
+            String recordType,
+            String[] recordIds,
+            MultiRecordFetchResponseHandler handler
+    ) {
+        RecordFetchRequest request = new RecordFetchRequest(recordType, recordIds, this);
+        request.setResponseHandler(handler);
+
+        this.getContainer().sendRequest(request);
+    }
+
+    /**
      * Query records.
      *
      * @param query   the query object
@@ -328,6 +364,7 @@ public class Database {
 
         this.getContainer().sendRequest(request);
     }
+
 
     /**
      * Delete a record.
