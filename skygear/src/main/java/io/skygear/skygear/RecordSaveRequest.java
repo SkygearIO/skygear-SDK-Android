@@ -34,7 +34,6 @@ import java.util.Set;
 public class RecordSaveRequest extends Request {
     private String databaseId;
     private List<Record> records;
-    private boolean atomic;
 
     /**
      * Instantiates a record save request with default properties.
@@ -57,14 +56,34 @@ public class RecordSaveRequest extends Request {
         this.records = Arrays.asList(records);
         this.updateData();
     }
-    
-    public boolean getAtomic() {
-        return this.atomic;
+
+    /**
+     * Instantiates a record save request.
+     *
+     * @param record   the record
+     * @param database the database
+     */
+    public RecordSaveRequest(Record record, Database database) {
+        this(new Record[]{ record }, database);
     }
 
-    public void setAtomic(boolean atomic) {
-        this.atomic = atomic;
-        this.data.put("atomic", this.atomic);
+    public void setAtomic(boolean isAtomic) {
+        if (isAtomic) {
+            this.data.put("atomic", true);
+            return;
+        }
+
+        if (this.data.containsKey("atomic")) {
+            this.data.remove("atomic");
+        }
+    }
+
+    public boolean isAtomic() {
+        if (!this.data.containsKey("atomic")) {
+            return false;
+        }
+
+        return (boolean) this.data.get("atomic");
     }
 
     private void updateData() {
@@ -76,7 +95,7 @@ public class RecordSaveRequest extends Request {
 
         this.data.put("records", recordArray);
         this.data.put("database_id", this.databaseId);
-        this.data.put("atomic", this.atomic);
+        this.data.put("atomic", true);
     }
 
     @Override

@@ -18,7 +18,6 @@
 package io.skygear.skygear;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Array;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -240,7 +239,7 @@ public class Database {
      * @param record  the record
      * @param handler the response handler
      */
-    public void save(Record record, RecordSaveResponseHandler handler) {
+    public void save(Record record, RecordSaveResponseLegacyHandler handler) {
         this.save(new Record[]{ record }, handler);
     }
 
@@ -250,9 +249,9 @@ public class Database {
      * @param records the records
      * @param handler the response handler
      */
-    public void save(final Record[] records, RecordSaveResponseHandler handler) {
+    public void save(final Record[] records, RecordSaveResponseLegacyHandler handler) {
         final Record[] recordsToSave = records;
-        final RecordSaveResponseHandler responseHandler = handler;
+        final RecordSaveResponseLegacyHandler responseHandler = handler;
         this.presave(records, new ResultCallback<Record[]>() {
             @Override
             public void onSuccess(Record[] result) {
@@ -275,9 +274,9 @@ public class Database {
      * @param records the records
      * @param handler the response handler
      */
-    public void saveAtomically(final Record[] records, RecordSaveResponseHandler handler) {
+    public void saveAtomically(final Record[] records, RecordSaveResponseLegacyHandler handler) {
         final Record[] recordsToSave = records;
-        final RecordSaveResponseHandler responseHandler = handler;
+        final RecordSaveResponseLegacyHandler responseHandler = handler;
         this.presave(records, new ResultCallback<Record[]>() {
             @Override
             public void onSuccess(Record[] result) {
