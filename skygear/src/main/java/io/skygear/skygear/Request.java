@@ -118,7 +118,7 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
      */
     public void onValidationError(Exception exception) {
         if (this.responseHandler != null) {
-            this.responseHandler.onFail(new Error(exception.getMessage()));
+            this.responseHandler.onFailure(new Error(exception.getMessage()));
         }
     }
 
@@ -160,7 +160,7 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
                 requestError = new Error(error.getMessage());
             }
 
-            this.responseHandler.onFail(requestError);
+            this.responseHandler.onFailure(requestError);
         }
     }
 

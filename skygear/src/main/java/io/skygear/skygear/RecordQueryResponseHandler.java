@@ -74,7 +74,7 @@ public abstract class RecordQueryResponseHandler extends ResponseHandler {
     }
 
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onQueryError(error);
     }
 }

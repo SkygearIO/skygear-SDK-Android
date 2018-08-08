@@ -17,23 +17,23 @@
 
 package io.skygear.skygear;
 
-import org.json.JSONObject;
-
 /**
- * The Response Handling interface for Skygear Request.
+ * The result handling interface for asynchronous operation.
+ *
+ * @param <T> the type of the result
  */
-public interface ResponseHandling {
+public interface ResultHandling<T> {
     /**
      * The success callback.
      *
      * @param result the result
      */
-    void onSuccess(JSONObject result);
+    void onSuccess(T result);
 
     /**
      * The error callback.
      *
      * @param error the error
      */
-    void onFail(Error error);
+    void onFailure(Error error);
 }

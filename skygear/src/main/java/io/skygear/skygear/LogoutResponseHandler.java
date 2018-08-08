@@ -40,8 +40,9 @@ public abstract class LogoutResponseHandler extends ResponseHandler {
         this.onLogoutSuccess();
     }
 
+
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onLogoutFail(error);
     }
 }

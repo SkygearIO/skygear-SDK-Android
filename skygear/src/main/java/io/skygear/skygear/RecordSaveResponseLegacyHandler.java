@@ -112,7 +112,7 @@ public abstract class RecordSaveResponseLegacyHandler extends ResponseHandler {
     }
 
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onSaveFail(error);
     }
 }

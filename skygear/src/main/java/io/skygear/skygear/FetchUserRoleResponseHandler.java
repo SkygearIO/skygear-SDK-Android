@@ -55,7 +55,7 @@ public abstract class FetchUserRoleResponseHandler extends ResponseHandler {
     }
 
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onFetchFail(error);
     }
 }

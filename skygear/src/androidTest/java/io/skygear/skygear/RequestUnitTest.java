@@ -44,12 +44,12 @@ public class RequestUnitTest {
 
         RequestUnitTest.sampleHandler = new ResponseHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 // Do nothing
             }
 
             @Override
-            public void onFail(Error error) {
+            public final void onFailure(Error error) {
                 // Do nothing
             }
         };

@@ -172,7 +172,7 @@ public class Database {
         return record;
     }
 
-    private void presaveAssets(final Object object, final ResultCallback<Map<Asset, Asset>> callback) {
+    private void presaveAssets(final Object object, final ResultHandling<Map<Asset, Asset>> callback) {
         List<Asset> assetsToUpload = new ArrayList<Asset>();
         for (Asset asset : Database.findInObject(object, Asset.class)) {
             if (asset.isPendingUpload()) {
@@ -187,10 +187,10 @@ public class Database {
         }
     }
 
-    private void presave(final Record[] object, final ResultCallback<Record[]> callback) {
-        this.presaveAssets(object, new ResultCallback<Map<Asset, Asset>>() {
+    private void presave(final Record[] object, final ResultHandling<Record[]> callback) {
+        this.presaveAssets(object, new ResultHandling<Map<Asset, Asset>>() {
             @Override
-            public void onSuccess(Map<Asset, Asset> result) {
+            public final void onSuccess(Map<Asset, Asset> result) {
                 Record[] newArray = new Record[object.length];
                 for (int i = 0; i < object.length; i++) {
                     newArray[i] = Database.replaceObject(object[i], result);
@@ -199,35 +199,35 @@ public class Database {
             }
 
             @Override
-            public void onFailure(Error error) {
+            public final void onFailure(Error error) {
                 callback.onFailure(error);
             }
         });
     }
 
-    void presave(final List object, final ResultCallback<List> callback) { // package-private
-        this.presaveAssets(object, new ResultCallback<Map<Asset, Asset>>() {
+    void presave(final List object, final ResultHandling<List> callback) { // package-private
+        this.presaveAssets(object, new ResultHandling<Map<Asset, Asset>>() {
             @Override
-            public void onSuccess(Map<Asset, Asset> result) {
+            public final void onSuccess(Map<Asset, Asset> result) {
                 callback.onSuccess(Database.replaceObject(object, result));
             }
 
             @Override
-            public void onFailure(Error error) {
+            public final void onFailure(Error error) {
                 callback.onFailure(error);
             }
         });
     }
 
-    void presave(final Map object, final ResultCallback<Map> callback) { // package-private
-        this.presaveAssets(object, new ResultCallback<Map<Asset, Asset>>() {
+    void presave(final Map object, final ResultHandling<Map> callback) { // package-private
+        this.presaveAssets(object, new ResultHandling<Map<Asset, Asset>>() {
             @Override
-            public void onSuccess(Map<Asset, Asset> result) {
+            public final void onSuccess(Map<Asset, Asset> result) {
                 callback.onSuccess(Database.replaceObject(object, result));
             }
 
             @Override
-            public void onFailure(Error error) {
+            public final void onFailure(Error error) {
                 callback.onFailure(error);
             }
         });
@@ -252,9 +252,9 @@ public class Database {
     public void save(final Record[] records, RecordSaveResponseLegacyHandler handler) {
         final Record[] recordsToSave = records;
         final RecordSaveResponseLegacyHandler responseHandler = handler;
-        this.presave(records, new ResultCallback<Record[]>() {
+        this.presave(records, new ResultHandling<Record[]>() {
             @Override
-            public void onSuccess(Record[] result) {
+            public final void onSuccess(Record[] result) {
                 RecordSaveRequest request = new RecordSaveRequest(result, Database.this);
                 request.setResponseHandler(responseHandler);
 
@@ -262,7 +262,7 @@ public class Database {
             }
 
             @Override
-            public void onFailure(Error error) {
+            public final void onFailure(Error error) {
                 responseHandler.onSaveFail(error);
             }
         });
@@ -277,9 +277,9 @@ public class Database {
     public void saveAtomically(final Record[] records, RecordSaveResponseLegacyHandler handler) {
         final Record[] recordsToSave = records;
         final RecordSaveResponseLegacyHandler responseHandler = handler;
-        this.presave(records, new ResultCallback<Record[]>() {
+        this.presave(records, new ResultHandling<Record[]>() {
             @Override
-            public void onSuccess(Record[] result) {
+            public final void onSuccess(Record[] result) {
                 RecordSaveRequest request = new RecordSaveRequest(result, Database.this);
                 request.setAtomic(true);
                 request.setResponseHandler(responseHandler);
@@ -288,7 +288,7 @@ public class Database {
             }
 
             @Override
-            public void onFailure(Error error) {
+            public final void onFailure(Error error) {
                 responseHandler.onSaveFail(error);
             }
         });
@@ -430,7 +430,7 @@ public class Database {
 
     private void uploadAssets(
             final List<Asset> assets,
-            final ResultCallback<Map<Asset, Asset>> callback
+            final ResultHandling<Map<Asset, Asset>> callback
     ) {
         final RequestManager requestManager = this.getContainer().requestManager;
 

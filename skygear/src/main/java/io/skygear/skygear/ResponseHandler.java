@@ -1,11 +1,13 @@
 package io.skygear.skygear;
 
+import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
 
 /**
  * The Response Base Handler interface for Skygear Request.
  */
-public abstract class ResponseHandler implements ResponseHandling {
+public abstract class ResponseHandler implements ResultHandling<JSONObject> {
     WeakReference<Request> requestRef;
 
     /**

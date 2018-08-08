@@ -147,13 +147,13 @@ public class RequestManagerUnitTest {
 
         ResponseHandler responseHandler = new ResponseHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 checkpoints[0] = true;
                 latch.countDown();
             }
 
             @Override
-            public void onFail(Error error) {
+            public final void onFailure(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -201,13 +201,13 @@ public class RequestManagerUnitTest {
 
         ResponseHandler responseHandler = new ResponseHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 checkpoints[0] = true;
                 latch.countDown();
             }
 
             @Override
-            public void onFail(Error error) {
+            public final void onFailure(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -258,7 +258,7 @@ public class RequestManagerUnitTest {
 
         ResponseHandler responseHandler = new ResponseHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 try {
                     assertEquals("OK", result.getString("status"));
                 } catch (JSONException e) {
@@ -270,7 +270,7 @@ public class RequestManagerUnitTest {
             }
 
             @Override
-            public void onFail(Error error) {
+            public final void onFailure(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -329,12 +329,12 @@ public class RequestManagerUnitTest {
 
         ResponseHandler responseHandler = new ResponseHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 fail("Should not get success callback");
             }
 
             @Override
-            public void onFail(Error error) {
+            public final void onFailure(Error error) {
                 assertEquals("write is not allowed", error.getDetailMessage());
                 assertEquals("PermissionDenied", error.getName());
                 assertEquals(Error.Code.PERMISSION_DENIED, error.getCode());
@@ -371,13 +371,13 @@ public class RequestManagerUnitTest {
 
         ResponseHandler responseHandler = new ResponseHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 checkpoints[1] = true;
                 latch.countDown();
             }
 
             @Override
-            public void onFail(Error error) {
+            public final void onFailure(Error error) {
                 fail("Should not get error callback");
             }
         };
@@ -418,12 +418,12 @@ public class RequestManagerUnitTest {
 
         ResponseHandler responseHandler = new ResponseHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 fail("Should not get success callback");
             }
 
             @Override
-            public void onFail(Error error) {
+            public final void onFailure(Error error) {
                 assertEquals("Test validation exception", error.getDetailMessage());
 
                 checkpoints[0] = true;

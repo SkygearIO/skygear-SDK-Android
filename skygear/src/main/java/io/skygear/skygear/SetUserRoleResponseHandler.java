@@ -25,7 +25,7 @@ public abstract class SetUserRoleResponseHandler extends ResponseHandler {
     }
 
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onSetFail(error);
     }
 }

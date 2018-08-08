@@ -20,7 +20,7 @@ public abstract class RecordDeleteResponseBaseHandler<T> extends ResponseHandler
     public abstract void onDeleteFail(Error error);
 
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onDeleteFail(error);
     }
 }

@@ -9,8 +9,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
-import static org.junit.Assert.*;
-
 public class MultiRecordDeleteByIDResponseHandlerUnitTest {
     @Test
     public void testMultiRecordDeleteByIDResponseNormalFlow() throws Exception {
@@ -65,7 +63,7 @@ public class MultiRecordDeleteByIDResponseHandlerUnitTest {
             }
         };
 
-        handler.onFail(new Error("Test error"));
+        handler.onFailure(new Error("Test error"));
         assertTrue(checkpoints[0]);
     }
 }

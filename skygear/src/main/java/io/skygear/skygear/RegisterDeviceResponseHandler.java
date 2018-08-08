@@ -50,7 +50,7 @@ public abstract class RegisterDeviceResponseHandler extends ResponseHandler {
     }
 
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onRegisterError(error);
     }
 }

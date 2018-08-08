@@ -99,7 +99,7 @@ public abstract class AssetPreparePostResponseHandler extends ResponseHandler {
     }
 
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onPreparePostFail(error);
     }
 }

@@ -94,7 +94,7 @@ public class AuthResponseHandlerUnitTest {
             }
         };
 
-        authResponseHandler.onFail(new Error("Test error"));
+        authResponseHandler.onFailure(new Error("Test error"));
         assertTrue(checkpoints[0]);
     }
 }

@@ -87,7 +87,7 @@ public class RecordSaveResponseHandlerUnitTest {
             }
         };
 
-        handler.onFail(new Error("Unknown server error"));
+        handler.onFailure(new Error("Unknown server error"));
         assertTrue(checkpoints[0]);
     }
 }

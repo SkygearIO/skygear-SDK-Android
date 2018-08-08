@@ -127,7 +127,7 @@ public class RecordNonAtomicDeleteResponseHandlerUnitTest {
             }
         };
 
-        handler.onFail(new Error("some-error"));
+        handler.onFailure(new Error("some-error"));
         assertTrue(checkpoints[0]);
     }
 }

@@ -55,7 +55,7 @@ public class RecordDeleteByIDResponseHandlerUnitTest {
             }
         };
 
-        handler.onFail(new Error("Test error"));
+        handler.onFailure(new Error("Test error"));
         assertTrue(checkpoints[0]);
     }
 }

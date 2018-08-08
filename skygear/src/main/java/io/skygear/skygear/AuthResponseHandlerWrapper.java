@@ -55,14 +55,14 @@ class AuthResponseHandlerWrapper extends ResponseHandler {
                 this.originalHandler.onSuccess(result);
             }
         } catch (JSONException e) {
-            this.onFail(new Error("Malformed server response"));
+            this.onFailure(new Error("Malformed server response"));
         }
     }
 
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         if (this.originalHandler != null) {
-            this.originalHandler.onFail(error);
+            this.originalHandler.onFailure(error);
         }
     }
 }

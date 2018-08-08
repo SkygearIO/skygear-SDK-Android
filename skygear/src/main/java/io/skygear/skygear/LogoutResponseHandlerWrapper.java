@@ -52,9 +52,9 @@ class LogoutResponseHandlerWrapper extends ResponseHandler {
     }
 
     @Override
-    public final void onFail(Error error) {
+    public final void onFailure(Error error) {
         if (this.originalHandler != null) {
-            this.originalHandler.onFail(error);
+            this.originalHandler.onFailure(error);
         }
     }
 }
