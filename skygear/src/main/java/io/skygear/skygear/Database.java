@@ -239,8 +239,25 @@ public class Database {
      * @param record  the record
      * @param handler the response handler
      */
-    public void save(Record record, RecordSaveResponseLegacyHandler handler) {
-        this.save(new Record[]{ record }, handler);
+    public void save(Record record, RecordSaveResponseHandler handler) {
+        final RecordSaveResponseHandler responseHandler = handler;
+        this.presave(new Record[]{record}, new ResultHandling<Record[]>() {
+            @Override
+            public void onSuccess(Record[] result) {
+                Record theRecord = result[0];
+                RecordSaveRequest request = new RecordSaveRequest(theRecord, Database.this);
+                request.setResponseHandler(responseHandler);
+
+                Database.this.getContainer().sendRequest(request);
+            }
+
+            @Override
+            public void onFailure(Error error) {
+                if (responseHandler != null) {
+                    responseHandler.onFailure(error);
+                }
+            }
+        });
     }
 
     /**
@@ -249,9 +266,8 @@ public class Database {
      * @param records the records
      * @param handler the response handler
      */
-    public void save(final Record[] records, RecordSaveResponseLegacyHandler handler) {
-        final Record[] recordsToSave = records;
-        final RecordSaveResponseLegacyHandler responseHandler = handler;
+    public void save(final Record[] records, MultiRecordSaveResponseHandler handler) {
+        final MultiRecordSaveResponseHandler responseHandler = handler;
         this.presave(records, new ResultHandling<Record[]>() {
             @Override
             public final void onSuccess(Record[] result) {
@@ -263,25 +279,29 @@ public class Database {
 
             @Override
             public final void onFailure(Error error) {
-                responseHandler.onSaveFail(error);
+                if (responseHandler != null) {
+                    responseHandler.onSaveFail(error);
+                }
             }
         });
     }
 
     /**
-     * Save multiple records atomically.
+     * Save records non-atomically.
      *
      * @param records the records
      * @param handler the response handler
      */
-    public void saveAtomically(final Record[] records, RecordSaveResponseLegacyHandler handler) {
-        final Record[] recordsToSave = records;
-        final RecordSaveResponseLegacyHandler responseHandler = handler;
+    public void saveNonAtomically(
+            final Record[] records,
+            RecordNonAtomicSaveResponseHandler handler
+    ) {
+        final RecordNonAtomicSaveResponseHandler responseHandler = handler;
         this.presave(records, new ResultHandling<Record[]>() {
             @Override
             public final void onSuccess(Record[] result) {
                 RecordSaveRequest request = new RecordSaveRequest(result, Database.this);
-                request.setAtomic(true);
+                request.setAtomic(false);
                 request.setResponseHandler(responseHandler);
 
                 Database.this.getContainer().sendRequest(request);
@@ -289,7 +309,9 @@ public class Database {
 
             @Override
             public final void onFailure(Error error) {
-                responseHandler.onSaveFail(error);
+                if (responseHandler != null) {
+                    responseHandler.onSaveFail(error);
+                }
             }
         });
     }
