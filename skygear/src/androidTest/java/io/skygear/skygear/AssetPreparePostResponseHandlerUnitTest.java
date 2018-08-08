@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
@@ -73,8 +74,17 @@ public class AssetPreparePostResponseHandlerUnitTest {
             @Override
             public void onPreparePostSuccess(AssetPostRequest postRequest) {
                 Asset asset = postRequest.getAsset();
+                byte[] data = null;
+                try {
+                    data = new byte[asset.inputStream.available()];
+                    asset.inputStream.read(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    assertTrue(false);
+                }
+
                 assertEquals("598bfc9a-ba98-45a5-b194-22ceea2b4954-hello.txt", asset.getName());
-                assertEquals("hello world", new String(asset.data));
+                assertEquals("hello world", new String(data));
                 assertEquals(11, asset.getSize());
                 assertEquals("text/plain", asset.getMimeType());
                 assertEquals(
@@ -125,8 +135,17 @@ public class AssetPreparePostResponseHandlerUnitTest {
             @Override
             public void onPreparePostSuccess(AssetPostRequest postRequest) {
                 Asset asset = postRequest.getAsset();
+                byte[] data = null;
+                try {
+                    data = new byte[asset.inputStream.available()];
+                    asset.inputStream.read(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    assertTrue(false);
+                }
+
                 assertEquals("598bfc9a-ba98-45a5-b194-22ceea2b4954-hello.txt", asset.getName());
-                assertEquals("hello world", new String(asset.data));
+                assertEquals("hello world", new String(data));
                 assertEquals(11, asset.getSize());
                 assertEquals("text/plain", asset.getMimeType());
                 assertEquals(

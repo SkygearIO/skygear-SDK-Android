@@ -26,6 +26,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,12 +44,12 @@ public class AssetPostRequestUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        asset = new Asset(
-                "hello.txt",
-                "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt",
-                "text/plain"
-        );
-        asset.data = "hello world".getBytes();
+        byte[] data = "hello world".getBytes();
+        asset = new Asset.Builder("hello.txt")
+                .setMimeType("text/plain")
+                .setData(data)
+                .build();
+        asset.url = "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt";
     }
 
     @After
@@ -131,12 +133,12 @@ public class AssetPostRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testAssetPostRequestValidationNotAllowNonTypedAsset() throws Exception {
-        Asset assetWithoutType = new Asset(
-                "hello.txt",
-                "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt",
-                ""
-        );
-        assetWithoutType.data = "hello world".getBytes();
+        byte[] data = "hello world".getBytes();
+        Asset assetWithoutType = new Asset.Builder("hello.txt")
+                .setMimeType("")
+                .setData(data)
+                .build();
+        assetWithoutType.url = "http://skygear.dev/asset/3f72d553-3aca-4668-8c9f-a454cf7b28e8-hello.txt";
 
         AssetPostRequest postRequest = new AssetPostRequest(
                 assetWithoutType,
@@ -166,7 +168,7 @@ public class AssetPostRequestUnitTest {
                 assertEquals(assetToUpload.getUrl(), asset.getUrl());
                 assertEquals(assetToUpload.getMimeType(), asset.getMimeType());
                 assertEquals(assetToUpload.getSize(), asset.getSize());
-                assertEquals(assetToUpload.data, asset.data);
+                assertEquals(assetToUpload.inputStream, asset.inputStream);
                 assertFalse(asset.isPendingUpload());
 
                 checkpoints[0] = true;
@@ -204,7 +206,7 @@ public class AssetPostRequestUnitTest {
                 assertEquals(assetToUpload.getUrl(), asset.getUrl());
                 assertEquals(assetToUpload.getMimeType(), asset.getMimeType());
                 assertEquals(assetToUpload.getSize(), asset.getSize());
-                assertEquals(assetToUpload.data, asset.data);
+                assertEquals(assetToUpload.inputStream, asset.inputStream);
 
                 assertEquals("Test Error", error.getDetailMessage());
 
