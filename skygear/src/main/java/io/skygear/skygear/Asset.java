@@ -201,6 +201,11 @@ public class Asset {
             return this;
         }
 
+        public Builder setSize(Long size) {
+            this.size = size;
+            return this;
+        }
+
         public Builder setUri(Uri uri) {
             this.uri = uri;
             return this;
