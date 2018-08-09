@@ -21,6 +21,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +34,7 @@ import java.io.InputStream;
  * The Skygear Asset Model.
  */
 public class Asset {
+    private static final String TAG = "Skygear SDK";
 
     /**
      * The Name.
@@ -248,6 +250,7 @@ public class Asset {
 
         private Asset buildFromByteArray() {
             ensureStateIsNonNull(this.mimeType, "MimeType");
+            warnRedundantStateIfNeeded(this.size, "Size", "data");
 
             long size = this.data.length;
             InputStream inputStream = new ByteArrayInputStream(this.data);
@@ -257,6 +260,8 @@ public class Asset {
 
         private Asset buildFromUri() {
             ensureStateIsNonNull(this.context, "Context");
+            warnRedundantStateIfNeeded(this.mimeType, "MimeType", "uri");
+            warnRedundantStateIfNeeded(this.size, "Size", "uri");
 
             ContentResolver contentResolver = context.getContentResolver();
             InputStream inputStream;
@@ -278,6 +283,12 @@ public class Asset {
         private static void ensureStateIsNonNull(Object state, String name) {
             if (state == null) {
                 throw new IllegalStateException(name + " must be set first");
+            }
+        }
+
+        private static void warnRedundantStateIfNeeded(Object state, String name, String context) {
+            if (state != null) {
+                Log.w(TAG, name + " would be ignored when using " + context + " as data source");
             }
         }
     }
