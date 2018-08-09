@@ -236,7 +236,7 @@ public class Asset {
                 return this.buildFromUri();
             }
 
-            return null;
+            throw new IllegalStateException("Either inputStream, data or uri must be set first");
         }
 
         private Asset buildFromInputStream() {
@@ -277,7 +277,7 @@ public class Asset {
 
         private static void ensureStateIsNonNull(Object state, String name) {
             if (state == null) {
-                throw new IllegalStateException(name + " must been set first");
+                throw new IllegalStateException(name + " must be set first");
             }
         }
     }
