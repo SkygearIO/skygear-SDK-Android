@@ -38,11 +38,10 @@ public class AssetPreparePostResponseHandlerUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        asset = new Asset(
-                "hello.txt",
-                "text/plain",
-                "hello world".getBytes()
-        );
+        asset = new Asset.Builder("hello.txt")
+                .setMimeType("text/plain")
+                .setData("hello world".getBytes())
+                .build();
     }
 
     @After

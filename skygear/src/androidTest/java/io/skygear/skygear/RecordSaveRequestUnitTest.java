@@ -124,7 +124,12 @@ public class RecordSaveRequestUnitTest {
     @Test(expected = InvalidParameterException.class)
     public void testRecordSaveRequestNotAllowSavingRecordWithPendingAsset() throws Exception {
         Record note = new Record("Note");
-        note.set("attachment", new Asset("hello.txt", "text/plain", "hello world".getBytes()));
+
+        Asset asset = new Asset.Builder("hello.txt")
+                .setMimeType("text/plain")
+                .setData("hello world".getBytes())
+                .build();
+        note.set("attachment", asset);
 
         RecordSaveRequest recordSaveRequest = new RecordSaveRequest(
                 new Record[]{ note },

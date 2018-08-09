@@ -33,7 +33,11 @@ public class AssetUnitTest {
     public void testAssetCreationFromData() throws Exception {
         byte[] data = "Hello World".getBytes();
 
-        Asset asset = new Asset("hello.txt", "text/plain", data);
+        Asset asset = new Asset.Builder("hello.txt")
+                .setMimeType("text/plain")
+                .setData(data)
+                .build();
+
 
         assertEquals("hello.txt", asset.getName());
         assertEquals("text/plain", asset.getMimeType());
