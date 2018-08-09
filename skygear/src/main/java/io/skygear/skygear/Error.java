@@ -299,6 +299,8 @@ public class Error extends Exception {
                     return "The password does not meet policy requirement.";
                 case USER_DISABLED:
                     return "The user is disabled.";
+                case ASSET_SIZE_TOO_LARGE:
+                    return "The asset is too large to upload.";
                 case UNEXPECTED_ERROR:
                     return "An unexpected error has occurred.";
             }
