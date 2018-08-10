@@ -26,6 +26,7 @@ public abstract class RecordFetchResponseBaseHandler<T> extends RecordQueryRespo
         Request request = this.getRequest();
         if (request == null || !(request instanceof RecordFetchRequest)) {
             this.onFetchError(new Error("Cannot find the request from response handler"));
+            return;
         }
 
         RecordFetchRequest fetchRequest = (RecordFetchRequest)request;
