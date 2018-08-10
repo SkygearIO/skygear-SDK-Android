@@ -17,13 +17,25 @@
 
 package io.skygear.skygear;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * The Skygear Asset Model.
  */
 public class Asset {
+    private static final String TAG = "Skygear SDK";
+
     /**
      * The Name.
      */
@@ -35,28 +47,43 @@ public class Asset {
     String url;
 
     /**
-     * The Asset Data.
-     */
-    byte[] data;
-
-    /**
      * The Asset MIME Type.
      */
-    String mimeType;
+    final String mimeType;
+
+    /**
+     * The Asset data size
+     */
+    final long size;
+
+    /**
+     * The Asset data input stream
+     */
+    final InputStream inputStream;
 
     /**
      * Instantiates a new Asset with name, MIME type and file data.
+     *
+     * @deprecated use {@link Asset.Builder} instead.
      *
      * @param name     the name
      * @param mimeType the MIME type
      * @param data     the data
      */
+    @Deprecated
     public Asset(String name, String mimeType, byte[] data) {
         super();
-
         this.name = name;
         this.mimeType = mimeType;
-        this.data = data;
+        this.size = data.length;
+        this.inputStream = new ByteArrayInputStream(data);
+    }
+
+    Asset(String name, String mimeType, long size, InputStream inputStream) {
+        this.name = name;
+        this.mimeType = mimeType;
+        this.size = size;
+        this.inputStream = inputStream;
     }
 
     /**
@@ -72,6 +99,8 @@ public class Asset {
         this.name = name;
         this.url = url;
         this.mimeType = mimeType;
+        this.size = 0;
+        this.inputStream = null;
     }
 
     /**
@@ -120,20 +149,7 @@ public class Asset {
      * @return the size
      */
     public long getSize() {
-        if (this.data == null) {
-            return 0;
-        }
-
-        return this.data.length;
-    }
-
-    /**
-     * Get the asset data
-     *
-     * @return the data
-     */
-    public byte[] getData() {
-        return data;
+        return this.size;
     }
 
     /**
@@ -154,5 +170,126 @@ public class Asset {
      */
     public static Asset fromJson(JSONObject jsonObject) throws JSONException {
         return AssetSerializer.deserialize(jsonObject);
+    }
+
+    /**
+     * Asset builder
+     */
+    public static class Builder {
+        private Context context;
+        private String name;
+        private String mimeType;
+        private Long size;
+        private Uri uri;
+        private byte[] data;
+        private InputStream inputStream;
+
+        public Builder(String name) {
+            this.name = name;
+        }
+
+        public Builder setContext(Context context) {
+            this.context = context;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+            return this;
+        }
+
+        public Builder setSize(Long size) {
+            this.size = size;
+            return this;
+        }
+
+        public Builder setUri(Uri uri) {
+            this.uri = uri;
+            return this;
+        }
+
+        public Builder setData(byte[] data) {
+            this.data = data;
+            return this;
+        }
+
+        public Builder setInputStream(InputStream inputStream) {
+            this.inputStream = inputStream;
+            return this;
+        }
+
+        public Asset build() {
+            ensureStateIsNonNull(this.name, "Name");
+
+            if (this.inputStream != null) {
+                return this.buildFromInputStream();
+            }
+
+            if (this.data != null) {
+                return this.buildFromByteArray();
+            }
+
+            if (this.uri != null) {
+                return this.buildFromUri();
+            }
+
+            throw new IllegalStateException("Either inputStream, data or uri must be set first");
+        }
+
+        private Asset buildFromInputStream() {
+            ensureStateIsNonNull(this.mimeType, "MimeType");
+            ensureStateIsNonNull(this.size, "Size");
+
+            return new Asset(this.name, this.mimeType, this.size, this.inputStream);
+        }
+
+        private Asset buildFromByteArray() {
+            ensureStateIsNonNull(this.mimeType, "MimeType");
+            warnRedundantStateIfNeeded(this.size, "Size", "data");
+
+            long size = this.data.length;
+            InputStream inputStream = new ByteArrayInputStream(this.data);
+
+            return new Asset(this.name, this.mimeType, size, inputStream);
+        }
+
+        private Asset buildFromUri() {
+            ensureStateIsNonNull(this.context, "Context");
+            warnRedundantStateIfNeeded(this.mimeType, "MimeType", "uri");
+            warnRedundantStateIfNeeded(this.size, "Size", "uri");
+
+            ContentResolver contentResolver = context.getContentResolver();
+            InputStream inputStream;
+            long size;
+            try {
+                inputStream = contentResolver.openInputStream(uri);
+                ParcelFileDescriptor fd = contentResolver.openFileDescriptor(this.uri, "r");
+                size = fd.getStatSize();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            String mimeType = contentResolver.getType(uri);
+
+            return new Asset(this.name, mimeType, size, inputStream);
+        }
+
+        private static void ensureStateIsNonNull(Object state, String name) {
+            if (state == null) {
+                throw new IllegalStateException(name + " must be set first");
+            }
+        }
+
+        private static void warnRedundantStateIfNeeded(Object state, String name, String context) {
+            if (state != null) {
+                Log.w(TAG, name + " would be ignored when using " + context + " as data source");
+            }
+        }
     }
 }

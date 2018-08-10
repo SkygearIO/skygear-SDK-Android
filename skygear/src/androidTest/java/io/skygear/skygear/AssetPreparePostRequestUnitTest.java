@@ -30,7 +30,10 @@ import static junit.framework.Assert.assertEquals;
 public class AssetPreparePostRequestUnitTest {
     @Test
     public void testAssetPreparePostRequestNormalFlow() throws Exception {
-        Asset asset = new Asset("hello.txt", "text/plain", "Hello World".getBytes());
+        Asset asset = new Asset.Builder("hello.txt")
+                .setMimeType("text/plain")
+                .setData("Hello World".getBytes())
+                .build();
         AssetPreparePostRequest request = new AssetPreparePostRequest(asset);
 
         assertEquals("asset:put", request.action);
@@ -41,6 +44,7 @@ public class AssetPreparePostRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testAssetPreparePostRequestNotAllowNoFilename() throws Exception {
+        // Use deprecated constructor to test request.validate
         Asset asset = new Asset(null, "text/plain", "Hello World".getBytes());
         AssetPreparePostRequest request = new AssetPreparePostRequest(asset);
 
@@ -49,6 +53,7 @@ public class AssetPreparePostRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testAssetPreparePostRequestNotAllowNoMimeType() throws Exception {
+        // Use deprecated constructor to test request.validate
         Asset asset = new Asset("hello.txt", null, "Hello World".getBytes());
         AssetPreparePostRequest request = new AssetPreparePostRequest(asset);
 
@@ -57,6 +62,7 @@ public class AssetPreparePostRequestUnitTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testAssetPreparePostRequestNotAllowNoData() throws Exception {
+        // Use deprecated constructor to test request.validate
         Asset asset = new Asset("hello.txt", "text/plain", new byte[]{});
         AssetPreparePostRequest request = new AssetPreparePostRequest(asset);
 

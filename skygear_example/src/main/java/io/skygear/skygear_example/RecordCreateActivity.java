@@ -24,12 +24,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -52,8 +57,11 @@ import com.google.android.gms.location.LocationServices;
 import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 
 import io.skygear.skygear.Asset;
@@ -241,12 +249,6 @@ public class RecordCreateActivity
             return;
         }
 
-        Bitmap bitmap = BitmapFactory.decodeByteArray(
-                this.recordAsset.getData(),
-                0,
-                (int) this.recordAsset.getSize()
-        );
-        this.recordAssetImageView.setImageDrawable(new BitmapDrawable(null, bitmap));
         this.recordAssetButton.setText(R.string.remove_image);
         this.recordAssetButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -404,51 +406,73 @@ public class RecordCreateActivity
         }
     }
 
-    private void handleImagePick(Uri uri) {
+    private void handleImagePick(final Uri uri) {
         Log.i(TAG, "handleImagePick: Got URI: " + uri);
-        ContentResolver contentResolver = getContentResolver();
+        final ContentResolver contentResolver = getContentResolver();
 
-        try {
-            final InputStream inputStream = contentResolver.openInputStream(uri);
-            final String mimeType = contentResolver.getType(uri);
-            Log.i(TAG, "handleImagePick: Got MIME-Type: " + mimeType);
+        this.handleImageUpload(uri);
 
-            final ProgressDialog loading = new ProgressDialog(this);
-            loading.setTitle("Loading");
-            loading.setMessage("Decoding image...");
-            loading.setCancelable(false);
-            loading.show();
+        final ProgressDialog loading = new ProgressDialog(this);
+        loading.setTitle("Loading");
+        loading.setMessage("Decoding image...");
+        loading.setCancelable(false);
+        loading.show();
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = null;
+                try {
                     Log.i(TAG, "handleImagePick: Start decoding the image");
 
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    InputStream is = contentResolver.openInputStream(uri);
+                    final BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    BitmapFactory.decodeStream(is, null, options);
+                    is.close();
 
-                    final byte[] bytes = byteArrayOutputStream.toByteArray();
-                    Log.i(TAG, "handleImagePick: Finish decoding, size: " + bytes.length);
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loading.dismiss();
-                            RecordCreateActivity.this.handleImageUpload(bytes, mimeType);
-                        }
-                    });
+                    is = contentResolver.openInputStream(uri);
+                    options.inSampleSize = RecordCreateActivity.this.calculateInSampleSize(options);
+                    options.inJustDecodeBounds = false;
+                    bitmap = BitmapFactory.decodeStream(is, null, options);
+                    is.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }).start();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+                final Bitmap finalBitmap = bitmap;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        RecordCreateActivity.this.recordAssetImageView.setImageBitmap(finalBitmap);
+                        loading.dismiss();
+                        RecordCreateActivity.this.handleImageUpload(uri);
+                    }
+                });
+            }
+        }).start();
     }
 
-    private void handleImageUpload(byte[] data, String mimeType) {
-        Asset asset = new Asset("Record-Image", mimeType, data);
+    private void handleImageUpload(Uri uri) {
+        Asset asset = new Asset.Builder("Record-Image").setContext(this).setUri(uri).build();
         RecordCreateActivity.this.recordAsset = asset;
         RecordCreateActivity.this.updateAssetViews();
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options) {
+        int reqWidth = recordAssetImageView.getWidth();
+        int reqHeight = recordAssetImageView.getHeight();
+
+        int hScale = (int) Math.ceil(options.outHeight / reqHeight);
+        int wScale = (int) Math.ceil(options.outWidth / reqWidth);
+        int scale = Math.max(hScale, wScale);
+
+        if (scale <= 1) {
+            return 1;
+        }
+
+        return Integer.highestOneBit(scale - 1);
     }
 }

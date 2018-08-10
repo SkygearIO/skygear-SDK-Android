@@ -478,7 +478,10 @@ public class RequestManagerUnitTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final boolean[] checkpoints = { false };
 
-        Asset asset = new Asset("hello.txt", "text/plain", "hello world".getBytes());
+        Asset asset = new Asset.Builder("hello.txt")
+                .setMimeType("text/plain")
+                .setData("hello world".getBytes())
+                .build();
         Map<String, String> extraFields = new HashMap<>();
         extraFields.put("hello", "world");
         extraFields.put("foo", "bar");
