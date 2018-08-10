@@ -81,7 +81,7 @@ public class RecordFetchResponseHandlerUnitTest {
     }
 
     @Test
-    public void testMultiRecordFetchResponseHandlerMissingFlow() throws Exception {
+    public void testRecordsFetchResponseHandlerMissingFlow() throws Exception {
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("_id", "Note/48092492-0791-4120-B314-022202AD3970");
         jsonObject1.put("_created_at", "2016-06-15T07:55:32.342Z");
@@ -129,7 +129,7 @@ public class RecordFetchResponseHandlerUnitTest {
     }
 
     @Test
-    public void testMultiRecordFetchResponseHandlerOperationErrorFlow() throws Exception {
+    public void testRecordsFetchResponseHandlerOperationErrorFlow() throws Exception {
         final boolean[] checkpoints = new boolean[]{ false };
         RecordFetchRequest request = new RecordFetchRequest(
                 "Note",

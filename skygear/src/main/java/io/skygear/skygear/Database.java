@@ -266,8 +266,8 @@ public class Database {
      * @param records the records
      * @param handler the response handler
      */
-    public void save(final Record[] records, MultiRecordSaveResponseHandler handler) {
-        final MultiRecordSaveResponseHandler responseHandler = handler;
+    public void save(final Record[] records, RecordsSaveResponseHandler handler) {
+        final RecordsSaveResponseHandler responseHandler = handler;
         this.presave(records, new ResultHandling<Record[]>() {
             @Override
             public final void onSuccess(Record[] result) {
@@ -344,7 +344,7 @@ public class Database {
     public void fetchRecordById(
             String recordType,
             String[] recordIds,
-            MultiRecordFetchResponseHandler handler
+            RecordsFetchResponseHandler handler
     ) {
         RecordFetchRequest request = new RecordFetchRequest(recordType, recordIds, this);
         request.setResponseHandler(handler);
@@ -385,7 +385,7 @@ public class Database {
      * @param records the records
      * @param handler the response handler
      */
-    public void delete(Record[] records, MultiRecordDeleteResponseHandler handler) {
+    public void delete(Record[] records, RecordsDeleteResponseHandler handler) {
         RecordDeleteRequest request = new RecordDeleteRequest(records, this);
         request.setResponseHandler(handler);
 
@@ -413,7 +413,7 @@ public class Database {
      * @param recordIDs  the record IDs
      * @param handler    the response handler
      */
-    public void delete(String recordType, String[] recordIDs, MultiRecordDeleteByIDResponseHandler handler) {
+    public void delete(String recordType, String[] recordIDs, RecordsDeleteByIDResponseHandler handler) {
         RecordDeleteRequest request = new RecordDeleteRequest(recordType, recordIDs, this);
         request.setResponseHandler(handler);
 

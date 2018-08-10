@@ -33,14 +33,11 @@ import android.widget.TextView;
 
 import org.json.JSONException;
 
-import java.util.Map;
-
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
-import io.skygear.skygear.MultiRecordDeleteResponseHandler;
+import io.skygear.skygear.RecordsDeleteResponseHandler;
 import io.skygear.skygear.Query;
 import io.skygear.skygear.Record;
-import io.skygear.skygear.RecordDeleteResponseHandler;
 import io.skygear.skygear.RecordQueryResponseHandler;
 
 public class RecordQueryActivity extends AppCompatActivity {
@@ -230,7 +227,7 @@ public class RecordQueryActivity extends AppCompatActivity {
                 .setMessage("")
                 .create();
 
-        skygear.getPublicDatabase().delete(this.records, new MultiRecordDeleteResponseHandler() {
+        skygear.getPublicDatabase().delete(this.records, new RecordsDeleteResponseHandler() {
             @Override
             public void onDeleteSuccess(Record[] result) {
                 RecordQueryActivity.this.records = null;

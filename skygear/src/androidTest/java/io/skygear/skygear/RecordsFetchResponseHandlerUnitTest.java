@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
-public class MultiRecordFetchResponseHandlerUnitTest {
+public class RecordsFetchResponseHandlerUnitTest {
     static Context instrumentationContext;
     static Container instrumentationContainer;
     static Database instrumentationPublicDatabase;
@@ -34,7 +34,7 @@ public class MultiRecordFetchResponseHandlerUnitTest {
     }
 
     @Test
-    public void testMultiRecordFetchResponseHandlerNormalFlow() throws Exception {
+    public void testRecordsFetchResponseHandlerNormalFlow() throws Exception {
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("_id", "Note/48092492-0791-4120-B314-022202AD3970");
         jsonObject1.put("_created_at", "2016-06-15T07:55:32.342Z");
@@ -77,7 +77,7 @@ public class MultiRecordFetchResponseHandlerUnitTest {
                 },
                 instrumentationPublicDatabase
         );
-        request.setResponseHandler(new MultiRecordFetchResponseHandler() {
+        request.setResponseHandler(new RecordsFetchResponseHandler() {
             @Override
             public void onFetchSuccess(RecordResult<Record>[] result) {
                 assertEquals(2, result.length);
@@ -109,7 +109,7 @@ public class MultiRecordFetchResponseHandlerUnitTest {
     }
 
     @Test
-    public void testMultiRecordFetchResponseHandlerSomeMissingFlow() throws Exception {
+    public void testRecordsFetchResponseHandlerSomeMissingFlow() throws Exception {
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("_id", "Note/48092492-0791-4120-B314-022202AD3970");
         jsonObject1.put("_created_at", "2016-06-15T07:55:32.342Z");
@@ -153,7 +153,7 @@ public class MultiRecordFetchResponseHandlerUnitTest {
                 },
                 instrumentationPublicDatabase
         );
-        request.setResponseHandler(new MultiRecordFetchResponseHandler() {
+        request.setResponseHandler(new RecordsFetchResponseHandler() {
             @Override
             public void onFetchSuccess(RecordResult<Record>[] result) {
                 assertEquals(3, result.length);
@@ -193,7 +193,7 @@ public class MultiRecordFetchResponseHandlerUnitTest {
     }
 
     @Test
-    public void testMultiRecordFetchResponseHandlerOperationErrorFlow() throws Exception {
+    public void testRecordsFetchResponseHandlerOperationErrorFlow() throws Exception {
         final boolean[] checkpoints = new boolean[]{ false };
         RecordFetchRequest request = new RecordFetchRequest(
                 "Note",
@@ -203,7 +203,7 @@ public class MultiRecordFetchResponseHandlerUnitTest {
                 },
                 instrumentationPublicDatabase
         );
-        request.setResponseHandler(new MultiRecordFetchResponseHandler() {
+        request.setResponseHandler(new RecordsFetchResponseHandler() {
             @Override
             public void onFetchSuccess(RecordResult<Record>[] result) {
                 fail("Should not get success callback");

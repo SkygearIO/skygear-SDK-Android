@@ -2,9 +2,9 @@ package io.skygear.skygear;
 
 
 /**
- * The Response Handler for Saving Multiple Records
+ * The Response Handler for Saving Records
  */
-public abstract class MultiRecordSaveResponseHandler
+public abstract class RecordsSaveResponseHandler
         extends RecordSaveResponseBaseHandler<Record[]>
 {
     @Override

@@ -9,9 +9,9 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
-public class MultiRecordDeleteByIDResponseHandlerUnitTest {
+public class RecordsDeleteByIDResponseHandlerUnitTest {
     @Test
-    public void testMultiRecordDeleteByIDResponseNormalFlow() throws Exception {
+    public void testRecordsDeleteByIDResponseNormalFlow() throws Exception {
         JSONArray results = new JSONArray();
 
         JSONObject jsonObject1 = new JSONObject();
@@ -28,7 +28,7 @@ public class MultiRecordDeleteByIDResponseHandlerUnitTest {
         resultObject.put("result", results);
 
         final boolean[] checkpoints = new boolean[] { false };
-        MultiRecordDeleteByIDResponseHandler handler = new MultiRecordDeleteByIDResponseHandler() {
+        RecordsDeleteByIDResponseHandler handler = new RecordsDeleteByIDResponseHandler() {
             @Override
             public void onDeleteSuccess(String[] result) {
                 assertEquals("48092492-0791-4120-B314-022202AD3970", result[0]);
@@ -48,9 +48,9 @@ public class MultiRecordDeleteByIDResponseHandlerUnitTest {
     }
 
     @Test
-    public void testMultiRecordDeleteByIDResponseErrorFlow() throws JSONException {
+    public void testRecordsDeleteByIDResponseErrorFlow() throws JSONException {
         final boolean[] checkpoints = new boolean[] { false };
-        MultiRecordDeleteByIDResponseHandler handler = new MultiRecordDeleteByIDResponseHandler() {
+        RecordsDeleteByIDResponseHandler handler = new RecordsDeleteByIDResponseHandler() {
             @Override
             public void onDeleteSuccess(String[] result) {
                 fail("Should not call success callback");

@@ -12,9 +12,9 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
-public class MultiRecordSaveResponseHandlerUnitTest {
+public class RecordsSaveResponseHandlerUnitTest {
     @Test
-    public void testMultiRecordSaveResponseHandlerNormalFlow() throws Exception {
+    public void testRecordsSaveResponseHandlerNormalFlow() throws Exception {
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("_recordType", "Note");
         jsonObject1.put("_recordID", "48092492-0791-4120-B314-022202AD3970");
@@ -52,7 +52,7 @@ public class MultiRecordSaveResponseHandlerUnitTest {
 
         final boolean[] checkpoints = new boolean[]{ false };
 
-        MultiRecordSaveResponseHandler handler = new MultiRecordSaveResponseHandler() {
+        RecordsSaveResponseHandler handler = new RecordsSaveResponseHandler() {
             @Override
             public void onSaveSuccess(Record[] result) {
                 assertEquals(2, result.length);
@@ -107,9 +107,9 @@ public class MultiRecordSaveResponseHandlerUnitTest {
     }
 
     @Test
-    public void testMultiRecordSaveResponseHandlerErrorFlow() {
+    public void testRecordsSaveResponseHandlerErrorFlow() {
         final boolean[] checkpoints = new boolean[]{ false };
-        MultiRecordSaveResponseHandler handler = new MultiRecordSaveResponseHandler() {
+        RecordsSaveResponseHandler handler = new RecordsSaveResponseHandler() {
             @Override
             public void onSaveSuccess(Record[] result) {
                 fail("Should not get success callback");

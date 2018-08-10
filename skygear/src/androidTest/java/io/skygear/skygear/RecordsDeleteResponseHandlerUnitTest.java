@@ -11,9 +11,9 @@ import org.junit.runner.RunWith;
 import static junit.framework.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
-public class MultiRecordDeleteResponseHandlerUnitTest {
+public class RecordsDeleteResponseHandlerUnitTest {
     @Test
-    public void testMultiRecordDeleteResponseNormalFlow() throws Exception {
+    public void testRecordsDeleteResponseNormalFlow() throws Exception {
         JSONArray results = new JSONArray();
 
         JSONObject jsonObject1 = new JSONObject();
@@ -30,7 +30,7 @@ public class MultiRecordDeleteResponseHandlerUnitTest {
         resultObject.put("result", results);
 
         final boolean[] checkpoints = new boolean[] { false };
-        MultiRecordDeleteResponseHandler handler = new MultiRecordDeleteResponseHandler() {
+        RecordsDeleteResponseHandler handler = new RecordsDeleteResponseHandler() {
             @Override
             public void onDeleteSuccess(Record[] result) {
                 assertEquals("Note", result[0].getType());
@@ -55,9 +55,9 @@ public class MultiRecordDeleteResponseHandlerUnitTest {
     }
 
     @Test
-    public void testMultiRecordDeleteResponseErrorFlow() throws JSONException {
+    public void testRecordsDeleteResponseErrorFlow() throws JSONException {
         final boolean[] checkpoints = new boolean[] { false };
-        MultiRecordDeleteResponseHandler handler = new MultiRecordDeleteResponseHandler() {
+        RecordsDeleteResponseHandler handler = new RecordsDeleteResponseHandler() {
             @Override
             public void onDeleteSuccess(Record[] result) {
                 fail("Should not call success callback");

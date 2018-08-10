@@ -1,9 +1,9 @@
 package io.skygear.skygear;
 
 /**
- * The Response Handler for Fetching Skygear Records
+ * The Response Handler for Fetching Records
  */
-public abstract class MultiRecordFetchResponseHandler
+public abstract class RecordsFetchResponseHandler
         extends RecordFetchResponseBaseHandler<RecordResult<Record>[]>
 {
     @Override
