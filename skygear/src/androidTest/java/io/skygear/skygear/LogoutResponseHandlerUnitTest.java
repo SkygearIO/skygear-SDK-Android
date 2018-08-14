@@ -63,6 +63,6 @@ public class LogoutResponseHandlerUnitTest {
             }
         };
 
-        logoutResponseHandler.onFail(new Error("Test Error"));
+        logoutResponseHandler.onFailure(new Error("Test Error"));
     }
 }

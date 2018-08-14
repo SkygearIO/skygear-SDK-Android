@@ -44,12 +44,12 @@ public class RequestUnitTest {
 
         RequestUnitTest.sampleHandler = new ResponseHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 // Do nothing
             }
 
             @Override
-            public void onFail(Error error) {
+            public final void onFailure(Error error) {
                 // Do nothing
             }
         };
@@ -71,7 +71,7 @@ public class RequestUnitTest {
 
         assertEquals("test:action", req.action);
         assertEquals(RequestUnitTest.sampleData, req.data);
-        assertEquals(RequestUnitTest.sampleHandler, req.responseHandler);
+        assertEquals(RequestUnitTest.sampleHandler, req.getResponseHandler());
     }
 
     @Test
@@ -83,6 +83,6 @@ public class RequestUnitTest {
 
         assertEquals("test:action", req.action);
         assertEquals(RequestUnitTest.sampleData, req.data);
-        assertNull(req.responseHandler);
+        assertNull(req.getResponseHandler());
     }
 }

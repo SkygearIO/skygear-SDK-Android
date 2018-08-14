@@ -188,7 +188,7 @@ public class AssetPreparePostResponseHandlerUnitTest {
                 checkpoints[0] = true;
             }
         };
-        handler.onFail(new Error("Test Error"));
+        handler.onFailure(new Error("Test Error"));
         assertTrue(checkpoints[0]);
     }
 }

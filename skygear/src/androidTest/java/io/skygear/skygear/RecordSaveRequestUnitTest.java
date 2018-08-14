@@ -70,7 +70,7 @@ public class RecordSaveRequestUnitTest {
         JSONArray records = (JSONArray) data.get("records");
         assertEquals(2, records.length());
 
-        assertFalse((boolean)data.get("atomic"));
+        assertTrue(data.containsKey("atomic"));
 
         JSONObject record1 = (JSONObject) records.get(0);
         assertEquals(
@@ -94,12 +94,12 @@ public class RecordSaveRequestUnitTest {
     }
 
     @Test
-    public void testRecordSaveRequestAtomic() throws Exception {
+    public void testRecordSaveRequestNonAtomic() throws Exception {
         RecordSaveRequest recordSaveRequest
                 = new RecordSaveRequest(new Record[]{}, instrumentationPublicDatabase);
-        recordSaveRequest.setAtomic(true);
+        recordSaveRequest.setAtomic(false);
         Map<String, Object> data = recordSaveRequest.data;
-        assertTrue((boolean)data.get("atomic"));
+        assertFalse(data.containsKey("atomic"));
     }
 
     @Test

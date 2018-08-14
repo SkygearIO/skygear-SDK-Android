@@ -33,13 +33,11 @@ import android.widget.TextView;
 
 import org.json.JSONException;
 
-import java.util.Map;
-
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
+import io.skygear.skygear.RecordsDeleteResponseHandler;
 import io.skygear.skygear.Query;
 import io.skygear.skygear.Record;
-import io.skygear.skygear.RecordDeleteResponseHandler;
 import io.skygear.skygear.RecordQueryResponseHandler;
 
 public class RecordQueryActivity extends AppCompatActivity {
@@ -229,39 +227,16 @@ public class RecordQueryActivity extends AppCompatActivity {
                 .setMessage("")
                 .create();
 
-        skygear.getPublicDatabase().delete(this.records, new RecordDeleteResponseHandler() {
+        skygear.getPublicDatabase().delete(this.records, new RecordsDeleteResponseHandler() {
             @Override
-            public void onDeleteSuccess(String[] ids) {
+            public void onDeleteSuccess(Record[] result) {
                 RecordQueryActivity.this.records = null;
                 RecordQueryActivity.this.updateRecordDisplay();
 
                 successDialog.setMessage(
-                        String.format("Successfully delete %d records", ids.length)
+                        String.format("Successfully delete %d records", result.length)
                 );
                 successDialog.show();
-            }
-
-            @Override
-            public void onDeletePartialSuccess(String[] ids, Error[] errors) {
-                RecordQueryActivity.this.records = null;
-                int successCount = 0;
-                for (String eachId: ids) {
-                    if (eachId != null) {
-                        successCount++;
-                    }
-                }
-
-                int errorCount = 0;
-                for (Error eachError: errors) {
-                    if (eachError != null) {
-                        errorCount++;
-                    }
-                }
-
-                partiallySuccessDialog.setMessage(
-                        String.format("%d successes\n%d fails", successCount, errorCount)
-                );
-                partiallySuccessDialog.show();
             }
 
             @Override

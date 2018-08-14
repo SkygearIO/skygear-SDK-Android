@@ -76,7 +76,7 @@ public class SetRoleResponseHandlerUnitTest {
             }
         };
 
-        handler.onFail(new Error("Test Error"));
+        handler.onFailure(new Error("Test Error"));
         assertTrue(checkpoints[0]);
     }
 }

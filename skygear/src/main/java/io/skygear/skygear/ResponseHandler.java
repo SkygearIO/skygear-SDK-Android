@@ -1,39 +1,25 @@
-/*
- * Copyright 2017 Oursky Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 package io.skygear.skygear;
 
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 /**
- * The Response Handler interface for Skygear Request.
+ * The Response Base Handler interface for Skygear Request.
  */
-public interface ResponseHandler {
-    /**
-     * The success callback.
-     *
-     * @param result the result
-     */
-    void onSuccess(JSONObject result);
+public abstract class ResponseHandler implements ResultHandling<JSONObject> {
+    WeakReference<Request> requestRef;
 
     /**
-     * The error callback.
+     * The request the handler is serving
      *
-     * @param error the error
+     * @return the request
      */
-    void onFail(Error error);
+    public Request getRequest() {
+        if (this.requestRef != null) {
+            return this.requestRef.get();
+        }
+
+        return null;
+    }
 }

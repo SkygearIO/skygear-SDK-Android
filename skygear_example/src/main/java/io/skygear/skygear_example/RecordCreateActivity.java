@@ -24,17 +24,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -56,16 +50,11 @@ import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Map;
 
 import io.skygear.skygear.Asset;
-import io.skygear.skygear.AssetPostRequest;
 import io.skygear.skygear.Container;
 import io.skygear.skygear.Error;
 import io.skygear.skygear.Record;
@@ -302,17 +291,11 @@ public class RecordCreateActivity
 
         skygear.getPublicDatabase().save(newRecord, new RecordSaveResponseHandler(){
             @Override
-            public void onSaveSuccess(Record[] records) {
-                RecordCreateActivity.this.record = records[0];
+            public void onSaveSuccess(Record result) {
+                RecordCreateActivity.this.record = result;
                 RecordCreateActivity.this.updateRecordDisplay();
 
                 successDialog.show();
-            }
-
-            @Override
-            public void onPartiallySaveSuccess(Record[] successRecords, Error[] errors) {
-                failDialog.setMessage("Unexpected Error");
-                failDialog.show();
             }
 
             @Override
@@ -359,18 +342,12 @@ public class RecordCreateActivity
 
         skygear.getPublicDatabase().delete(this.record, new RecordDeleteResponseHandler() {
             @Override
-            public void onDeleteSuccess(String[] ids) {
+            public void onDeleteSuccess(Record result) {
                 RecordCreateActivity.this.record = null;
                 RecordCreateActivity.this.updateRecordDisplay();
 
                 successDialog.setMessage("Successfully delete the record");
                 successDialog.show();
-            }
-
-            @Override
-            public void onDeletePartialSuccess(String[] ids, Error[] errors) {
-                failDialog.setMessage("Unexpected Error");
-                failDialog.show();
             }
 
             @Override

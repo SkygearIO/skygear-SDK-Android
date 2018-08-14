@@ -159,7 +159,7 @@ public class AssetPostRequestUnitTest {
         );
 
         final boolean[] checkpoints = new boolean[]{ false };
-        postRequest.responseHandler = new AssetPostRequest.ResponseHandler() {
+        postRequest.setResponseHandler(new AssetPostRequest.ResponseHandler() {
             @Override
             public void onPostSuccess(Asset asset, String response) {
                 assertEquals(response, "Upload success");
@@ -178,7 +178,7 @@ public class AssetPostRequestUnitTest {
             public void onPostFail(Asset asset, Error error) {
                 fail("Should not get fail callback");
             }
-        };
+        });
 
         postRequest.onResponse("Upload success");
         assertTrue(checkpoints[0]);
@@ -194,7 +194,7 @@ public class AssetPostRequestUnitTest {
         );
 
         final boolean[] checkpoints = new boolean[]{ false };
-        postRequest.responseHandler = new AssetPostRequest.ResponseHandler() {
+        postRequest.setResponseHandler(new AssetPostRequest.ResponseHandler() {
             @Override
             public void onPostSuccess(Asset asset, String response) {
                 fail("Should not get success callback");
@@ -212,7 +212,7 @@ public class AssetPostRequestUnitTest {
 
                 checkpoints[0] = true;
             }
-        };
+        });
 
         postRequest.onErrorResponse(new VolleyError("Test Error"));
         assertTrue(checkpoints[0]);

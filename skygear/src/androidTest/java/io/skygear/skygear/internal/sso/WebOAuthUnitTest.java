@@ -39,7 +39,7 @@ public class WebOAuthUnitTest {
 
         WebOAuth.callback = new WebOAuthHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 try {
                     assertEquals("OK", result.getString("result"));
                 } catch (JSONException e) {
@@ -62,7 +62,7 @@ public class WebOAuthUnitTest {
 
         WebOAuth.callback = new WebOAuthHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 fail("Should not get success callback");
             }
 
@@ -81,7 +81,7 @@ public class WebOAuthUnitTest {
     public void testCancelWebOAuth() throws Exception {
         WebOAuth.callback = new WebOAuthHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 fail("Should not get success callback");
             }
 

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 /**
  * The Set Skygear User Role Response Handler.
  */
-public abstract class SetUserRoleResponseHandler implements ResponseHandler {
+public abstract class SetUserRoleResponseHandler extends ResponseHandler {
     /**
      * Set success callback.
      */
@@ -20,12 +20,12 @@ public abstract class SetUserRoleResponseHandler implements ResponseHandler {
 
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         this.onSetSuccess();
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onSetFail(error);
     }
 }

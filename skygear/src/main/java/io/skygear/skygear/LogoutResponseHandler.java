@@ -22,7 +22,7 @@ import org.json.JSONObject;
 /**
  * The type Logout response handler.
  */
-public abstract class LogoutResponseHandler implements ResponseHandler {
+public abstract class LogoutResponseHandler extends ResponseHandler {
     /**
      * On logout success.
      */
@@ -36,12 +36,13 @@ public abstract class LogoutResponseHandler implements ResponseHandler {
     public abstract void onLogoutFail(Error error);
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         this.onLogoutSuccess();
     }
 
+
     @Override
-    public void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onLogoutFail(error);
     }
 }

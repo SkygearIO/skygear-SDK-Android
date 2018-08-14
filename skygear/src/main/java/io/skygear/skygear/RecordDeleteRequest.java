@@ -87,6 +87,25 @@ public class RecordDeleteRequest extends Request {
         this.updateData();
     }
 
+    public void setAtomic(boolean isAtomic) {
+        if (isAtomic) {
+            this.data.put("atomic", true);
+            return;
+        }
+
+        if (this.data.containsKey("atomic")) {
+            this.data.remove("atomic");
+        }
+    }
+
+    public boolean isAtomic() {
+        if (!this.data.containsKey("atomic")) {
+            return false;
+        }
+
+        return (boolean) this.data.get("atomic");
+    }
+
     private void updateData() {
         JSONArray deprecatedIDs = new JSONArray();
         JSONArray recordIdentifiers = new JSONArray();
@@ -114,6 +133,7 @@ public class RecordDeleteRequest extends Request {
         this.data.put("ids", deprecatedIDs);
         this.data.put("records", recordIdentifiers);
         this.data.put("database_id", this.databaseId);
+        this.data.put("atomic", true);
     }
 
     @Override

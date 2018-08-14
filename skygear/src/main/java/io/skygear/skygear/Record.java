@@ -48,6 +48,8 @@ public class Record implements Parcelable {
     String updaterId;
     String ownerId;
 
+    boolean deleted;
+
     Map<String, Object> transientMap;
 
     Map<String, Object> data;
@@ -107,6 +109,8 @@ public class Record implements Parcelable {
         this.updaterId = null;
         this.createdAt = null;
         this.updatedAt = null;
+
+        this.deleted = false;
 
         this.access = AccessControl.defaultAccessControl();
 

@@ -221,17 +221,17 @@ public final class Container {
         final String lambdaName = name;
         final Object[] lambdaArgs = args;
         final LambdaResponseHandler responseHandler = handler;
-        this.publicDatabase.presave(Arrays.asList(args), new ResultCallback<List>() {
+        this.publicDatabase.presave(Arrays.asList(args), new ResultHandling<List>() {
             @Override
-            public void onSuccess(List result) {
+            public final void onSuccess(List result) {
                 LambdaRequest request = new LambdaRequest(name, result);
-                request.responseHandler = responseHandler;
+                request.setResponseHandler(responseHandler);
 
                 Container.this.requestManager.sendRequest(request);
             }
 
             @Override
-            public void onFailure(Error error) {
+            public final void onFailure(Error error) {
 
             }
         });
@@ -248,17 +248,17 @@ public final class Container {
         final String lambdaName = name;
         final Map<String, Object> lambdaArgs = args;
         final LambdaResponseHandler responseHandler = handler;
-        this.publicDatabase.presave(args, new ResultCallback<Map>() {
+        this.publicDatabase.presave(args, new ResultHandling<Map>() {
             @Override
-            public void onSuccess(Map result) {
+            public final void onSuccess(Map result) {
                 LambdaRequest request = new LambdaRequest(lambdaName, result);
-                request.responseHandler = responseHandler;
+                request.setResponseHandler(responseHandler);
 
                 Container.this.requestManager.sendRequest(request);
             }
 
             @Override
-            public void onFailure(Error error) {
+            public final void onFailure(Error error) {
 
             }
         });

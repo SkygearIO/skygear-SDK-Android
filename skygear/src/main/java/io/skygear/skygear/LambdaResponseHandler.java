@@ -22,7 +22,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Lambda Response Handler.
  */
-public abstract class LambdaResponseHandler implements ResponseHandler {
+public abstract class LambdaResponseHandler extends ResponseHandler {
     /**
      * The success callback.
      *
@@ -43,7 +43,7 @@ public abstract class LambdaResponseHandler implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onLambdaFail(error);
     }
 }

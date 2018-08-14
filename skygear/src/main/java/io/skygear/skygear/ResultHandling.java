@@ -18,9 +18,11 @@
 package io.skygear.skygear;
 
 /**
- * The result callback interface for asynchronous operation.
+ * The result handling interface for asynchronous operation.
+ *
+ * @param <T> the type of the result
  */
-public interface ResultCallback<T> {
+public interface ResultHandling<T> {
     /**
      * The success callback.
      *

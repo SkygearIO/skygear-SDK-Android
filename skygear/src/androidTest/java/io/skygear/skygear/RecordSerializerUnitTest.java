@@ -63,6 +63,7 @@ public class RecordSerializerUnitTest {
         assertFalse(RecordSerializer.isValidKey("_created_by"));
         assertFalse(RecordSerializer.isValidKey("_updated_by"));
         assertFalse(RecordSerializer.isValidKey("_access"));
+        assertFalse(RecordSerializer.isValidKey("_deleted"));
         assertFalse(RecordSerializer.isValidKey("_transient"));
 
         assertTrue(RecordSerializer.isValidKey("hello"));
@@ -275,6 +276,17 @@ public class RecordSerializerUnitTest {
         assertNotNull(jsonObject);
         assertTrue(jsonObject.has("null-value-key"));
         assertTrue(jsonObject.isNull("null-value-key"));
+    }
+
+    @Test
+    public void testRecordSerializeDeleted() throws Exception {
+        Record aDeletedNote = new Record("Note");
+        aDeletedNote.deleted = true;
+
+        JSONObject jsonObject = RecordSerializer.serialize(aDeletedNote);
+
+        assertNotNull(jsonObject);
+        assertTrue(jsonObject.getBoolean("_deleted"));
     }
 
     @Test
@@ -530,6 +542,17 @@ public class RecordSerializerUnitTest {
 
         Record aNote = RecordSerializer.deserialize(jsonObject);
         assertEquals(JSONObject.NULL, aNote.get("null-value-key"));
+    }
+
+    @Test
+    public void testRecordDeserializeDeleted() throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("_recordType", "Note");
+        jsonObject.put("_recordID", "48092492-0791-4120-B314-022202AD3971");
+        jsonObject.put("_deleted", true);
+
+        Record aDeletedNote = RecordSerializer.deserialize(jsonObject);
+        assertTrue(aDeletedNote.deleted);
     }
 
     @Test

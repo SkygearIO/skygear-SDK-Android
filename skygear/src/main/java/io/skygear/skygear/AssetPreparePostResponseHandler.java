@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * The Skygear Asset Prepare Post Response Handler.
  */
-public abstract class AssetPreparePostResponseHandler implements ResponseHandler {
+public abstract class AssetPreparePostResponseHandler extends ResponseHandler {
 
     private final Asset asset;
 
@@ -62,7 +62,7 @@ public abstract class AssetPreparePostResponseHandler implements ResponseHandler
     public abstract void onPreparePostFail(Error error);
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             // parse asset return from server and update the asset object
             JSONObject assetObject = result.getJSONObject("asset");
@@ -99,7 +99,7 @@ public abstract class AssetPreparePostResponseHandler implements ResponseHandler
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onPreparePostFail(error);
     }
 }

@@ -27,7 +27,7 @@ import java.util.HashMap;
  */
 public class RecordQueryRequest extends Request {
 
-    private final Query query;
+    private Query query;
     private final String databaseId;
 
     /**
@@ -38,15 +38,42 @@ public class RecordQueryRequest extends Request {
      */
     public RecordQueryRequest(Query query, Database database) {
         super("record:query");
-        this.query = query;
+
         this.databaseId = database.getName();
         this.data = new HashMap<>();
 
+        this.setQuery(query);
         this.updateData();
     }
 
-    private void updateData() {
-        this.data.put("database_id", this.databaseId);
+    /**
+     * Instantiates a new record query request.
+     *
+     * @param database the database
+     */
+    public RecordQueryRequest(Database database) {
+        this(null, database);
+    }
+
+    public Query getQuery() {
+        return this.query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
+
+        if (query == null) {
+            this.data.remove("record_type");
+            this.data.remove("sort");
+            this.data.remove("predicate");
+            this.data.remove("include");
+            this.data.remove("limit");
+            this.data.remove("count");
+            this.data.remove("offset");
+
+            return;
+        }
+
         this.data.put("record_type", this.query.getType());
         this.data.put("sort", this.query.getSortPredicateJson());
 
@@ -63,5 +90,9 @@ public class RecordQueryRequest extends Request {
         this.data.put("limit",  this.query.getLimit());
         this.data.put("count",  this.query.getOverallCount());
         this.data.put("offset", this.query.getOffset());
+    }
+
+    private void updateData() {
+        this.data.put("database_id", this.databaseId);
     }
 }

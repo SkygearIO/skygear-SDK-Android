@@ -23,7 +23,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Typed Lambda Response Handler.
  */
-public abstract class TypedLambdaResponseHandler<T extends Object> extends LambdaResponseHandler {
+public abstract class TypedLambdaResponseHandler<T> extends LambdaResponseHandler {
     /**
      * The success callback.
      *
@@ -36,21 +36,16 @@ public abstract class TypedLambdaResponseHandler<T extends Object> extends Lambd
     }
 
     @Override
-    final public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             // The object can be a JSONObject, JSONArray or other
             // JSON-compatible types.
             Object anyJSONObject = result.opt("result");
             this.onLambdaSuccess((T)ValueSerializer.deserialize(anyJSONObject));
         } catch (JSONException ex) {
-            this.onFail(new Error(ex.getMessage()));
+            this.onFailure(new Error(ex.getMessage()));
         } catch (ClassCastException ex) {
-            this.onFail(new Error(ex.getMessage()));
+            this.onFailure(new Error(ex.getMessage()));
         }
-    }
-
-    @Override
-    final public void onFail(Error error) {
-        this.onLambdaFail(error);
     }
 }

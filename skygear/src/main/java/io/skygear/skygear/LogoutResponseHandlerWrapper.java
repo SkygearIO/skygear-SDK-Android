@@ -25,7 +25,7 @@ import org.json.JSONObject;
  * This wrapper wraps original logout response handler and auth resolver
  * so that the resolver will be called before original handler is called.
  */
-class LogoutResponseHandlerWrapper implements ResponseHandler {
+class LogoutResponseHandlerWrapper extends ResponseHandler {
     private final AuthResolver resolver;
     private final LogoutResponseHandler originalHandler;
 
@@ -42,7 +42,7 @@ class LogoutResponseHandlerWrapper implements ResponseHandler {
     }
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         if (this.resolver != null) {
             this.resolver.resolveAuthUser(null, null);
         }
@@ -52,9 +52,9 @@ class LogoutResponseHandlerWrapper implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFailure(Error error) {
         if (this.originalHandler != null) {
-            this.originalHandler.onFail(error);
+            this.originalHandler.onFailure(error);
         }
     }
 }

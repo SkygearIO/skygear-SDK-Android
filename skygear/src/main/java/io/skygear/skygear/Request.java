@@ -23,6 +23,7 @@ import com.android.volley.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 
@@ -39,10 +40,8 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
      * The Data.
      */
     protected Map<String, Object> data;
-    /**
-     * The Response handler.
-     */
-    public ResponseHandler responseHandler;
+
+    private ResponseHandler responseHandler;
 
     /**
      * Instantiates a new Request.
@@ -73,11 +72,32 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
     public Request(String action, Map<String, Object>data, ResponseHandler responseHandler) {
         this.action = action;
         this.data = data;
-        this.responseHandler = responseHandler;
+
+        this.setResponseHandler(responseHandler);
     }
 
     public Map<String, Object> getData() {
         return Collections.unmodifiableMap(this.data);
+    }
+
+    /**
+     * Set the Response Handler of the Request.
+     *
+     * After this method call, the response handler would have
+     * a weak reference back to the request
+     *
+     * @param responseHandler the response handler of the request
+     */
+    public void setResponseHandler(ResponseHandler responseHandler) {
+        this.responseHandler = responseHandler;
+
+        if (this.responseHandler != null) {
+            this.responseHandler.requestRef = new WeakReference<>(this);
+        }
+    }
+
+    public ResponseHandler getResponseHandler() {
+        return this.responseHandler;
     }
 
     /**
@@ -98,7 +118,7 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
      */
     public void onValidationError(Exception exception) {
         if (this.responseHandler != null) {
-            this.responseHandler.onFail(new Error(exception.getMessage()));
+            this.responseHandler.onFailure(new Error(exception.getMessage()));
         }
     }
 
@@ -140,7 +160,7 @@ public class Request implements Response.Listener<JSONObject>, Response.ErrorLis
                 requestError = new Error(error.getMessage());
             }
 
-            this.responseHandler.onFail(requestError);
+            this.responseHandler.onFailure(requestError);
         }
     }
 

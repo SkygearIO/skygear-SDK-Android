@@ -76,7 +76,7 @@ public class LogoutResponseHandlerWrapperUnitTest {
                 logoutResponseHandler
         );
 
-        wrapper.onFail(new Error("Test Error"));
+        wrapper.onFailure(new Error("Test Error"));
 
         assertTrue(checkpoints[0]);
     }

@@ -86,7 +86,7 @@ public class AuthResponseHandlerWrapperUnitTest {
                 authResponseHandler
         );
 
-        wrapper.onFail(new Error("Test Error"));
+        wrapper.onFailure(new Error("Test Error"));
 
         assertTrue(checkpoints[0]);
     }

@@ -23,7 +23,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Unregister Device Response Handler.
  */
-public abstract class UnregisterDeviceResponseHandler implements ResponseHandler {
+public abstract class UnregisterDeviceResponseHandler extends ResponseHandler {
 
     /**
      * Unregister success callback.
@@ -40,7 +40,7 @@ public abstract class UnregisterDeviceResponseHandler implements ResponseHandler
     public abstract void onUnregisterError(Error error);
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             String deviceId = result.getString("id");
             this.onUnregisterSuccess(deviceId);
@@ -50,7 +50,7 @@ public abstract class UnregisterDeviceResponseHandler implements ResponseHandler
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onUnregisterError(error);
     }
 }

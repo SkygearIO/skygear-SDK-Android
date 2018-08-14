@@ -59,7 +59,7 @@ public class OAuthManager {
     public void loginProvider(final AuthContainer authContainer, String providerID, OAuthOption options, final Activity activity, final AuthResponseHandler handler) {
         this.oauthFlowWithProvider(OAuthActionType.LOGIN, authContainer, providerID, options, activity, new WebOAuthHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 handleLoginResponse(authContainer, result, handler);
             }
 
@@ -84,7 +84,7 @@ public class OAuthManager {
     public void linkProvider(AuthContainer authContainer, String providerID, OAuthOption options, final Activity activity, final LinkProviderResponseHandler handler) {
         this.oauthFlowWithProvider(OAuthActionType.LINK, authContainer, providerID, options, activity, new WebOAuthHandler() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public final void onSuccess(JSONObject result) {
                 if (handler != null) {
                     handler.onSuccess();
                 }
@@ -121,7 +121,7 @@ public class OAuthManager {
                     @Override
                     public void onLambdaFail(Error error) {
                         if (handler != null) {
-                            handler.onFail(error);
+                            handler.onFailure(error);
                         }
                     }
                 });
@@ -256,7 +256,7 @@ public class OAuthManager {
         try {
             if (response.has("error")) {
                 if (handler != null) {
-                    handler.onFail(new Error(response.getJSONObject("error")));
+                    handler.onFailure(new Error(response.getJSONObject("error")));
                 }
                 return;
             }
@@ -270,7 +270,7 @@ public class OAuthManager {
             }
         } catch (JSONException e) {
             if (handler != null) {
-                handler.onFail(new Error("Malformed server response"));
+                handler.onFailure(new Error("Malformed server response"));
             }
         }
     }

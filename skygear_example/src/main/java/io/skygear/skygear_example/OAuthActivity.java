@@ -82,7 +82,7 @@ public class OAuthActivity extends AppCompatActivity {
                 new OAuthOptionBuilder().setScheme("skygearexample").getOption(),
                 this, new LinkProviderResponseHandler() {
                     @Override
-                    public void onSuccess() {
+                    public final void onSuccess() {
                         hideLoading();
                         showSuccessAlert("Link provider success");
                     }
@@ -124,7 +124,7 @@ public class OAuthActivity extends AppCompatActivity {
                 accessTokenInput.getText().toString(),
                 new LinkProviderResponseHandler() {
                     @Override
-                    public void onSuccess() {
+                    public final void onSuccess() {
                         hideLoading();
                         showSuccessAlert("Link provider successfully");
 
@@ -145,7 +145,7 @@ public class OAuthActivity extends AppCompatActivity {
                 selectedProvider,
                 new UnlinkProviderResponseHandler() {
                     @Override
-                    public void onSuccess() {
+                    public final void onSuccess() {
                         hideLoading();
                         showSuccessAlert("Unlink provider successfully");
 
@@ -165,7 +165,7 @@ public class OAuthActivity extends AppCompatActivity {
         this.skygear.getAuth().getOAuthProviderProfiles(
                 new GetOAuthProviderProfilesResponseHandler() {
                     @Override
-                    public void onSuccess(JSONObject result) {
+                    public final void onSuccess(JSONObject result) {
                         hideLoading();
                         showSuccessAlert("Provider profiles data: \n" + result.toString());
 

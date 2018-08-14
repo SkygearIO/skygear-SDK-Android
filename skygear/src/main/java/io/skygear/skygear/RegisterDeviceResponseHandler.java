@@ -23,7 +23,7 @@ import org.json.JSONObject;
 /**
  * The Skygear Register Device Response Handler.
  */
-public abstract class RegisterDeviceResponseHandler implements ResponseHandler {
+public abstract class RegisterDeviceResponseHandler extends ResponseHandler {
 
     /**
      * Register success callback.
@@ -40,7 +40,7 @@ public abstract class RegisterDeviceResponseHandler implements ResponseHandler {
     public abstract void onRegisterError(Error error);
 
     @Override
-    public void onSuccess(JSONObject result) {
+    public final void onSuccess(JSONObject result) {
         try {
             String deviceId = result.getString("id");
             this.onRegisterSuccess(deviceId);
@@ -50,7 +50,7 @@ public abstract class RegisterDeviceResponseHandler implements ResponseHandler {
     }
 
     @Override
-    public void onFail(Error error) {
+    public final void onFailure(Error error) {
         this.onRegisterError(error);
     }
 }
