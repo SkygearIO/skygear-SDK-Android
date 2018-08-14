@@ -144,8 +144,15 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
     }
 
     private S3Error parseS3Error(VolleyError error) {
-        NetworkResponse response = error.networkResponse;
-        InputStream inputStream = new ByteArrayInputStream(response.data);
+        byte[] data;
+        if (error.networkResponse != null) {
+            data = error.networkResponse.data;
+        } else {
+            data = error.getMessage().getBytes();
+        }
+
+        InputStream inputStream = new ByteArrayInputStream(data);
+
         S3Error s3Error;
         try {
             s3Error = new Persister().read(S3Error.class, inputStream);
