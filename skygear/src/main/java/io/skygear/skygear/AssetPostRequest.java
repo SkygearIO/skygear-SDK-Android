@@ -17,10 +17,17 @@
 
 package io.skygear.skygear;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import java.lang.ref.WeakReference;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
+import org.simpleframework.xml.core.Persister;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
@@ -127,6 +134,36 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
         }
     }
 
+    private Error parseResponseError(VolleyError error) {
+        S3Error s3Error = this.parseS3Error(error);
+        if (s3Error != null) {
+            return s3Error.toSkygearError();
+        }
+
+        return new Error(error.getMessage());
+    }
+
+    private S3Error parseS3Error(VolleyError error) {
+        byte[] data;
+        if (error.networkResponse != null) {
+            data = error.networkResponse.data;
+        } else {
+            data = error.getMessage().getBytes();
+        }
+
+        InputStream inputStream = new ByteArrayInputStream(data);
+
+        S3Error s3Error;
+        try {
+            s3Error = new Persister().read(S3Error.class, inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return s3Error;
+    }
+
     /**
      * Validation error callback
      *
@@ -148,7 +185,7 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
     @Override
     public void onErrorResponse(VolleyError error) {
         if (this.responseHandler != null) {
-            this.responseHandler.onPostFail(this.asset, new Error(error.getMessage()));
+            this.responseHandler.onPostFail(this.asset, this.parseResponseError(error));
         }
     }
 
@@ -190,6 +227,23 @@ public class AssetPostRequest implements Response.Listener<String>, Response.Err
             }
 
             return null;
+        }
+    }
+
+    @Root(strict = false, name = "Error")
+    private static class S3Error {
+        @Element(name = "Code")
+        String code;
+
+        @Element(name = "Message")
+        String message;
+
+        Error toSkygearError() {
+            if (this.code.equals("EntityTooLarge")) {
+                return new Error(Error.Code.ASSET_SIZE_TOO_LARGE.getValue(), this.message);
+            }
+
+            return new Error(this.message);
         }
     }
 }
