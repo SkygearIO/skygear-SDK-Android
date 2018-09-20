@@ -42,7 +42,7 @@ class PersistentStore {
     static final String DEVICE_ID_KEY = "device_id";
     static final String DEVICE_TOKEN_KEY = "device_token";
 
-    private final Context context;
+    final Context context;
     /**
      * The Current user.
      */
