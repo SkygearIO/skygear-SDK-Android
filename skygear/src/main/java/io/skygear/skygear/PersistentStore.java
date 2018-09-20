@@ -109,7 +109,7 @@ class PersistentStore {
         prefEditor.apply();
     }
 
-    private void restoreAuthUser(SharedPreferences pref) {
+    void restoreAuthUser(SharedPreferences pref) {
         String currentUserString = pref.getString(CURRENT_USER_KEY, null);
 
         if (currentUserString == null) {
@@ -126,7 +126,7 @@ class PersistentStore {
         }
     }
 
-    private void saveAuthUser(SharedPreferences.Editor prefEditor) {
+    void saveAuthUser(SharedPreferences.Editor prefEditor) {
         if (this.currentUser != null) {
             prefEditor.putString(CURRENT_USER_KEY,
                     RecordSerializer.serialize(this.currentUser).toString()
@@ -136,11 +136,11 @@ class PersistentStore {
         }
     }
 
-    private void restoreAccessToken(SharedPreferences pref) {
+    void restoreAccessToken(SharedPreferences pref) {
         this.accessToken = pref.getString(ACCESS_TOKEN_KEY, null);
     }
 
-    private void saveAccessToken(SharedPreferences.Editor prefEditor) {
+    void saveAccessToken(SharedPreferences.Editor prefEditor) {
         if (this.accessToken != null) {
             prefEditor.putString(ACCESS_TOKEN_KEY, this.accessToken);
         } else {
