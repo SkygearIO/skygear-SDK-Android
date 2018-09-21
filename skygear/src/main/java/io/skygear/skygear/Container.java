@@ -146,9 +146,9 @@ public final class Container {
         }
 
         this.config = config;
+        this.configPersistentStore(config);
         this.requestManager.configure(config);
         this.pubsub.configure(config);
-        this.configPersistentStore(config);
     }
 
     /**
