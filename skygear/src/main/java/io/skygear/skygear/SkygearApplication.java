@@ -55,6 +55,16 @@ public abstract class SkygearApplication extends Application {
         return false;
     }
 
+
+    /**
+     * Gets whether encrypt current user data saved in SharedPreferences.
+     *
+     * @return the boolean indicating whether encrypt current user data saved in SharedPreferences
+     */
+    public boolean encryptCurrentUserData() {
+        return false;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -64,6 +74,7 @@ public abstract class SkygearApplication extends Application {
                 .apiKey(this.getApiKey())
                 .gcmSenderId(this.getGcmSenderId())
                 .pubsubHandlerExecutionInBackground(this.isPubsubHandlerExecutionInBackground())
+                .encryptCurrentUserData(this.encryptCurrentUserData())
                 .build();
 
         Container.defaultContainer(this).configure(config);

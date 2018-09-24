@@ -31,7 +31,7 @@ public final class Container {
     private static final String TAG = "Skygear SDK";
     private static Container sharedInstance;
 
-    final PersistentStore persistentStore;
+    PersistentStore persistentStore;
     final Context context;
     final RequestManager requestManager;
     Configuration config;
@@ -61,18 +61,13 @@ public final class Container {
         this.context = context.getApplicationContext();
         this.config = config;
         this.requestManager = new RequestManager(this.context, this.config);
-        this.persistentStore = new PersistentStore(this.context);
 
         this.auth = new AuthContainer(this);
         this.pubsub = new PubsubContainer(this);
         this.push = new PushContainer(this);
         this.publicDatabase = Database.Factory.publicDatabase(this);
         this.privateDatabase = Database.Factory.privateDatabase(this);
-        this.requestManager.accessToken = this.persistentStore.accessToken;
-
-        if (this.persistentStore.defaultAccessControl != null) {
-            AccessControl.defaultAccessControl = this.persistentStore.defaultAccessControl;
-        }
+        this.configPersistentStore(config);
     }
 
     /**
@@ -151,6 +146,7 @@ public final class Container {
         }
 
         this.config = config;
+        this.configPersistentStore(config);
         this.requestManager.configure(config);
         this.pubsub.configure(config);
     }
@@ -262,5 +258,17 @@ public final class Container {
 
             }
         });
+    }
+
+    private void configPersistentStore(Configuration config) {
+        if (config != null && config.encryptCurrentUserData) {
+            this.persistentStore = new SecurePersistentStore(this.context);
+        } else {
+            this.persistentStore = new PersistentStore(this.context);
+        }
+        this.requestManager.accessToken = this.persistentStore.accessToken;
+        if (this.persistentStore.defaultAccessControl != null) {
+            AccessControl.defaultAccessControl = this.persistentStore.defaultAccessControl;
+        }
     }
 }

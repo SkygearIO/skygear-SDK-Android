@@ -52,18 +52,27 @@ public final class Configuration {
      */
     final boolean pubsubConnectAutomatically;
 
+
+    /**
+     * Boolean indicating whether encrypt current user data saved in SharedPreferences.
+     */
+    final boolean encryptCurrentUserData;
+
+
     private Configuration(
             String endpoint,
             String apiKey,
             String gcmSenderId,
             boolean pubsubHandlerExecutionInBackground,
-            boolean pubsubConnectAutomatically
+            boolean pubsubConnectAutomatically,
+            boolean encryptCurrentUserData
     ) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
         this.gcmSenderId = gcmSenderId;
         this.pubsubHandlerExecutionInBackground = pubsubHandlerExecutionInBackground;
         this.pubsubConnectAutomatically = pubsubConnectAutomatically;
+        this.encryptCurrentUserData = encryptCurrentUserData;
     }
 
     /**
@@ -112,6 +121,15 @@ public final class Configuration {
     }
 
     /**
+     * Encrypt current user data boolean.
+     *
+     * @return the boolean
+     */
+    public boolean encryptCurrentUserData() {
+        return encryptCurrentUserData;
+    }
+
+    /**
      * Creates an instance of default configuration.
      *
      * This method is deprecated. You should create configuration by
@@ -148,6 +166,7 @@ public final class Configuration {
         private String gcmSenderId;
         private boolean pubsubHandlerExecutionInBackground;
         private boolean pubsubConnectAutomatically;
+        private boolean encryptCurrentUserData;
 
         /**
          * Creates an instance of Builder.
@@ -213,6 +232,18 @@ public final class Configuration {
         }
 
         /**
+         * Sets whether encrypt current user data saved in SharedPreferences.
+         *
+         * @param enabled the boolean indicating whether encryption Enabled
+         * automatically.
+         * @return the builder
+         */
+        public Builder encryptCurrentUserData(boolean enabled) {
+            this.encryptCurrentUserData = enabled;
+            return this;
+        }
+
+        /**
          * Build a configuration.
          *
          * @return the configuration
@@ -231,7 +262,8 @@ public final class Configuration {
                     this.apiKey,
                     this.gcmSenderId,
                     this.pubsubHandlerExecutionInBackground,
-                    this.pubsubConnectAutomatically
+                    this.pubsubConnectAutomatically,
+                    this.encryptCurrentUserData
             );
         }
     }
