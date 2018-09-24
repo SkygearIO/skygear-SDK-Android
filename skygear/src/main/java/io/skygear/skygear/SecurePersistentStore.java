@@ -138,7 +138,7 @@ class SecurePersistentStore extends PersistentStore {
 
     private Encryptor getEncryptor() {
         if (encryptor == null) {
-            encryptor = new Encryptor(this.context);
+            encryptor = new Encryptor();
         }
         return encryptor;
     }
@@ -198,12 +198,10 @@ class SecurePersistentStore extends PersistentStore {
 
     class Encryptor {
 
-        private final Context context;
         private KeyStore keyStore;
 
-        Encryptor(Context context) {
+        Encryptor() {
             super();
-            this.context = context;
         }
 
         EncryptedResult encryptText(final String textToEncrypt) throws NoSuchPaddingException,
@@ -266,7 +264,7 @@ class SecurePersistentStore extends PersistentStore {
             Calendar start = Calendar.getInstance();
             Calendar end = Calendar.getInstance();
             end.add(Calendar.YEAR, 1);
-            KeyPairGeneratorSpec spec = new KeyPairGeneratorSpec.Builder(this.context)
+            KeyPairGeneratorSpec spec = new KeyPairGeneratorSpec.Builder(context)
                     .setAlias(alias)
                     .setSerialNumber(BigInteger.ONE)
                     .setSubject(new X500Principal("CN=" + alias))
@@ -281,7 +279,7 @@ class SecurePersistentStore extends PersistentStore {
         }
     }
 
-    class EncryptedResult {
+    static class EncryptedResult {
         String encryptedKey;
         String encryptedData;
 
