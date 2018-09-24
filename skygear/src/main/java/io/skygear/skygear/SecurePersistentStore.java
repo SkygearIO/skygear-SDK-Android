@@ -150,14 +150,6 @@ class SecurePersistentStore extends PersistentStore {
         return decryptor;
     }
 
-    private String getRSACipherProvider() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return "AndroidOpenSSL";
-        } else {
-            return "AndroidKeyStoreBCWorkaround";
-        }
-    }
-
     class Decryptor {
 
         private KeyStore keyStore;
@@ -172,7 +164,7 @@ class SecurePersistentStore extends PersistentStore {
             }
             KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry)keyStore.getEntry(
                     KEY_ALIAS, null);
-            Cipher output = Cipher.getInstance(RSA_MODE, getRSACipherProvider());
+            Cipher output = Cipher.getInstance(RSA_MODE);
             output.init(Cipher.DECRYPT_MODE, privateKeyEntry.getPrivateKey());
             CipherInputStream cipherInputStream = new CipherInputStream(
                     new ByteArrayInputStream(encrypted), output);
@@ -241,7 +233,7 @@ class SecurePersistentStore extends PersistentStore {
                 InvalidKeyException, InvalidAlgorithmParameterException, CertificateException,
                 KeyStoreException, UnrecoverableEntryException {
             PublicKey publicKey = getRSAPublicKey();
-            Cipher inputCipher = Cipher.getInstance(RSA_MODE, getRSACipherProvider());
+            Cipher inputCipher = Cipher.getInstance(RSA_MODE);
             inputCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
