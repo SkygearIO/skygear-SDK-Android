@@ -54,7 +54,7 @@ class SecurePersistentStore extends PersistentStore {
     static final String ACCESS_TOKEN_ENCRYPTED_KEY_KEY = "access_token_encrypted_key";
 
     private static final String RSA_MODE =  "RSA/ECB/PKCS1Padding";
-    private static final String AES_MODE = "AES/ECB/PKCS7Padding";
+    private static final String AES_MODE = "AES/ECB/PKCS5Padding";
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
 
     Encryptor encryptor;
@@ -189,7 +189,7 @@ class SecurePersistentStore extends PersistentStore {
             byte[] encryptedDataBytes = Base64.decode(encryptedData, Base64.DEFAULT);
             byte[] secretKey = rsaDecrypt(encryptedKeyBytes);
 
-            Cipher c = Cipher.getInstance(AES_MODE, "BC");
+            Cipher c = Cipher.getInstance(AES_MODE);
             c.init(Cipher.DECRYPT_MODE, new SecretKeySpec(secretKey, "AES"));
             byte[] decodedBytes = c.doFinal(encryptedDataBytes);
             return new String(decodedBytes, "UTF-8");
@@ -212,7 +212,7 @@ class SecurePersistentStore extends PersistentStore {
             byte[] encryptedKeyBytes = rsaEncrypt(secretKey);
             String encryptedKey = Base64.encodeToString(encryptedKeyBytes, Base64.DEFAULT);
 
-            Cipher c = Cipher.getInstance(AES_MODE, "BC");
+            Cipher c = Cipher.getInstance(AES_MODE);
             c.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(secretKey, "AES"));
             byte[] encodedBytes = c.doFinal(textToEncrypt.getBytes("UTF-8"));
             String encryptedBase64Encoded = Base64.encodeToString(encodedBytes, Base64.DEFAULT);
