@@ -1,9 +1,17 @@
+## 1.6.3 (2018-09-26)
+
+### Features
+
+- Support encrypt current user data when storing into SharedPreferences SkygearIO/features#250
+
+
 ## 1.6.2 (2018-07-23)
 
 ### Bug Fixes
 
 - Add asset too large error code
 - Add verification required error code
+
 ## 1.6.0 (2018-06-28)
 
 ### Features
