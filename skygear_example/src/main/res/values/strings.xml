@@ -78,6 +78,7 @@
     <string name="transient_include">Transient Include</string>
     <string name="set_current_location">Set to current location</string>
     <string name="gcm_sender_id_title">GCM Sender ID (Optional)</string>
+    <string name="encrypt_user_data_title">Encrypt User Data</string>
     <string name="gcm_sender_id">GCM Sender ID</string>
     <string name="signup_with_email">Signup With Email</string>
     <string name="signup_anonymously">Signup Anonymously</string>
