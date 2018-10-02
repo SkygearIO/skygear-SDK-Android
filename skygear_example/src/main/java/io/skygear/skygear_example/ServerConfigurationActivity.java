@@ -23,6 +23,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import io.skygear.skygear.Configuration;
@@ -34,6 +35,7 @@ public class ServerConfigurationActivity extends AppCompatActivity {
     private EditText endpointEditText;
     private EditText apiKeyEditText;
     private EditText gcmSenderIdEditText;
+    private CheckBox encryptUserDataCheckbox;
     private Container skygear;
 
     @Override
@@ -46,6 +48,7 @@ public class ServerConfigurationActivity extends AppCompatActivity {
         this.endpointEditText = (EditText) findViewById(R.id.endpoint_edittext);
         this.apiKeyEditText = (EditText) findViewById(R.id.api_key_edittext);
         this.gcmSenderIdEditText = (EditText) findViewById(R.id.gcm_sender_id_edittext);
+        this.encryptUserDataCheckbox = findViewById(R.id.encrypt_user_data_checkbox);
 
         Configuration config = this.skygear.getConfig();
         if (config != null) {
@@ -56,10 +59,12 @@ public class ServerConfigurationActivity extends AppCompatActivity {
             } else {
                 this.gcmSenderIdEditText.setText("");
             }
+            this.encryptUserDataCheckbox.setChecked(config.encryptCurrentUserData());
         } else {
             this.endpointEditText.setText("");
             this.apiKeyEditText.setText("");
             this.gcmSenderIdEditText.setText("");
+            this.encryptUserDataCheckbox.setChecked(false);
         }
 
     }
@@ -68,6 +73,7 @@ public class ServerConfigurationActivity extends AppCompatActivity {
         String endpoint = this.endpointEditText.getText().toString().trim();
         String apiKey = this.apiKeyEditText.getText().toString().trim();
         String gcmSenderId = this.gcmSenderIdEditText.getText().toString().trim();
+        boolean encryptUserData = this.encryptUserDataCheckbox.isChecked();
 
         if (endpoint.length() == 0 || apiKey.length() == 0) {
             return;
@@ -75,7 +81,8 @@ public class ServerConfigurationActivity extends AppCompatActivity {
 
         Configuration.Builder configBuilder = new Configuration.Builder()
                 .endPoint(endpoint)
-                .apiKey(apiKey);
+                .apiKey(apiKey)
+                .encryptCurrentUserData(encryptUserData);
 
         if (gcmSenderId.length() > 0) {
             configBuilder.gcmSenderId(gcmSenderId);
