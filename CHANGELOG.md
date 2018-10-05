@@ -1,3 +1,10 @@
+## 1.6.4 (2018-10-05)
+
+### Other Notes
+
+- Upgrade Java-WebSocket lib to 1.3.9
+- Upgrade joda-time lib to 2.10
+
 ## 1.6.3 (2018-09-26)
 
 ### Features
