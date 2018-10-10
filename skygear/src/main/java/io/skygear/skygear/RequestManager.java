@@ -40,13 +40,15 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The Skygear request manager.
  */
 public class RequestManager {
     /** The default request timeout in milliseconds */
-    public static final int DEFAULT_TIMEOUT = DefaultRetryPolicy.DEFAULT_TIMEOUT_MS;
+    /** Align to iOS SDK timeout 60s */
+    public static final int DEFAULT_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(60);
     private static final String TAG = "Skygear SDK";
 
     /**
