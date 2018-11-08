@@ -35,7 +35,7 @@ public class AssignUserRoleRequestUnitTest {
 
         AssignUserRoleRequest request = new AssignUserRoleRequest(users, roles);
 
-        assertEquals("role:assign", request.action);
+        assertEquals("auth:role:assign", request.action);
 
         Map<String, Object> data = request.data;
         String[] userIDs = (String[]) data.get("users");

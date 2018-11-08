@@ -39,7 +39,7 @@ public class SetAdminRoleRequestUnitTest {
                 new Role("Boss")
         });
 
-        assertEquals("role:admin", request.action);
+        assertEquals("auth:role:admin", request.action);
 
         Map<String, Object> data = request.data;
         String[] roleNames = (String[]) data.get("roles");

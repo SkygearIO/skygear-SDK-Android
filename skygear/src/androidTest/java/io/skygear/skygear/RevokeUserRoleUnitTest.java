@@ -35,7 +35,7 @@ public class RevokeUserRoleUnitTest {
 
         RevokeUserRoleRequest request = new RevokeUserRoleRequest(users, roles);
 
-        assertEquals("role:revoke", request.action);
+        assertEquals("auth:role:revoke", request.action);
 
         Map<String, Object> data = request.data;
         String[] userIDs = (String[]) data.get("users");

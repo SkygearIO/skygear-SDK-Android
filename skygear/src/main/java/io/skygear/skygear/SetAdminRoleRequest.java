@@ -29,7 +29,7 @@ public class SetAdminRoleRequest extends Request {
      * @param roles the roles array
      */
     public SetAdminRoleRequest(Role[] roles) {
-        super("role:admin");
+        super("auth:role:admin");
 
         this.data = new HashMap<>();
 

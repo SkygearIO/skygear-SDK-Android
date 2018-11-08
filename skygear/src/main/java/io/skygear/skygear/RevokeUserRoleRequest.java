@@ -13,7 +13,7 @@ public class RevokeUserRoleRequest extends Request {
      * @param roleNames the role name array
      */
     public RevokeUserRoleRequest(String[] userIDs, String []roleNames) {
-        super("role:revoke");
+        super("auth:role:revoke");
         this.data = new HashMap<>();
         this.data.put("users", userIDs);
         this.data.put("roles", roleNames);

@@ -38,7 +38,7 @@ public class SetDefaultRoleRequestUnitTest {
                 new Role("Boss")
         });
 
-        assertEquals("role:default", request.action);
+        assertEquals("auth:role:default", request.action);
 
         Map<String, Object> data = request.data;
         String[] roleNames = (String[]) data.get("roles");

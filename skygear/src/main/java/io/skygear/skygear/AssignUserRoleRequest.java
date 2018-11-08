@@ -13,7 +13,7 @@ public class AssignUserRoleRequest extends Request {
      * @param roleNames the role name array
      */
     public AssignUserRoleRequest(String[] userIDs, String []roleNames) {
-        super("role:assign");
+        super("auth:role:assign");
         this.data = new HashMap<>();
         this.data.put("users", userIDs);
         this.data.put("roles", roleNames);

@@ -29,7 +29,7 @@ public class SetDefaultRoleRequest extends Request {
      * @param roles the roles array
      */
     public SetDefaultRoleRequest(Role[] roles) {
-        super("role:default");
+        super("auth:role:default");
 
         this.data = new HashMap<>();
 

@@ -32,7 +32,7 @@ public class FetchUserRoleRequestUnitTest {
     public void testGetUserRoleRequestCreation() throws Exception {
         FetchUserRoleRequest request = new FetchUserRoleRequest(new String[]{"user1", "user2"});
 
-        assertEquals("role:get", request.action);
+        assertEquals("auth:role:get", request.action);
 
         Map<String, Object> data = request.data;
         String[] users = (String[]) data.get("users");
