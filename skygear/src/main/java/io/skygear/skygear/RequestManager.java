@@ -17,7 +17,6 @@
 
 package io.skygear.skygear;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.util.Log;
 
@@ -32,7 +31,6 @@ import io.skygear.utils.volley.SimpleMultiPartRequest;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,13 +42,15 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The Skygear request manager.
  */
 public class RequestManager {
     /** The default request timeout in milliseconds */
-    public static final int DEFAULT_TIMEOUT = DefaultRetryPolicy.DEFAULT_TIMEOUT_MS;
+    /** Align to iOS SDK timeout 60s */
+    public static final int DEFAULT_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(60);
     private static final String TAG = "Skygear SDK";
 
     /**
