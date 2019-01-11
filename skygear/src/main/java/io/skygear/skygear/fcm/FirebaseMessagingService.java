@@ -15,46 +15,58 @@
  *
  */
 
-package io.skygear.skygear.gcm;
+package io.skygear.skygear.fcm;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Bundle;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Date;
 import java.util.Random;
 
-/**
- * The GCM Listener Service.
- */
-public class ListenerService extends com.google.android.gms.gcm.GcmListenerService {
+import io.skygear.skygear.Container;
+
+public class FirebaseMessagingService extends
+        com.google.firebase.messaging.FirebaseMessagingService {
     private static final String TAG = "Skygear SDK";
     private final Random random;
 
-    /**
-     * Instantiates a new GCM listener service.
-     */
-    public ListenerService() {
+    public FirebaseMessagingService() {
         super();
         this.random = new Random(new Date().getTime());
     }
 
+    /**
+     * Called if InstanceID token is updated. This may occur if the security of
+     * the previous token had been compromised. Note that this is called when the InstanceID token
+     * is initially generated so this is where you would retrieve the token.
+     */
     @Override
-    public void onMessageReceived(String s, Bundle bundle) {
-        super.onMessageReceived(s, bundle);
+    public void onNewToken(String token) {
+        Log.d(TAG, "Requesting to refresh token: " + token);
 
-        Bundle notification = bundle.getBundle("notification");
-        if (notification == null) {
-            Log.w(TAG, "Got null notification value in GCM data bundle");
+        Container container = Container.defaultContainer(this.getApplicationContext());
+        container.getPush().registerDeviceToken(token);
+    }
+
+    @Override
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        super.onMessageReceived(remoteMessage);
+
+        if (remoteMessage.getNotification() == null) {
+            Log.w(TAG, "Remote message doesn't contain notification");
             return;
         }
 
-        String title = notification.getString("title");
-        String body = notification.getString("body");
+        String title = remoteMessage.getNotification().getTitle();
+        String body = remoteMessage.getNotification().getBody();
 
         if (body == null) {
             Log.w(TAG, "Got null notification body");
@@ -76,6 +88,16 @@ public class ListenerService extends com.google.android.gms.gcm.GcmListenerServi
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
+            NotificationChannel channel = new NotificationChannel(
+                    "skygear_channel_id",
+                    appName,
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+            notificationBuilder.setChannelId(channel.getId());
+        }
 
         notificationManager.notify(this.random.nextInt(), notificationBuilder.build());
     }
