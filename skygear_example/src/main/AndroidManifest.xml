@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2017 Oursky Ltd.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +20,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <permission
-        android:name="io.skygear.skygear_example.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="io.skygear.skygear_example.permission.C2D_MESSAGE" />
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -87,33 +81,11 @@
             android:name=".OAuthActivity"
             android:screenOrientation="portrait" />
 
-        <!-- Delegate Skygear SDK to manage GCM Services -->
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
+        <!-- Delegate Skygear SDK to manage FCM Services -->
+        <service android:name="io.skygear.skygear.fcm.FirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="io.skygear.skygear_example" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </receiver>
-        <service
-            android:name="io.skygear.skygear.gcm.ListenerService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </service>
-        <service
-            android:name="io.skygear.skygear.gcm.InstanceIDListenerService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID" />
-            </intent-filter>
-        </service>
-        <service
-            android:name="io.skygear.skygear.gcm.RegistrationIntentService"
-            android:exported="false">
         </service>
 
     </application>
