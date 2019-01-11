@@ -33,7 +33,6 @@ public class ServerConfigurationActivity extends AppCompatActivity {
 
     private EditText endpointEditText;
     private EditText apiKeyEditText;
-    private EditText gcmSenderIdEditText;
     private CheckBox encryptUserDataCheckbox;
     private Container skygear;
 
@@ -46,23 +45,16 @@ public class ServerConfigurationActivity extends AppCompatActivity {
 
         this.endpointEditText = (EditText) findViewById(R.id.endpoint_edittext);
         this.apiKeyEditText = (EditText) findViewById(R.id.api_key_edittext);
-        this.gcmSenderIdEditText = (EditText) findViewById(R.id.gcm_sender_id_edittext);
         this.encryptUserDataCheckbox = findViewById(R.id.encrypt_user_data_checkbox);
 
         Configuration config = this.skygear.getConfig();
         if (config != null) {
             this.endpointEditText.setText(config.getEndpoint());
             this.apiKeyEditText.setText(config.getApiKey());
-            if (config.getGcmSenderId() != null) {
-                this.gcmSenderIdEditText.setText(config.getGcmSenderId());
-            } else {
-                this.gcmSenderIdEditText.setText("");
-            }
             this.encryptUserDataCheckbox.setChecked(config.encryptCurrentUserData());
         } else {
             this.endpointEditText.setText("");
             this.apiKeyEditText.setText("");
-            this.gcmSenderIdEditText.setText("");
             this.encryptUserDataCheckbox.setChecked(false);
         }
 
@@ -71,7 +63,6 @@ public class ServerConfigurationActivity extends AppCompatActivity {
     public void doConfigure(View view) {
         String endpoint = this.endpointEditText.getText().toString().trim();
         String apiKey = this.apiKeyEditText.getText().toString().trim();
-        String gcmSenderId = this.gcmSenderIdEditText.getText().toString().trim();
         boolean encryptUserData = this.encryptUserDataCheckbox.isChecked();
 
         if (endpoint.length() == 0 || apiKey.length() == 0) {
@@ -82,10 +73,6 @@ public class ServerConfigurationActivity extends AppCompatActivity {
                 .endPoint(endpoint)
                 .apiKey(apiKey)
                 .encryptCurrentUserData(encryptUserData);
-
-        if (gcmSenderId.length() > 0) {
-            configBuilder.gcmSenderId(gcmSenderId);
-        }
 
         Configuration config = configBuilder.build();
 
