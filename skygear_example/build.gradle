@@ -16,6 +16,9 @@
  */
 
 apply plugin: 'com.android.application'
+if (project.file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
+}
 
 def keystorePassword = System.getenv('KEYSTORE_PASSWORD')
 def keystoreKeyAlias = System.getenv('KEYSTORE_KEY_ALIAS')

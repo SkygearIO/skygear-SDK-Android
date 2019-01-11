@@ -28,7 +28,6 @@ import android.widget.EditText;
 
 import io.skygear.skygear.Configuration;
 import io.skygear.skygear.Container;
-import io.skygear.skygear.gcm.RegistrationIntentService;
 
 public class ServerConfigurationActivity extends AppCompatActivity {
 
@@ -92,11 +91,6 @@ public class ServerConfigurationActivity extends AppCompatActivity {
 
         this.skygear.configure(config);
         this.saveConfiguration(config);
-
-        if (this.skygear.getPush().getGcmSenderId() != null) {
-            Intent gcmTokenRegisterIntent = new Intent(this, RegistrationIntentService.class);
-            this.startService(gcmTokenRegisterIntent);
-        }
 
         new AlertDialog.Builder(this)
                 .setTitle("Server Configuration")
