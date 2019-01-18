@@ -49,19 +49,6 @@ public class PushContainer {
     }
 
     /**
-     * Gets GCM Sender ID.
-     *
-     * @return the sender id
-     */
-    public String getGcmSenderId() {
-        Configuration config = this.getContainer().getConfig();
-        if (config == null) {
-            return null;
-        }
-        return config.getGcmSenderId();
-    }
-
-    /**
      * Register device token.
      *
      * @param token the token
