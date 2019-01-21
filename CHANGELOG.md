@@ -1,3 +1,14 @@
+## 1.7.0 (2019-01-21)
+
+### Features
+
+- Support FCM (#254)
+
+### Other Notes
+
+- Update request timeout to 60s to align with iOS SDK
+
+
 ## 1.6.4 (2018-10-05)
 
 ### Other Notes
