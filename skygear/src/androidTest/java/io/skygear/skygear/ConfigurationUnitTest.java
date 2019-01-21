@@ -37,7 +37,6 @@ public class ConfigurationUnitTest {
 
         assertEquals("http://skygear.dev/", defaultConfig.endpoint);
         assertEquals("changeme", defaultConfig.apiKey);
-        assertNull(defaultConfig.gcmSenderId);
         assertFalse(defaultConfig.pubsubHandlerExecutionInBackground);
     }
 
@@ -46,13 +45,11 @@ public class ConfigurationUnitTest {
         Configuration config = new Configuration.Builder()
                 .endPoint("http://my-endpoint.skygeario.com/")
                 .apiKey("my-api-key")
-                .gcmSenderId("my-sender-id")
                 .pubsubHandlerExecutionInBackground(true)
                 .build();
 
         assertEquals("http://my-endpoint.skygeario.com/", config.endpoint);
         assertEquals("my-api-key", config.apiKey);
-        assertEquals("my-sender-id", config.gcmSenderId);
         assertTrue(config.pubsubHandlerExecutionInBackground);
     }
 

@@ -37,11 +37,6 @@ public final class Configuration {
     final String apiKey;
 
     /**
-     * GCM Sender ID
-     */
-    final String gcmSenderId;
-
-    /**
      * Boolean indicating whether PubsubClient Handler Execution is in Background.
      */
     final boolean pubsubHandlerExecutionInBackground;
@@ -62,14 +57,12 @@ public final class Configuration {
     private Configuration(
             String endpoint,
             String apiKey,
-            String gcmSenderId,
             boolean pubsubHandlerExecutionInBackground,
             boolean pubsubConnectAutomatically,
             boolean encryptCurrentUserData
     ) {
         this.endpoint = endpoint;
         this.apiKey = apiKey;
-        this.gcmSenderId = gcmSenderId;
         this.pubsubHandlerExecutionInBackground = pubsubHandlerExecutionInBackground;
         this.pubsubConnectAutomatically = pubsubConnectAutomatically;
         this.encryptCurrentUserData = encryptCurrentUserData;
@@ -91,15 +84,6 @@ public final class Configuration {
      */
     public String getApiKey() {
         return apiKey;
-    }
-
-    /**
-     * Gets GCM Sender ID.
-     *
-     * @return the sender id
-     */
-    public String getGcmSenderId() {
-        return gcmSenderId;
     }
 
     /**
@@ -163,7 +147,6 @@ public final class Configuration {
     public static final class Builder {
         private String endpoint;
         private String apiKey;
-        private String gcmSenderId;
         private boolean pubsubHandlerExecutionInBackground;
         private boolean pubsubConnectAutomatically;
         private boolean encryptCurrentUserData;
@@ -194,17 +177,6 @@ public final class Configuration {
          */
         public Builder apiKey(String apiKey) {
             this.apiKey = apiKey;
-            return this;
-        }
-
-        /**
-         * Sets the GCM Sender ID.
-         *
-         * @param senderId the sender id
-         * @return the builder
-         */
-        public Builder gcmSenderId(String senderId) {
-            this.gcmSenderId = senderId;
             return this;
         }
 
@@ -260,7 +232,6 @@ public final class Configuration {
             return new Configuration(
                     this.endpoint,
                     this.apiKey,
-                    this.gcmSenderId,
                     this.pubsubHandlerExecutionInBackground,
                     this.pubsubConnectAutomatically,
                     this.encryptCurrentUserData

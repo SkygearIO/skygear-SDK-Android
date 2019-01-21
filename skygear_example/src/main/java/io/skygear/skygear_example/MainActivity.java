@@ -33,7 +33,6 @@ import io.skygear.skygear.Error;
 import io.skygear.skygear.LogoutResponseHandler;
 import io.skygear.skygear.Record;
 import io.skygear.skygear.Role;
-import io.skygear.skygear.gcm.RegistrationIntentService;
 
 public class MainActivity extends AppCompatActivity {
     private Container skygear;
@@ -56,11 +55,6 @@ public class MainActivity extends AppCompatActivity {
 
         this.skygear = Container.defaultContainer(this);
         this.restoreServerConfiguration();
-
-        if (this.skygear.getPush().getGcmSenderId() != null) {
-            Intent gcmTokenRegisterIntent = new Intent(this, RegistrationIntentService.class);
-            this.startService(gcmTokenRegisterIntent);
-        }
     }
 
     @Override
