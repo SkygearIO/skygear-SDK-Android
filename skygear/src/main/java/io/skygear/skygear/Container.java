@@ -203,7 +203,9 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(String name, LambdaResponseHandler handler) {
-        this.callLambdaFunction(name, (Object[]) null, handler);
+        LambdaRequest request = new LambdaRequest(name, (Object)null);
+        request.setResponseHandler(handler);
+        this.requestManager.sendRequest(request);
     }
 
     /**
