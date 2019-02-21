@@ -234,7 +234,7 @@ public final class Container {
 
             @Override
             public void onFailure(Error error) {
-
+                responseHandler.onFail(error);
             }
         });
     }
@@ -265,7 +265,7 @@ public final class Container {
 
             @Override
             public void onFailure(Error error) {
-
+                responseHandler.onFail(error);
             }
         });
     }
