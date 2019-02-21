@@ -203,7 +203,9 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(String name, LambdaResponseHandler handler) {
-        this.callLambdaFunction(name, (Object[]) null, handler);
+        LambdaRequest request = new LambdaRequest(name, (Object)null);
+        request.responseHandler = handler;
+        this.requestManager.sendRequest(request);
     }
 
     /**
@@ -214,6 +216,10 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(final String name, Object[] args, LambdaResponseHandler handler) {
+        if (args == null) {
+            this.callLambdaFunction(name, handler);
+            return;
+        }
         final String lambdaName = name;
         final Object[] lambdaArgs = args;
         final LambdaResponseHandler responseHandler = handler;
@@ -228,7 +234,7 @@ public final class Container {
 
             @Override
             public void onFailure(Error error) {
-
+                responseHandler.onFail(error);
             }
         });
     }
@@ -241,6 +247,10 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(String name, Map<String, Object> args, LambdaResponseHandler handler) {
+        if (args == null) {
+            this.callLambdaFunction(name, handler);
+            return;
+        }
         final String lambdaName = name;
         final Map<String, Object> lambdaArgs = args;
         final LambdaResponseHandler responseHandler = handler;
@@ -255,7 +265,7 @@ public final class Container {
 
             @Override
             public void onFailure(Error error) {
-
+                responseHandler.onFail(error);
             }
         });
     }
