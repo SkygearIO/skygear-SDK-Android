@@ -216,6 +216,10 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(final String name, Object[] args, LambdaResponseHandler handler) {
+        if (args == null) {
+            this.callLambdaFunction(name, handler);
+            return;
+        }
         final String lambdaName = name;
         final Object[] lambdaArgs = args;
         final LambdaResponseHandler responseHandler = handler;
@@ -243,6 +247,10 @@ public final class Container {
      * @param handler the response handler
      */
     public void callLambdaFunction(String name, Map<String, Object> args, LambdaResponseHandler handler) {
+        if (args == null) {
+            this.callLambdaFunction(name, handler);
+            return;
+        }
         final String lambdaName = name;
         final Map<String, Object> lambdaArgs = args;
         final LambdaResponseHandler responseHandler = handler;
