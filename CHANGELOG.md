@@ -1,3 +1,9 @@
+## 1.7.1 (2019-02-22)
+
+### Bug Fixes
+
+- Fix fail to call lambda without arguments #276
+
 ## 1.7.0 (2019-01-21)
 
 ### Features
